@@ -4,6 +4,9 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.Servo;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import org.firstinspires.ftc.robotcore.internal.android.dex.EncodedValueReader;
 
 import java.lang.*;
@@ -30,6 +33,9 @@ public class TeleOpAlign extends LinearOpMode{
 
     @Override
     public void runOpMode() throws InterruptedException {
+
+
+
         swerveServo0 = hardwareMap.get(Servo.class, "swerveServo0");
         swerveServo1 = hardwareMap.get(Servo.class, "swerveServo1");
         swerveServo2 = hardwareMap.get(Servo.class, "swerveServo2");
@@ -62,9 +68,20 @@ public class TeleOpAlign extends LinearOpMode{
 
         int currentServoProgram = -1;
 
+        JsonReader opmodeCfg = new JsonReader(JsonReader.opModesDir + "test.json");
+
+        try {
+            opmodeCfg.jsonRoot.put("modOneDefPos", servoAngle[0]);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
 
         waitForStart();
         while (opModeIsActive()) {
+
+
+
+
             xButtonStatus.recordNewValue(gamepad1.x);
             yButtonStatus.recordNewValue(gamepad1.y);
             aButtonStatus.recordNewValue(gamepad1.a);

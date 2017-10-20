@@ -41,7 +41,7 @@ public class TeleOpAlign extends LinearOpMode{
         swerveServo2 = hardwareMap.get(Servo.class, "swerveServo2");
         swerveServo3 = hardwareMap.get(Servo.class, "swerveServo3");
 
-        telemetry.addData("Say", "Hello Driver");    //
+        telemetry.addData("Say", "Hello Dave");    //
         telemetry.update();
 
         boolean bPrevState = false;

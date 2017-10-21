@@ -15,7 +15,7 @@ import java.util.Iterator;
 
 
     public class JsonReader {
-        public static final String baseDir = new String("/sdcard/FIRST/team9773/");
+        public static final String baseDir = new String("/storage/emulated/0/FIRST/team9773/");
         public static final String sensorSpecsFile = new String(baseDir + "specs/sensor_specs.json");
         public static final String wheelSpecsFile = new String(baseDir + "specs/wheel_specs.json");
         public static final String motorSpecsFile = new String(baseDir + "specs/motor_specs.json");

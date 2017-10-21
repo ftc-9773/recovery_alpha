@@ -23,6 +23,7 @@ public class TeleOpAlign extends LinearOpMode{
     private Servo swerveServo1;
     private Servo swerveServo2;
     private Servo swerveServo3;
+    JsonReader opmodeCfg = new JsonReader(JsonReader.opModesDir + "test.json");
 
     private void setServo(double pos) {
         swerveServo0.setPosition(pos);
@@ -53,7 +54,7 @@ public class TeleOpAlign extends LinearOpMode{
         double increment = 0.001;
         double buttonIncrement = 0.032;
         double neutral = 0.1;
-        double[] servoAngle = new double[4];
+        double servoAngle[] = new double[4];
         servoAngle[0] = 0.5;
         servoAngle[1] = 0.5;
         servoAngle[2] = 0.5;
@@ -68,19 +69,13 @@ public class TeleOpAlign extends LinearOpMode{
 
         int currentServoProgram = -1;
 
-        JsonReader opmodeCfg = new JsonReader(JsonReader.opModesDir + "test.json");
-
-        try {
+        waitForStart();
+        while (opModeIsActive()){
+            try {
             opmodeCfg.jsonRoot.put("modOneDefPos", servoAngle[0]);
         } catch (JSONException e) {
             e.printStackTrace();
         }
-
-        waitForStart();
-        while (opModeIsActive()) {
-
-
-
 
             xButtonStatus.recordNewValue(gamepad1.x);
             yButtonStatus.recordNewValue(gamepad1.y);

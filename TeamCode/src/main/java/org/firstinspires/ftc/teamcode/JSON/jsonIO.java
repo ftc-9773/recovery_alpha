@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.initialSwerveDrive;
+package org.firstinspires.ftc.teamcode.JSON;
 
 /**
  * Created by arjun on 10/15/2017.
@@ -8,13 +8,15 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Iterator;
 
 
 
-    public class JsonReader {
+    public class jsonIO {
         public static final String baseDir = new String("/storage/emulated/0/FIRST/team9773/");
         public static final String sensorSpecsFile = new String(baseDir + "specs/sensor_specs.json");
         public static final String wheelSpecsFile = new String(baseDir + "specs/wheel_specs.json");
@@ -23,7 +25,7 @@ import java.util.Iterator;
         public static final String navigationFile = new String(baseDir + "navigation_options.json");
         public static final String autonomousOptFile = new String(baseDir + "autonomous_options.json");
         public static final String driveSystemsFile = new String(baseDir + "drivesystems.json");
-        public static final String opModesDir = new String(baseDir + "initialSwerveDrive/");
+        public static final String opModesDir = new String(baseDir + "swerve_drive/");
         public static final String autonomousRedDir =  new String(baseDir + "autonomous/red/");
         public static final String autonomousBlueDir = new String(baseDir + "autonomous/blue/");
 
@@ -31,7 +33,7 @@ import java.util.Iterator;
         public String jsonStr;
         public JSONObject jsonRoot;
 
-        public JsonReader(String filePath) {
+        public jsonIO(String filePath) {
             FileReader fileReader = null;
             BufferedReader bufReader = null;
             StringBuilder strBuilder = new StringBuilder();
@@ -76,7 +78,18 @@ import java.util.Iterator;
             }
             return null;
         }
-
-
+        public void writeJson() throws IOException {
+            File file = new File(opModesDir+"positions.json");
+                file.delete();
+            FileWriter jsonWriter = new FileWriter(opModesDir+"positions.json");
+            try{
+                jsonWriter.write(jsonRoot.toString());
+            }
+            catch(IOException e){
+                e.printStackTrace();
+            }
+            jsonWriter.flush();
+            jsonWriter.close();
+        }
     }
 

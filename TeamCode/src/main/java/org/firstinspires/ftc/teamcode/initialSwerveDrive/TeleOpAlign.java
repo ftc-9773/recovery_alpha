@@ -1,14 +1,14 @@
 package org.firstinspires.ftc.teamcode.initialSwerveDrive;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.Servo;
-
+import org.firstinspires.ftc.teamcode.JSON.jsonIO;
+import org.firstinspires.ftc.teamcode.resources.ButtonStatus;
 import org.json.JSONException;
-import org.json.JSONObject;
 
-import org.firstinspires.ftc.robotcore.internal.android.dex.EncodedValueReader;
-
+import java.io.IOException;
 import java.lang.*;
 
 
@@ -17,14 +17,19 @@ import java.lang.*;
  * Created by Vikesh on 10/8/2017.
  */
 @TeleOp(name="TeleOpAlign")
+@Disabled
 public class TeleOpAlign extends LinearOpMode{
 
+    //hardware declarations - servos only, because this opmode does not use the motors:
     private Servo swerveServo0;
     private Servo swerveServo1;
     private Servo swerveServo2;
     private Servo swerveServo3;
-    JsonReader opmodeCfg = new JsonReader(JsonReader.opModesDir + "test.json");
 
+    //create new JsonReader object.
+    jsonIO opmodeCfg = new jsonIO(jsonIO.opModesDir + "test.json");
+
+    //setServo sets all servos to the position on the imput.
     private void setServo(double pos) {
         swerveServo0.setPosition(pos);
         swerveServo1.setPosition(pos);
@@ -36,30 +41,32 @@ public class TeleOpAlign extends LinearOpMode{
     public void runOpMode() throws InterruptedException {
 
 
-
+//defining the servos from the hardwareMap
         swerveServo0 = hardwareMap.get(Servo.class, "swerveServo0");
         swerveServo1 = hardwareMap.get(Servo.class, "swerveServo1");
         swerveServo2 = hardwareMap.get(Servo.class, "swerveServo2");
         swerveServo3 = hardwareMap.get(Servo.class, "swerveServo3");
 
-        telemetry.addData("Say", "Hello Dave");    //
-        telemetry.update();
 
+//boolean data for the states of the x and b buttons
         boolean bPrevState = false;
         boolean bCurrState = false;
         boolean xPrevState = false;
         boolean xCurrState = false;
 
-        double pos = 0.5;
+        //position is used as an argument to setServo
+        double position = 0.5;
+        //increment is the amount that the servo will be changed for every button press.
         double increment = 0.001;
         double buttonIncrement = 0.032;
         double neutral = 0.1;
+        //servoAngle contains the angles of each servo
         double servoAngle[] = new double[4];
         servoAngle[0] = 0.5;
         servoAngle[1] = 0.5;
         servoAngle[2] = 0.5;
         servoAngle[3] = 0.5;
-        setServo(pos);
+        setServo(position);
         ButtonStatus xButtonStatus = new ButtonStatus();
         ButtonStatus yButtonStatus = new ButtonStatus();
         ButtonStatus aButtonStatus = new ButtonStatus();
@@ -100,21 +107,21 @@ public class TeleOpAlign extends LinearOpMode{
                     double dir = gamepad1.left_stick_x;
                     if (dir>0) {
                         servoAngle[currentServoProgram] -= increment;
-                        if (servoAngle[currentServoProgram]<0.0) { pos = 0.0; }
+                        if (servoAngle[currentServoProgram]<0.0) { position = 0.0; }
                     } else if (dir < 0) {
                         servoAngle[currentServoProgram] += increment;
-                        if (servoAngle[currentServoProgram]>1.0) { pos = 1.0; }
+                        if (servoAngle[currentServoProgram]>1.0) { position = 1.0; }
                     }
                 }
             }
 
             double dir = gamepad1.left_stick_x;
             if (dir>0) {
-                pos -= increment;
-                if (pos>1.0) { pos = 1.0; }
+                position -= increment;
+                if (position>1.0) { position = 1.0; }
             } else if (dir < 0) {
-                pos += increment;
-                if (pos<0) { pos = 0; }
+                position += increment;
+                if (position<0) { position = 0; }
             }
 
             // check the status of the x button on either gamepad.
@@ -144,12 +151,21 @@ public class TeleOpAlign extends LinearOpMode{
             }
             */
 
-            setServo(pos);
+            setServo(position);
             // Send telemetry message to signify robot running;
-            telemetry.addData("hi Nicky, my pos is " ,  "%.2f", pos);
+            telemetry.addData("hi Nicky, my pos is " ,  "%.2f", position);
             telemetry.addData("hi Alex, my dir is " ,  "%.2f", dir);
+            telemetry.addData("", opmodeCfg.jsonRoot.toString());
             telemetry.update();
 
         }
+        try {
+            opmodeCfg.writeJson();
+        }
+        catch(IOException e){
+            e.printStackTrace();
+            telemetry.addData("error:", "IOException");
+        }
+        telemetry.update();
     }
 }

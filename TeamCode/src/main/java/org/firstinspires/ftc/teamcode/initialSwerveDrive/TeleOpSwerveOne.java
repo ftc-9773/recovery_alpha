@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.initialSwerveDrive;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -11,6 +12,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 
 @TeleOp(name = "SwerveDrive")
+@Disabled
 public class TeleOpSwerveOne extends LinearOpMode{
 
     private DcMotor swerveMotor0;
@@ -30,10 +32,10 @@ public class TeleOpSwerveOne extends LinearOpMode{
         swerveMotor2 = hardwareMap.get(DcMotor.class, "swerveMotor2");
         swerveMotor3 = hardwareMap.get(DcMotor.class, "swerveMotor3");
 
-        swerveServo0 = hardwareMap.get(Servo.class,"swerveServe0");
-        swerveServo1 = hardwareMap.get(Servo.class,"swerveServe1");
-        swerveServo2 = hardwareMap.get(Servo.class,"swerveServe2");
-        swerveServo3 = hardwareMap.get(Servo.class,"swerveServe3");
+        swerveServo0 = hardwareMap.get(Servo.class,"swerveServo0");
+        swerveServo1 = hardwareMap.get(Servo.class,"swerveServo1");
+        swerveServo2 = hardwareMap.get(Servo.class,"swerveServo2");
+        swerveServo3 = hardwareMap.get(Servo.class,"swerveServo3");
 
         swerveServo0.setPosition(0.5);
         swerveServo1.setPosition(0.5);

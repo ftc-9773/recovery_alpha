@@ -58,6 +58,7 @@ public class AlignByServo extends LinearOpMode{
             telemetry.addData("exception: ", "JSONException");
         }
 
+        waitForStart();
 
         //begin main program loop:
 
@@ -78,18 +79,28 @@ public class AlignByServo extends LinearOpMode{
                 servoNum = 0;
             }
 
-            //increment servo servoNum when button A is pressed.
-            if(gamepad1.a && positions[servoNum]<=1) {
-                positions[servoNum] += 0.000005;
-            }else if (gamepad1.a){
+            //increment servo position when button A is pressed. If servo position = 1, then it is set to 0.
+            if(gamepad1.y && positions[servoNum]<=1) {
+                positions[servoNum] += 0.000075;
+            }else if (gamepad1.y){
                 positions[servoNum] = 0;
             }
+
+            if(gamepad1.a && positions[servoNum]>=0) {
+                positions[servoNum] -= 0.000075;
+            }else if (gamepad1.a){
+                positions[servoNum] = 1;
+            }
+
+
             telemetry.addData("servo0: ", "%.3f", positions[0]);
             telemetry.addData("servo1: ", "%.3f", positions[1]);
             telemetry.addData("servo2: ", "%.3f", positions[2]);
             telemetry.addData("servo3: ", "%.3f", positions[3]);
             telemetry.update();
         }
+
+        //add values to the JSON string
         try {
             alignJson.jsonRoot.put("modOneDefPos", positions[0]);
             alignJson.jsonRoot.put("modTwoDefPos", positions[1]);
@@ -99,6 +110,8 @@ public class AlignByServo extends LinearOpMode{
         catch(JSONException e1){
             e1.printStackTrace();
         }
+
+        //write json string to json file.
         try{
             alignJson.writeJson();
         }

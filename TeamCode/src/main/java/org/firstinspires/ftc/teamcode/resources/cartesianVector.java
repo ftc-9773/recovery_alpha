@@ -11,7 +11,7 @@ public class cartesianVector {
     double conversionDir;
     double conversionMag;
 
-    public cartesianVector(){
+    public void cartesianVector(){
         this.xComponent = 0;
         this.yComponent = 0;
         this.conversionVector = new polarVector();
@@ -20,17 +20,17 @@ public class cartesianVector {
         xComponent = xcomp;
         yComponent = ycomp;
     }
-    public polarVector cartToPolar(double xcomp, double ycomp){
+    public polarVector cartToPolar(){
         if(xComponent!=0) {
-            conversionDir = Math.abs(Math.atan(ycomp / xcomp))*(180/3.141593);
+            conversionDir = Math.abs(Math.atan(yComponent / xComponent))*(180/3.141593);
         }else{
             conversionDir = 90;
         }
-        if(xComponent<0 || ycomp<0) {
-            conversionMag = -1*(xcomp * xcomp + ycomp * ycomp);
+        if(xComponent<0 || yComponent<0) {
+            conversionMag = -1*(xComponent * xComponent + yComponent * yComponent);
         }
         else{
-            conversionMag = (xcomp * xcomp + ycomp * ycomp);
+            conversionMag = (xComponent * xComponent + yComponent * yComponent);
         }
         conversionVector.set(conversionDir, conversionMag);
         return conversionVector;

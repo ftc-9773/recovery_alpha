@@ -39,7 +39,7 @@ public class Swerve extends LinearOpMode {
             yComponent = gamepad1.left_stick_y;
 
             if (xComponent != 0) {
-                conversionDir = (Math.atan(yComponent / xComponent) * (180 / 3.141593)+90;
+                conversionDir = (Math.atan(yComponent / xComponent) * (180 / 3.141593)+90);
             } else if(yComponent < 0){
                 conversionDir = 0;
             }

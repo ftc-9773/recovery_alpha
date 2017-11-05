@@ -9,7 +9,7 @@ public class polarVector {
     public double magnitude;
     public cartesianVector conversionVector;
 
-    public polarVector() {
+    public void polarVector() {
         this.direction = 0;
         this.magnitude = 0;
         conversionVector = new cartesianVector();

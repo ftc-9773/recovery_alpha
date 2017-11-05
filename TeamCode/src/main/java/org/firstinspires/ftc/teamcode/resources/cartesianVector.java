@@ -5,33 +5,25 @@ package org.firstinspires.ftc.teamcode.resources;
  */
 
 public class cartesianVector {
-    double xComponent;
-    double yComponent;
-    polarVector conversionVector;
-    double conversionDir;
-    double conversionMag;
+    double xComponent = 0;
+    double yComponent = 0;
+    polarVector conversionVector = new polarVector();
+    double conversionDir = 0;
+    double conversionMag = 0;
 
-    public void cartesianVector(){
-        this.xComponent = 0;
-        this.yComponent = 0;
-        this.conversionVector = new polarVector();
+    public void cartesianVector() {
     }
-    public void set(double xcomp, double ycomp){
+
+    public void set(double xcomp, double ycomp) {
         xComponent = xcomp;
         yComponent = ycomp;
     }
-    public polarVector cartToPolar(){
-        if(xComponent!=0) {
-            conversionDir = Math.abs(Math.atan(yComponent / xComponent))*(180/3.141593);
-        }else{
-            conversionDir = 90;
+
+    public polarVector cartToPolar() {
+        if (xComponent != 0) {
+            conversionDir = Math.toDegrees(Math.atan(yComponent / xComponent));
         }
-        if(xComponent<0 || yComponent<0) {
-            conversionMag = -1*(xComponent * xComponent + yComponent * yComponent);
-        }
-        else{
-            conversionMag = (xComponent * xComponent + yComponent * yComponent);
-        }
+        conversionMag = Math.sqrt(xComponent * xComponent + yComponent * yComponent);
         conversionVector.set(conversionDir, conversionMag);
         return conversionVector;
     }

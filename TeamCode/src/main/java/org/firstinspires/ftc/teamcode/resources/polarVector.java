@@ -5,18 +5,32 @@ package org.firstinspires.ftc.teamcode.resources;
  */
 
 public class polarVector {
-    public double direction;
-    public double magnitude;
-    public cartesianVector conversionVector;
 
-    public void polarVector() {
-        this.direction = 0;
-        this.magnitude = 0;
-        conversionVector = new cartesianVector();
+    //declarations
+    private double direction;
+    private double magnitude;
+    private cartesianVector conversionVector;
+
+    //constructor
+    public polarVector(double dir, double mag) {
+        this.direction = dir;
+        this.magnitude = mag;
+        conversionVector = new cartesianVector(0,0);
     }
 
+    //sets direction and magnitude
     public void set(double dir, double mag) {
         direction = dir;
         magnitude = mag;
+    }
+
+    //returns the direction
+    public double getDir(){
+        return direction;
+    }
+
+    //returns the magnitude
+    public double getMag(){
+        return magnitude;
     }
 }

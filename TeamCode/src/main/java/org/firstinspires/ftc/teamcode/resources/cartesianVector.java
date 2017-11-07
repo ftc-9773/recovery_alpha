@@ -5,25 +5,38 @@ package org.firstinspires.ftc.teamcode.resources;
  */
 
 public class cartesianVector {
-    double xComponent = 0;
-    double yComponent = 0;
-    polarVector conversionVector = new polarVector();
-    double conversionDir = 0;
-    double conversionMag = 0;
+    private double xComponent = 0;
+    private double yComponent = 0;
+    private polarVector conversionVector = new polarVector(0,0);
+    private double conversionDir = 0;
+    private double conversionMag = 0;
 
-    public void cartesianVector() {
+    //constructor
+    public cartesianVector(double x, double y) {
+        this.xComponent = x;
+        this.yComponent = y;
     }
 
+    //sets x and y components
     public void set(double xcomp, double ycomp) {
         xComponent = xcomp;
         yComponent = ycomp;
     }
 
+    public double getx(){
+        return xComponent;
+    }
+
+    public double gety(){
+        return yComponent;
+    }
+
+    //returns a polarVector object with the same direction and magnitude as the cartesianVector.
     public polarVector cartToPolar() {
         if (xComponent != 0) {
             conversionDir = Math.toDegrees(Math.atan(yComponent / xComponent));
         }
-        conversionMag = Math.sqrt(xComponent * xComponent + yComponent * yComponent);
+        conversionMag = Math.sqrt(xComponent * xComponent + yComponent * yComponent)*(xComponent/Math.abs(xComponent));
         conversionVector.set(conversionDir, conversionMag);
         return conversionVector;
     }

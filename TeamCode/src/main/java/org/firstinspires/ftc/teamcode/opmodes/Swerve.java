@@ -16,21 +16,59 @@ import org.firstinspires.ftc.teamcode.resources.polarVector;
 @TeleOp(name = "Swerve")
 public class Swerve extends LinearOpMode {
 
-    SwerveModule module0 = new SwerveModule(hardwareMap, "swerveServo0", "swerveMotor0", "modOneDefPos");
-    SwerveModule module1 = new SwerveModule(hardwareMap, "swerveServo1", "swerveMotor1", "modTwoDefPos");
-    SwerveModule module2 = new SwerveModule(hardwareMap, "swerveServo2", "swerveMotor2", "modThreeDefPos");
-    SwerveModule module3 = new SwerveModule(hardwareMap, "swerveServo3", "swerveMotor3", "modFourDefPos");
+    double xComponent;
+    double yComponent;
+    double conversionDir;
+    double conversionMag;
+    AnalogInput input;
+    DcMotor swerveMotor0;
+    Servo swerveServo0;
 
     @Override
     public void runOpMode() throws InterruptedException {
 
+        input = hardwareMap.get(AnalogInput.class, "input0");
+        swerveMotor0 = hardwareMap.get(DcMotor.class, "swerveMotor0");
+        swerveServo0 = hardwareMap.get(Servo.class, "swerveServo0");
+
         waitForStart();
 
         while(opModeIsActive()) {
-            module0.setVector(gamepad1.left_stick_x, gamepad1.left_stick_y * (-1));
-            module1.setVector(gamepad1.left_stick_x, gamepad1.left_stick_y * (-1));
-            module2.setVector(gamepad1.left_stick_x, gamepad1.left_stick_y * (-1));
-            module3.setVector(gamepad1.left_stick_x, gamepad1.left_stick_y * (-1));
+
+            xComponent = gamepad1.left_stick_x;
+            yComponent = gamepad1.left_stick_y;
+
+            if (xComponent != 0) {
+                conversionDir = (Math.atan(yComponent / xComponent) * (180 / 3.141593)+90);
+            } else if(yComponent < 0){
+                conversionDir = 0;
+            }
+            else{
+                conversionDir = 180;
+            }
+
+            if (xComponent < 0 && yComponent < 0) {
+                conversionMag = -1 * (xComponent * xComponent + yComponent * yComponent);
+            } else {
+                conversionMag = (xComponent * xComponent + yComponent * yComponent);
+            }
+
+            conversionDir = (conversionDir)/360+.25;
+
+            if(conversionDir < input.getVoltage()/3.24-0.005){
+                swerveServo0.setPosition(0);
+            }
+            else if(conversionDir > input.getVoltage()/3.24+0.005){
+                swerveServo0.setPosition(1);
+            }
+            else{
+                swerveServo0.setPosition(.5);
+            }
+
+            telemetry.addData("position:", "%.3f", conversionDir);
+            telemetry.addData("speed: ", conversionMag);
+            telemetry.update();
         }
+
     }
 }

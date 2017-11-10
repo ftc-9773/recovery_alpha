@@ -8,31 +8,50 @@ import com.qualcomm.robotcore.hardware.AnalogSensor;
 import com.qualcomm.robotcore.hardware.HardwareDevice;
 import com.qualcomm.robotcore.util.SerialNumber;
 
+import org.firstinspires.ftc.teamcode.JSON.jsonIO;
+import org.firstinspires.ftc.teamcode.infrastructure.SafeJsonReader;
+import org.json.JSONException;
+
+import java.io.IOException;
+
 /**
  * Created by Vikesh on 10/28/2017.
  */
 @TeleOp(name = "Align By Sensor")
 public class AlignBySensor extends LinearOpMode {
-    AnalogInput input0;
-    AnalogInput input1;
-    AnalogInput input2;
-    AnalogInput input3;
+    AnalogInput brwAbsEncoder;
+    AnalogInput frwAbsEncoder;
+    AnalogInput flwAbsEncoder;
+    AnalogInput blwAbsEncoder;
+    SafeJsonReader jsonio = new SafeJsonReader("positions");
+    double[] positions = new double[4];
     @Override
     public void runOpMode() throws InterruptedException {
 
-        input0 = hardwareMap.get(AnalogInput.class, "input0");
-        input1 = hardwareMap.get(AnalogInput.class, "input1");
-        input2 = hardwareMap.get(AnalogInput.class, "input2");
-        input3 = hardwareMap.get(AnalogInput.class, "input3");
+        brwAbsEncoder = hardwareMap.get(AnalogInput.class, "brwAbsEncoder");
+        frwAbsEncoder = hardwareMap.get(AnalogInput.class, "frwAbsEncoder");
+        flwAbsEncoder = hardwareMap.get(AnalogInput.class, "flwAbsEncoder");
+        blwAbsEncoder = hardwareMap.get(AnalogInput.class, "blwAbsEncoder");
         waitForStart();
 
         while(opModeIsActive()){
-            telemetry.addData("position 1", "%.3f", input0.getVoltage()/3.245);
-            telemetry.addData("position 2", "%.3f", input1.getVoltage()/3.245);
-            telemetry.addData("position 3", "%.3f", input2.getVoltage()/3.245);
-            telemetry.addData("position 4", "%.3f", input3.getVoltage()/3.245);
+            telemetry.addData("position 1", "%.3f", positions[0]);
+            telemetry.addData("position 2", "%.3f", positions[1]);
+            telemetry.addData("position 3", "%.3f", positions[2]);
+            telemetry.addData("position 4", "%.3f", positions[3]);
+            telemetry.addData("modOnePos: ", "%.3f", jsonio.getDouble("modOneDefPos"));
             telemetry.update();
+            positions[0] = (brwAbsEncoder.getVoltage()/3.24);
+            positions[1] = (frwAbsEncoder.getVoltage()/3.24);
+            positions[2] = (flwAbsEncoder.getVoltage()/3.24);
+            positions[3] = (blwAbsEncoder.getVoltage()/3.24);
+
+            jsonio.modifyDouble("modOneDefPos", 0.5);
+            jsonio.modifyDouble("modTwoDefPos", 0.6);
+            jsonio.modifyDouble("modThreeDefPos", positions[2]);
+            jsonio.modifyDouble("modFourDefPos", positions[3]);
         }
+        jsonio.updateFile();
 
     }
 }

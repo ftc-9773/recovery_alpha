@@ -31,7 +31,7 @@ where are the file on the phone?
  */
 
 @TeleOp(name="JasonTester")
-public class JasonTester extends LinearOpMode {
+public class JsonTester extends LinearOpMode {
 
     private SafeJsonReader swerveInfo;
     private double incrementServo0;

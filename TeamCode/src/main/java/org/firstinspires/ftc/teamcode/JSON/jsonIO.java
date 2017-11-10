@@ -25,7 +25,7 @@ import java.util.Iterator;
         public static final String navigationFile = new String(baseDir + "navigation_options.json");
         public static final String autonomousOptFile = new String(baseDir + "autonomous_options.json");
         public static final String driveSystemsFile = new String(baseDir + "drivesystems.json");
-        public static final String opModesDir = new String(baseDir + "jsonData");
+        public static final String opModesDir = new String(baseDir + "jsonData/");
         public static final String autonomousRedDir =  new String(baseDir + "autonomous/red/");
         public static final String autonomousBlueDir = new String(baseDir + "autonomous/blue/");
 

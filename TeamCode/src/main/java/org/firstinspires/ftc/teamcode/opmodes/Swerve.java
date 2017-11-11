@@ -27,7 +27,8 @@ public class Swerve extends LinearOpMode {
         waitForStart();
         while(opModeIsActive()) {
 
-            mySwerveController.pointDirection(gamepad1.left_stick_x, gamepad1.left_stick_y, gamepad1.right_stick_x);
+            mySwerveController.pointDirection(gamepad1.left_stick_y * -1, gamepad1.left_stick_x, gamepad1.right_stick_x);
+
             if (ENABLEDRIVING) {
                 mySwerveController.moveRobot();
             }
@@ -35,6 +36,13 @@ public class Swerve extends LinearOpMode {
             // Display gamepad values
             telemetry.addData("Gamepad x:", gamepad1.left_stick_x);
             telemetry.addData("Gamepad y:", gamepad1.left_stick_y);
+
+            telemetry.addData("Front Left Heading: ", Math.toDegrees(mySwerveController.flwVector.getAngle()));
+            telemetry.addData("Front Left Position: ", Math.toDegrees(mySwerveController.flwModule.currentPosition));
+            telemetry.addData("Front Left Error Value: ", mySwerveController.flwModule.errorAmt);
+            telemetry.addData("Front Left Servo Power: ", mySwerveController.flwModule.tellServo);
+            telemetry.addData("Front Left Motor Power: ", mySwerveController.flwVector.getMagnitude());
+
 
             telemetry.update();
         }

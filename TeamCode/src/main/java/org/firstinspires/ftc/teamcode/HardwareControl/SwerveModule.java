@@ -2,13 +2,11 @@ package org.firstinspires.ftc.teamcode.HardwareControl;
 
 import android.util.Log;
 
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.AnalogInput;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
-import org.firstinspires.ftc.teamcode.opmodes.Swerve;
 import org.firstinspires.ftc.teamcode.resources.Vector;
 
 /**
@@ -22,17 +20,39 @@ public class SwerveModule {
     private Servo swerveServo;
     private AnalogInput swerveAbsEncoder;
     private Vector velocityVector = new Vector(true, 0, 0);
-    private double dist;
+    private double errorAmt;
     private double servoMove;
     private double zeroPosition;
 
-    private static final double PIDCoef = 3;
-    private static final double PIDExp = 2.5;
     private static final String TAG = "ftc9773 SwerveModule";
 
-    public SwerveModule(HardwareMap mapHW, String hardwareMapTag, String jsonId) {
+
+
+    //    PID STUFF   //
+
+    // Variables
+    private double proportionalCorrection;
+    private double differentialCorrection;
+
+    private double lastTime = -1;
+    private double lastError;
+
+    // Temporary PID Constants
+    private final double Kp = 1.7;
+    private final double Kd = 0.6;
+
+
+
+    // For outside access
+    public boolean isTurning = false;
+    public double currentPosition = 0;
+
+
+
+    //INIT
+    public SwerveModule(HardwareMap hwMap, String hardwareMapTag, String jsonId) {
         // Pass the hardware map
-        hwMap = mapHW;
+        this.hwMap = hwMap;
 
         // Set the electronics
         swerveServo = hwMap.servo.get(hardwareMapTag + "Servo");
@@ -40,43 +60,60 @@ public class SwerveModule {
         swerveAbsEncoder = hwMap.analogInput.get(hardwareMapTag + "AbsEncoder");
     }
 
-    // Updates the module direction
-    public void setVector(double xComponent, double yComponent){
 
-        // puts x y components into a vector
-        velocityVector.set(true, xComponent, yComponent);
+    // Private Functions:
+    private double calculatePDCorrection() {
+
+        // Proportional error
+        proportionalCorrection = errorAmt * Kp;
+
+        // Differential error
+        if (lastTime != 0)  {
+            differentialCorrection = Kd * (errorAmt - lastError) / (System.currentTimeMillis() - lastTime) / 1000;
+            // Differential correction = Constant * (change in error / change in time)
+        }
+
+        return proportionalCorrection + differentialCorrection;
+    }
+
+
+
+    // Writes the module direction
+    public void setVector(Vector velocityVector){
 
         // Finds the current position
-        double currentPosition = swerveAbsEncoder.getVoltage() / 3.245 * 2 * Math.PI - zeroPosition;
+        currentPosition = swerveAbsEncoder.getVoltage() / 3.245 * 2 * Math.PI - zeroPosition;
 
         //Calculates distance to move on -pi to pi
-        dist = velocityVector.getAngle() - currentPosition * 2*Math.PI;
-        if (dist > 2 * Math.PI) {
-            dist -= 2 * Math.PI;
-        } else if (dist < -1 * Math.PI) {
-            dist += 2 * Math.PI;
+        errorAmt = velocityVector.getAngle() - currentPosition;
+        if (errorAmt > 2 * Math.PI) {
+            errorAmt -= 2 * Math.PI;
+        } else if (errorAmt < -1 * Math.PI) {
+            errorAmt += 2 * Math.PI;
         }
-
-        // Figure out how to move the servo
-
-        // Give 0.05 radians of not moving
-        if (Math.abs(dist) < 0.1) {
-            swerveServo.setPosition(0.5);
-
-        } else {
-            //Use a multiplyer
-            servoMove = 0.5 + Math.pow(dist, PIDExp) * PIDCoef;
-
-            if (servoMove > 1) {
-                swerveServo.setPosition(1.0);
-            } else if (servoMove < 0) {
-                swerveServo.setPosition(0);
-            } else {
-                swerveServo.setPosition(servoMove);
-            }
-        }
-
-        //swerveMotor.setPower(driveMag);
-        Log.e(TAG, "Encoder Position: " + currentPosition + "  Desired Position: " + velocityVector.getAngle() + "  Told Servo: " + dist);
     }
+
+    // Rotates the Module
+    public void pointModule() {
+        // ** Figure out how to move the servo **
+
+        //Calculate PID
+        double tellServo = calculatePDCorrection();
+
+        //Correct onto servo's range
+        if (tellServo > 1) {
+            tellServo = 1;
+        } else if (tellServo < 0) {
+            tellServo = 0;
+        }
+
+        swerveServo.setPosition(tellServo);
+        Log.e(TAG, "Desired Position: " + velocityVector.getAngle() + "  Told Servo: " + errorAmt + "   Current position: " + currentPosition);
+    }
+
+    // Drives the wheel
+    public void driveModule() {
+        swerveMotor.setPower(velocityVector.getMagnitude());
+    }
+
 }

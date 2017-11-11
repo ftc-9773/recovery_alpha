@@ -1,0 +1,10 @@
+{
+  "Kp": 0.04,
+  "Kpe": 1.4,
+  "Kp2": 0.01,
+  "Kd": 0.05,
+  "flwStraightPosition": 0.181,
+  "frwStraightPosition": 0.521,
+  "blwStraightPosition": 0.526,
+  "brwStraightPosition": 0.649
+}

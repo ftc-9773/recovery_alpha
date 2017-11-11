@@ -13,26 +13,26 @@ public class SwerveController {
     private static final String TAG = "ftc9773 SwerveController";
 
     // Swerve Modules
-    private SwerveModule flwModule;
-    private SwerveModule frwModule;
-    private SwerveModule blwModule;
-    private SwerveModule brwModule;
+    public SwerveModule flwModule;
+    public SwerveModule frwModule;
+    public SwerveModule blwModule;
+    public SwerveModule brwModule;
 
     //Module Movement Vectors
-    private Vector flwVector = new Vector(true, 0, 0);
-    private Vector frwVector = new Vector(true, 0, 0);
-    private Vector blwVector = new Vector(true, 0, 0);
-    private Vector brwVector = new Vector(true, 0, 0);
+    public Vector flwVector = new Vector(true, 0, 0);
+    public Vector frwVector = new Vector(true, 0, 0);
+    public Vector blwVector = new Vector(true, 0, 0);
+    public Vector brwVector = new Vector(true, 0, 0);
 
     // Variables
     private boolean motorsAreForward = true;
 
     //INIT
     public SwerveController (HardwareMap hardwareMap) {
-        flwModule = new SwerveModule(hardwareMap, "flw", "modOneDefPos");
-        frwModule = new SwerveModule(hardwareMap, "frw", "modTwoDefPos");
-        blwModule = new SwerveModule(hardwareMap, "blw", "modThreeDefPos");
-        brwModule = new SwerveModule(hardwareMap, "brw", "modFourDefPos");
+        flwModule = new SwerveModule(hardwareMap, "flw");
+        frwModule = new SwerveModule(hardwareMap, "frw");
+        blwModule = new SwerveModule(hardwareMap, "blw");
+        brwModule = new SwerveModule(hardwareMap, "brw");
     }
 
 
@@ -54,9 +54,21 @@ public class SwerveController {
         blwVector.addVector(false, rotationSpeed, 1.75 * Math.PI);
         brwVector.addVector(false, rotationSpeed, 1.25 * Math.PI);
 
-        //TODO: Reset magnitudes to be from -1 to 1
+        /// Keep velocity vectors under 1  ///
 
-        //Set the direction of each module
+        // Find the largest motor speed
+        double max = Math.max( Math.max(flwVector.getMagnitude(), frwVector.getMagnitude()),Math.max(blwVector.getMagnitude(), brwVector.getMagnitude()));
+
+        // if greater than 1, divide by largest
+        if (max > 1) {
+            flwVector.set(false, flwVector.getMagnitude()/max, flwVector.getAngle());
+            frwVector.set(false, frwVector.getMagnitude()/max, frwVector.getAngle());
+            blwVector.set(false, blwVector.getMagnitude()/max, blwVector.getAngle());
+            brwVector.set(false, brwVector.getMagnitude()/max, brwVector.getAngle());
+        }
+
+
+        //Write the direction and speed of each module
         flwModule.setVector(flwVector);
         frwModule.setVector(frwVector);
         blwModule.setVector(blwVector);

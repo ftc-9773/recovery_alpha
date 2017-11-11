@@ -53,14 +53,31 @@ public class Vector {
         }
     }
 
+    // Add a vector
+    public void addVector (boolean isCartesian, double xMag, double yAng) {
+        if (isCartesian) {
+            xComponent += xMag;
+            yComponent += yAng;
+        } else {
+            xComponent += xMag * Math.cos(yAng);
+            yComponent += xMag * Math.sin(yAng);
+        }
+    }
 
     //Fetching values
     public double getX () { return xComponent; }
     public double getY () { return yComponent; }
 
     public double getMagnitude () { return Math.sqrt( Math.pow(xComponent, 2) + Math.pow(yComponent, 2)); }
-    public double getAngle () { return Math.atan2(yComponent, xComponent);
 
-
+    public double getAngle () {
+        final double angle = Math.atan2(yComponent, xComponent);
+        if (angle < 0) {
+            return angle + 2 * Math.PI;
+        }  else {
+            return Math.atan2(yComponent, xComponent);
+        }
     }
+
+
 }

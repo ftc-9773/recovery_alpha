@@ -3,17 +3,10 @@ package org.firstinspires.ftc.teamcode.HardwareControl;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.AnalogInput;
-import com.qualcomm.robotcore.hardware.AnalogInputController;
-import com.qualcomm.robotcore.hardware.AnalogSensor;
 import com.qualcomm.robotcore.hardware.HardwareDevice;
 import com.qualcomm.robotcore.util.SerialNumber;
 
-import org.firstinspires.ftc.teamcode.JSON.jsonIO;
 import org.firstinspires.ftc.teamcode.infrastructure.SafeJsonReader;
-import org.json.JSONException;
-
-import java.io.IOException;
-
 /**
  * Created by Vikesh on 10/28/2017.
  */
@@ -24,7 +17,7 @@ public class AlignBySensor extends LinearOpMode {
     AnalogInput flwAbsEncoder;
     AnalogInput blwAbsEncoder;
     SafeJsonReader jsonio = new SafeJsonReader("positions");
-    double[] positions = new double[4];
+    double[] modPositions = new double[4];
     @Override
     public void runOpMode() throws InterruptedException {
 
@@ -35,22 +28,27 @@ public class AlignBySensor extends LinearOpMode {
         waitForStart();
 
         while(opModeIsActive()){
-            telemetry.addData("position 1", "%.3f", positions[0]);
-            telemetry.addData("position 2", "%.3f", positions[1]);
-            telemetry.addData("position 3", "%.3f", positions[2]);
-            telemetry.addData("position 4", "%.3f", positions[3]);
-            telemetry.addData("modOnePos: ", "%.3f", jsonio.getDouble("modOneDefPos"));
-            telemetry.update();
-            positions[0] = (brwAbsEncoder.getVoltage()/3.24);
-            positions[1] = (frwAbsEncoder.getVoltage()/3.24);
-            positions[2] = (flwAbsEncoder.getVoltage()/3.24);
-            positions[3] = (blwAbsEncoder.getVoltage()/3.24);
 
-            jsonio.modifyDouble("modOneDefPos", 0.5);
-            jsonio.modifyDouble("modTwoDefPos", 0.6);
-            jsonio.modifyDouble("modThreeDefPos", positions[2]);
-            jsonio.modifyDouble("modFourDefPos", positions[3]);
+            modPositions[0] = ((brwAbsEncoder.getVoltage()*2*Math.PI)/3.24);
+            modPositions[1] = ((frwAbsEncoder.getVoltage()*2*Math.PI)/3.24);
+            modPositions[2] = ((flwAbsEncoder.getVoltage()*2*Math.PI)/3.24);
+            modPositions[3] = ((blwAbsEncoder.getVoltage()*2*Math.PI)/3.24);
+
+            telemetry.addData("position 1", "%.3f", modPositions[0]);
+            telemetry.addData("position 2", "%.3f", modPositions[1]);
+            telemetry.addData("position 3", "%.3f", modPositions[2]);
+            telemetry.addData("position 4", "%.3f", modPositions[3]);
+
+            telemetry.addData("json string: ", jsonio.jsonRoot.toString());
+
+            telemetry.update();
+
         }
+        jsonio.modifyDouble("modOneDefPos", modPositions[0]);
+        jsonio.modifyDouble("modTwoDefPos", modPositions[1]);
+        jsonio.modifyDouble("modThreeDefPos", modPositions[2]);
+        jsonio.modifyDouble("modFourDefPos", modPositions[3]);
+
         jsonio.updateFile();
 
     }

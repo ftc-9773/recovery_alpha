@@ -30,8 +30,8 @@ where are the file on the phone?
  * Created by robocracy on 10/30/17.
  */
 
-@TeleOp(name="JasonTester")
-public class JasonTester extends LinearOpMode {
+@TeleOp(name="JsonTester")
+public class JsonTester extends LinearOpMode {
 
     private SafeJsonReader swerveInfo;
     private double incrementServo0;

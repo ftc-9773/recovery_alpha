@@ -37,7 +37,7 @@ public class SafeJsonReader {
         BufferedReader bufReader = null;
         StringBuilder strBuilder = new StringBuilder();
         String line = null;
-        // If the given file path does not exist, give an error
+        // If the given file path does not exist, give an error showing the JSON file not able to open
         try {
             fileReader = new FileReader(filePath);
             bufReader = new BufferedReader(fileReader);

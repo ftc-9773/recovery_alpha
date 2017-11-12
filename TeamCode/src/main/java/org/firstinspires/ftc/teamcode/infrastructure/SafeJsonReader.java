@@ -26,12 +26,16 @@ public class SafeJsonReader {
     public String jsonStr;
     public JSONObject jsonRoot;
 
+    private String FullName() {
+        return baseDir + "/" + this.fileName + ".json";
+    }
+
     // fileName is local name, baseDir will be appended to create full path name
     public SafeJsonReader(String fileName) {
         this.fileName = fileName;
         this.modified = false;
         // read file
-        String filePath = baseDir + "/" + this.fileName + ".json";
+        String filePath = FullName();
         if (DEBUG) Log.e(TAG, "try to read json file " + filePath);
         FileReader fileReader = null;
         BufferedReader bufReader = null;
@@ -79,7 +83,7 @@ public class SafeJsonReader {
         if (! this.modified) return;
 
         // file path (same as reading)
-        String filePath = baseDir + this.fileName + ".json";
+        String filePath = FullName();
         if (DEBUG) Log.e(TAG, "try to write json file " + filePath);
         // open file
         FileWriter fileWriter = null;

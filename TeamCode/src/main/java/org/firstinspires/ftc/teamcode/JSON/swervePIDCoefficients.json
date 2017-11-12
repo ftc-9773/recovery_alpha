@@ -1,10 +1,13 @@
 {
-  "Kp": 0.04,
-  "Kpe": 1.4,
-  "Kp2": 0.01,
-  "Kd": 0.05,
-  "flwStraightPosition": 0.181,
-  "frwStraightPosition": 0.521,
-  "blwStraightPosition": 0.526,
-  "brwStraightPosition": 0.649
+  "A1": 0.03,
+  "A2": 0.09,
+  "A3": 0.17,
+  "P0": 0.0,
+  "P1": -0.1,
+  "P2": -0.2,
+  "P3": -0.5,
+  "flwStraightPosition": 3.330,
+  "frwStraightPosition": 4.716,
+  "blwStraightPosition": 3.306,
+  "brwStraightPosition": 0.795
 }

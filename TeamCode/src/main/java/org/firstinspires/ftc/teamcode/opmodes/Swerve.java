@@ -4,6 +4,7 @@ import android.util.Log;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.teamcode.HardwareControl.SwerveController;
 /**
@@ -14,7 +15,7 @@ import org.firstinspires.ftc.teamcode.HardwareControl.SwerveController;
 public class Swerve extends LinearOpMode {
 
     private static final String TAG = "ftc9773 Swerve";
-    private static final boolean ENABLEDRIVING = false ;
+    private static final boolean ENABLEDRIVING = true ;
 
     private SwerveController mySwerveController;
 
@@ -23,11 +24,10 @@ public class Swerve extends LinearOpMode {
         Log.e(TAG, "Started initializing");
 
         mySwerveController = new SwerveController(hardwareMap);
-
         waitForStart();
         while(opModeIsActive()) {
 
-            mySwerveController.pointDirection(gamepad1.left_stick_y * -1, gamepad1.left_stick_x, gamepad1.right_stick_x);
+            mySwerveController.pointDirection(gamepad1.left_stick_y * -1, gamepad1.left_stick_x * -1, gamepad1.right_stick_x);
 
             if (ENABLEDRIVING) {
                 mySwerveController.moveRobot();

@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.HardwareControl;
 
+import android.widget.Button;
+
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.AnalogInput;
@@ -7,6 +9,8 @@ import com.qualcomm.robotcore.hardware.HardwareDevice;
 import com.qualcomm.robotcore.util.SerialNumber;
 
 import org.firstinspires.ftc.teamcode.infrastructure.SafeJsonReader;
+import org.firstinspires.ftc.teamcode.resources.ButtonStatus;
+
 /**
  * Created by Vikesh on 10/28/2017.
  */
@@ -16,40 +20,40 @@ public class AlignBySensor extends LinearOpMode {
     AnalogInput frwAbsEncoder;
     AnalogInput flwAbsEncoder;
     AnalogInput blwAbsEncoder;
-    SafeJsonReader jsonio = new SafeJsonReader("positions");
+
+    ButtonStatus aButton = new ButtonStatus();
+
+    SafeJsonReader coefficientsFile = new SafeJsonReader("swervePIDCoefficients");
+
     double[] modPositions = new double[4];
     @Override
     public void runOpMode() throws InterruptedException {
 
-        brwAbsEncoder = hardwareMap.get(AnalogInput.class, "brwAbsEncoder");
-        frwAbsEncoder = hardwareMap.get(AnalogInput.class, "frwAbsEncoder");
-        flwAbsEncoder = hardwareMap.get(AnalogInput.class, "flwAbsEncoder");
-        blwAbsEncoder = hardwareMap.get(AnalogInput.class, "blwAbsEncoder");
+        flwAbsEncoder = hardwareMap.analogInput.get("flwAbsEncoder");
+        frwAbsEncoder = hardwareMap.analogInput.get("frwAbsEncoder");
+        blwAbsEncoder = hardwareMap.analogInput.get("blwAbsEncoder");
+        brwAbsEncoder = hardwareMap.analogInput.get("brwAbsEncoder");
+
         waitForStart();
 
         while(opModeIsActive()){
 
-            modPositions[0] = ((brwAbsEncoder.getVoltage()*2*Math.PI)/3.24);
-            modPositions[1] = ((frwAbsEncoder.getVoltage()*2*Math.PI)/3.24);
-            modPositions[2] = ((flwAbsEncoder.getVoltage()*2*Math.PI)/3.24);
-            modPositions[3] = ((blwAbsEncoder.getVoltage()*2*Math.PI)/3.24);
+            aButton.recordNewValue(gamepad1.a);
+            if (aButton.isJustOn()) {
+                coefficientsFile.modifyDouble("flwStraightPosition", flwAbsEncoder.getVoltage() / 3.24 * 2 * Math.PI);
+                coefficientsFile.modifyDouble("frwStraightPosition", frwAbsEncoder.getVoltage() / 3.24 * 2 * Math.PI);
+                coefficientsFile.modifyDouble("blwStraightPosition", blwAbsEncoder.getVoltage() / 3.24 * 2 * Math.PI);
+                coefficientsFile.modifyDouble("brwStraightPosition", brwAbsEncoder.getVoltage() / 3.24 * 2 * Math.PI);
 
-            telemetry.addData("position 1", "%.3f", modPositions[0]);
-            telemetry.addData("position 2", "%.3f", modPositions[1]);
-            telemetry.addData("position 3", "%.3f", modPositions[2]);
-            telemetry.addData("position 4", "%.3f", modPositions[3]);
+                coefficientsFile.updateFile();
+            }
 
-            telemetry.addData("json string: ", jsonio.jsonRoot.toString());
-
+            telemetry.addData("Front Left Position: ", flwAbsEncoder.getVoltage() / 3.24 * 2 * Math.PI);
+            telemetry.addData("Front Right Position: ", frwAbsEncoder.getVoltage() / 3.24 * 2 * Math.PI);
+            telemetry.addData("Back Left Position: ", blwAbsEncoder.getVoltage() / 3.24 * 2 * Math.PI);
+            telemetry.addData("Back Right Position: ", brwAbsEncoder.getVoltage() / 3.24 * 2 * Math.PI);
             telemetry.update();
 
         }
-        jsonio.modifyDouble("modOneDefPos", modPositions[0]);
-        jsonio.modifyDouble("modTwoDefPos", modPositions[1]);
-        jsonio.modifyDouble("modThreeDefPos", modPositions[2]);
-        jsonio.modifyDouble("modFourDefPos", modPositions[3]);
-
-        jsonio.updateFile();
-
     }
 }

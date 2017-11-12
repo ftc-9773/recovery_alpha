@@ -67,10 +67,10 @@ public class JsonTester extends LinearOpMode {
         telemetry.addData("Say", "who is best %s", whoIsBest);
         telemetry.addData("Say", "years in action %d", teamYears);
         telemetry.update();
-        swerveInfo.modifyInt("teamYears", 4);
-        swerveInfo.modifyDouble("increment3", 0.9);
+        swerveInfo.modifyInt("teamYears", teamYears+1);
+        swerveInfo.modifyDouble("increment3", 10.5);
         swerveInfo.modifyBoolean("is9773great", false);
-        swerveInfo.modifyString("whoIsTheBest", "the very 9773");
+        swerveInfo.modifyString("whoIsTheBest", "we are all the best");
         swerveInfo.updateFile();
         waitForStart();
         while (opModeIsActive()) {

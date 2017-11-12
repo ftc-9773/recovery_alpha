@@ -28,7 +28,7 @@ import org.firstinspires.ftc.teamcode.resources.Vector;
 public class SwerveModule {
 
     private HardwareMap hwMap;
-    private DcMotor swerveMotor;
+    public DcMotor swerveMotor;
     private Servo swerveServo;
     private AnalogInput swerveAbsEncoder;
     private Vector velocityVector = new Vector(true, 0, 0);
@@ -51,10 +51,13 @@ public class SwerveModule {
     private double lastError;
 
     // PID Constants
-    private double Kp;
-    private double Kpe;
-    private double Kp2;
-    private double Kd;
+    private double A1;
+    private double A2;
+    private double A3;
+    private double P0;
+    private double P1;
+    private double P2;
+    private double P3;
 
 
 
@@ -80,13 +83,16 @@ public class SwerveModule {
 
         //builds the json reader
         myJsonCoefficients = new SafeJsonReader("swervePIDCoefficients");
-        Kp = myJsonCoefficients.getDouble("Kp");
-        Kpe = myJsonCoefficients.getDouble("Kpe");
-        Kp2 = myJsonCoefficients.getDouble("Kp2");
-        Kd = myJsonCoefficients.getDouble("Kd");
+        A1 = myJsonCoefficients.getDouble("A1");
+        A2 = myJsonCoefficients.getDouble("A2");
+        A3 = myJsonCoefficients.getDouble("A3");
+        P0 = myJsonCoefficients.getDouble("P0");
+        P1 = myJsonCoefficients.getDouble("P1");
+        P2 = myJsonCoefficients.getDouble("P2");
+        P3 = myJsonCoefficients.getDouble("P3");
 
         // Sets zero position
-        zeroPosition = myJsonCoefficients.getDouble(hardwareMapTag + "StraightPosition") * 2 * Math.PI;
+        zeroPosition = myJsonCoefficients.getDouble(hardwareMapTag + "StraightPosition");
     }
 
 
@@ -112,27 +118,26 @@ public class SwerveModule {
     }
 
     private double calculatePDCorrection(double input) {
+        //Not a PID - its a step function
 
-        // Proportional error
-        proportionalCorrection = input * Kp * Math.pow(Math.abs(input), Kpe) * input / Math.abs(input);
-
-        // Differential error
-        if (lastTime != 0)  {
-            differentialCorrection = Kd * (input - lastError) / (System.currentTimeMillis() - lastTime) / 1000;
-            // Differential correction = Constant * (change in error / change in time)
+        if (input < -A3) {
+            return 0.5 - P3;
+        } else if (input < -A2) {
+            return 0.5 - P2;
+        } else if (input < -A1) {
+            return 0.5 - P1;
+        } else if (input < 0) {
+            return 0.5 - P0;
+        } else if (input < A1) {
+            return 0.5 + P0;
+        } else if (input < A2) {
+            return 0.5 + P1;
+        } else if (input < A3) {
+            return 0.5 + P2;
+        } else {
+            return 0.5 + P3;
         }
-
-        lastTime = System.currentTimeMillis();
-        lastError = input;
-
-        Log.e(TAG, "input: " + input);
-        Log.e(TAG, "Proportional correction: " + proportionalCorrection);
-        Log.e(TAG, "Output: " + 0.5 + proportionalCorrection + differentialCorrection);
-
-
-        return 0.5 + proportionalCorrection + differentialCorrection;
     }
-
 
 
     // Writes the module direction
@@ -141,7 +146,7 @@ public class SwerveModule {
         velocityVector.set(true, newVector.getX(), newVector.getY());
 
         // Finds the current position
-        currentPosition = setOnTwoPI(swerveAbsEncoder.getVoltage() / 3.245 * 2 * Math.PI - zeroPosition);
+        currentPosition = setOnTwoPI(swerveAbsEncoder.getVoltage() / 3.24 * 2 * Math.PI - zeroPosition);
         //if (debug) { Log.e(TAG, "Current Position" + currentPosition / Math.PI); }
         //if (debug) {Log.e(TAG, "Desired Position" + velocityVector.getAngle() / Math.PI); }
 
@@ -159,9 +164,7 @@ public class SwerveModule {
             if (debug) { Log.e(TAG, "Inside pid stuffing"); }
             //Calculate PID
             tellServo = calculatePDCorrection(errorAmt);
-            if (debug) {
-                //Log.e(TAG, "Servo Distance" + tellServo);
-            }
+            if (debug) Log.e(TAG, "Servo Distance" + tellServo); Log.e(TAG, "Error Am");
 
             //Correct onto servo's range
             if (tellServo > 1) {

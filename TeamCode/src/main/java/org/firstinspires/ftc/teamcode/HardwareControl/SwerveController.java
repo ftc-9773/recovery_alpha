@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.HardwareControl;
 
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.teamcode.resources.Vector;
@@ -33,6 +35,8 @@ public class SwerveController {
         frwModule = new SwerveModule(hardwareMap, "frw");
         blwModule = new SwerveModule(hardwareMap, "blw");
         brwModule = new SwerveModule(hardwareMap, "brw");
+        blwModule.swerveMotor.setDirection(DcMotor.Direction.REVERSE);
+        flwModule.swerveMotor.setDirection(DcMotor.Direction.REVERSE);
     }
 
 
@@ -49,10 +53,10 @@ public class SwerveController {
         //rotationSpeed =
 
         // Add rotation vectors
-        flwVector.addVector(false, rotationSpeed, 0.25 * Math.PI);
-        frwVector.addVector(false, rotationSpeed, 0.75 * Math.PI);
-        blwVector.addVector(false, rotationSpeed, 1.75 * Math.PI);
-        brwVector.addVector(false, rotationSpeed, 1.25 * Math.PI);
+        flwVector.addVector(false, rotationSpeed, 1.75 * Math.PI);
+        frwVector.addVector(false, rotationSpeed, 1.25 * Math.PI);
+        blwVector.addVector(false, rotationSpeed, 0.25 * Math.PI);
+        brwVector.addVector(false, rotationSpeed, 0.75 * Math.PI);
 
         /// Keep velocity vectors under 1  ///
 

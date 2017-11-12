@@ -33,13 +33,17 @@ public class IntakeTest extends LinearOpMode {
     private double motorRightPower = 0;
     private double forward = 0;
     private double right = 0;
+    private double prevEncLeft = 0;
+    private double prevEncRight = 0;
+    private double currEncLeft = 0;
+    private double currEncRight = 0;
 
     @Override
     public void runOpMode() {
 
         /* Initialize the hardware variables. */
-        leftMotor   = hardwareMap.dcMotor.get("LeftIntakeMotor");
-        rightMotor  = hardwareMap.dcMotor.get("RightIntakeMotor");
+        leftMotor   = hardwareMap.dcMotor.get("liMotor");
+        rightMotor  = hardwareMap.dcMotor.get("riMotor");
         leftMotor.setDirection(DcMotor.Direction.FORWARD); // Set to REVERSE if using AndyMark motors
         rightMotor.setDirection(DcMotor.Direction.REVERSE);// Set to FORWARD if using AndyMark motors
 
@@ -47,10 +51,12 @@ public class IntakeTest extends LinearOpMode {
         leftMotor.setPower(0);
         rightMotor.setPower(0);
 
-        // Set all motors to run without encoders.
+        // Set all motors to run without encoders. Also, we are going to reset the encoder values here.
         // May want to use RUN_USING_ENCODERS if encoders are installed.
-        leftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        rightMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        leftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        leftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        rightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         // Set up our telemetry dashboard
         composeTelemetry();
@@ -75,6 +81,46 @@ public class IntakeTest extends LinearOpMode {
 
             leftMotor.setPower(motorLeftPower);
             rightMotor.setPower(motorRightPower);
+
+            //The following is being used to read the current MotorPosition
+            int leftPosition = leftMotor.getCurrentPosition() / 140;
+            int rightPosition = rightMotor.getCurrentPosition() / 140;
+            telemetry.addData("Left Motor Encoder Position", leftPosition);
+            telemetry.addData("Right Motor Encoder Position: ", rightPosition);
+            currEncLeft = leftPosition;
+            currEncRight = rightPosition;
+            double speedLeft = 0;
+            double speedRight = 0;
+            if (prevEncLeft != currEncLeft) {
+                speedLeft = currEncLeft - prevEncLeft;
+                prevEncLeft = currEncLeft;
+                //telemetry.addData ("The current speed is: ", speedLeft);
+                //telemetry.update();
+            } else if (prevEncLeft == currEncLeft){
+                telemetry.addData ("The motor is jammed at: ", currEncLeft);
+                telemetry.update();
+                telemetry.addData ("The current speed is: ", speedLeft);
+                telemetry.update();
+            } else {
+                telemetry.addData ("Impossible, this can't happen", leftPosition);
+                telemetry.addData ("The current speed is: ", speedLeft);
+                telemetry.update();
+            }
+            if (prevEncRight != currEncRight) {
+                speedRight = currEncRight - prevEncRight;
+                prevEncRight = currEncRight;
+                //telemetry.addData ("The current speed is: ", speedRight);
+                //telemetry.update();
+            } else if (prevEncRight == currEncRight) {
+                telemetry.addData ("The right motor is jammed at: ", currEncRight);
+                telemetry.update();
+                telemetry.addData ("The current speed is: ", speedRight);
+                telemetry.update();
+            } else {
+                telemetry.addData ("Impossible, this can't happen", rightPosition);
+                telemetry.addData ("The current speed is: ", speedRight);
+                telemetry.update();
+            }
 
             telemetry.update();
 

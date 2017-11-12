@@ -61,6 +61,13 @@ public class IntakeTest extends LinearOpMode {
         // Set up our telemetry dashboard
         composeTelemetry();
 
+        //FileRW myfile = new FileRW("/sdcard/FIRST/team9773/log18/hialex.1", true);
+        //myfile.fileWrite("hi alex");
+        //myfile.close();
+
+        InstrumentDoubleArray motorStats = new InstrumentDoubleArray("motorSpeed", 2, "motor1, motor2", 1e-3);
+        double[] motorData = new double[2];
+
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
 

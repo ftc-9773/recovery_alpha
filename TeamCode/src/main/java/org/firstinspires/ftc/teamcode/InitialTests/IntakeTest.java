@@ -1,19 +1,14 @@
 package org.firstinspires.ftc.teamcode.InitialTests;
 
-import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.Func;
-import org.firstinspires.ftc.robotcore.external.navigation.Acceleration;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
-import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
-import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
-import org.firstinspires.ftc.robotcore.external.navigation.Position;
-import org.firstinspires.ftc.robotcore.external.navigation.Velocity;
+import org.firstinspires.ftc.teamcode.infrastructure.InstrumentDoubleArray;
+import org.firstinspires.ftc.teamcode.infrastructure.Instrumentation;
+import org.firstinspires.ftc.teamcode.infrastructure.FileRW;
 
 import java.util.Locale;
 
@@ -36,8 +31,8 @@ public class IntakeTest extends LinearOpMode {
     public void runOpMode() {
 
         /* Initialize the hardware variables. */
-        leftMotor   = hardwareMap.dcMotor.get("LeftIntakeMotor");
-        rightMotor  = hardwareMap.dcMotor.get("RightIntakeMotor");
+        leftMotor   = hardwareMap.dcMotor.get("liMotor");
+        rightMotor  = hardwareMap.dcMotor.get("riMotor");
         leftMotor.setDirection(DcMotor.Direction.FORWARD); // Set to REVERSE if using AndyMark motors
         rightMotor.setDirection(DcMotor.Direction.REVERSE);// Set to FORWARD if using AndyMark motors
 
@@ -53,13 +48,20 @@ public class IntakeTest extends LinearOpMode {
         // Set up our telemetry dashboard
         composeTelemetry();
 
+        //FileRW myfile = new FileRW("/sdcard/FIRST/team9773/log18/hialex.1", true);
+        //myfile.fileWrite("hi alex");
+        //myfile.close();
+
+        InstrumentDoubleArray motorStats = new InstrumentDoubleArray("motorSpeed", 2, "motor1, motor2", 1e-3);
+        double[] motorData = new double[2];
+
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
 
 
         // run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
-
+            Instrumentation.NextLoopIteration();
             double stickX =  - Math.pow(gamepad1.right_stick_x,3) * .7;
             double stickY =  - gamepad1.right_stick_y;
 
@@ -74,9 +76,12 @@ public class IntakeTest extends LinearOpMode {
             leftMotor.setPower(motorLeftPower);
             rightMotor.setPower(motorRightPower);
 
+            motorData[0] = forward;
+            motorData[1] = right;
+            motorStats.push(motorData);
             telemetry.update();
-
         }
+        motorStats.close();
     }
 
     //----------------------------------------------------------------------------------------------

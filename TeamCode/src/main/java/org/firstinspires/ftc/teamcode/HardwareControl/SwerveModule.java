@@ -7,6 +7,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
+import org.firstinspires.ftc.robotcore.internal.system.SystemProperties;
 import org.firstinspires.ftc.teamcode.infrastructure.SafeJsonReader;
 import org.firstinspires.ftc.teamcode.resources.Vector;
 
@@ -30,18 +31,23 @@ public class SwerveModule {
     private HardwareMap hwMap;
     public DcMotor swerveMotor;
     private Servo swerveServo;
-    private AnalogInput swerveAbsEncoder;
-    private Vector velocityVector = new Vector(true, 0, 0);
-    public double errorAmt;
     private double zeroPosition;
+    private AnalogInput swerveAbsEncoder;
+
+    private Vector velocityVector = new Vector(true, 0, 0);
+    private boolean motorsAreForward;
+    public double errorAmt;
     public double tellServo;
+
+
     private SafeJsonReader myJsonCoefficients;
+
 
     private static final String TAG = "ftc9773 SwerveModule";
     private boolean debug = false;
 
 
-    //    PID STUFF   //
+    //    PID / Error scaling STUFF   //
 
     // Variables
     private double proportionalCorrection;
@@ -50,14 +56,17 @@ public class SwerveModule {
     private double lastTime = -1;
     private double lastError;
 
-    // PID Constants
-    private double A1;
-    private double A2;
-    private double A3;
-    private double P0;
-    private double P1;
-    private double P2;
-    private double P3;
+    private double Kp;
+    private double Kd;
+
+    // Step Function constants
+    private double A1; // 0.03
+    private double A2; // 0.09
+    private double A3; // 0.17
+    private double P0; // 0.0
+    private double P1; // -0.1
+    private double P2; // -0.2
+    private double P3; // -0.5
 
 
 
@@ -83,6 +92,12 @@ public class SwerveModule {
 
         //builds the json reader
         myJsonCoefficients = new SafeJsonReader("swervePIDCoefficients");
+
+        // Gets coefficients for PID
+        Kp = myJsonCoefficients.getDouble("Kp");
+        Kd = myJsonCoefficients.getDouble("Kd");
+
+        // Gets coefficients for step function
         A1 = myJsonCoefficients.getDouble("A1");
         A2 = myJsonCoefficients.getDouble("A2");
         A3 = myJsonCoefficients.getDouble("A3");
@@ -117,9 +132,30 @@ public class SwerveModule {
         return input;
     }
 
-    private double calculatePDCorrection(double input) {
-        //Not a PID - its a step function
+    //////// PID (not yet) //////////// Error scaling etc.
 
+    private double calculatePDCorrection(double input) {
+
+        //PID
+
+        //Proportional
+        proportionalCorrection = input * Kp;
+
+        //Differential
+        if (lastTime > 0) {
+            differentialCorrection = Kd * (input - lastError) / (System.currentTimeMillis() - lastTime);
+        } else {
+            differentialCorrection = 0;
+        }
+
+        // Update last time and error
+        lastTime = System.currentTimeMillis();
+        lastError = input;
+
+        return 0.5 + proportionalCorrection + differentialCorrection;
+
+        //Step Function
+        /*
         if (input < -A3) {
             return 0.5 - P3;
         } else if (input < -A2) {
@@ -137,23 +173,40 @@ public class SwerveModule {
         } else {
             return 0.5 + P3;
         }
+        */
     }
 
 
-    // Writes the module direction
-    public void setVector(Vector newVector){
+    /////// For Outside Control ////////
 
-        velocityVector.set(true, newVector.getX(), newVector.getY());
+    // Writes the module direction
+    public void setVector(Vector newVector, boolean motorsAreForward) {
+
+        this.motorsAreForward = motorsAreForward;
+
+        if (motorsAreForward) {
+            velocityVector.set(true, newVector.getX(), newVector.getY());
+        } else {
+            velocityVector.set(false, newVector.getMagnitude(), setOnTwoPI(newVector.getAngle()));
+        }
 
         // Finds the current position
         currentPosition = setOnTwoPI(swerveAbsEncoder.getVoltage() / 3.24 * 2 * Math.PI - zeroPosition);
-        //if (debug) { Log.e(TAG, "Current Position" + currentPosition / Math.PI); }
-        //if (debug) {Log.e(TAG, "Desired Position" + velocityVector.getAngle() / Math.PI); }
 
         //Calculates distance to move on -pi to pi
         errorAmt = setOnNegPosPI(velocityVector.getAngle() - currentPosition);
-        //if (debug) { Log.e(TAG, "Error amount:" + errorAmt / Math.PI); }
     }
+
+    // returns distance for servo to turn with motor as is
+    public double distForwardDirection () {
+        return Math.abs(errorAmt);
+    }
+
+    // returns distance for servos to turn with motor direction switched
+    public double distReversedDirection () {
+        return Math.abs(setOnTwoPI(errorAmt) - Math.PI);
+    }
+
 
     // Rotates the Module
     public void pointModule() {
@@ -181,9 +234,14 @@ public class SwerveModule {
         swerveServo.setPosition(tellServo);
     }
 
+
     // Drives the wheel
     public void driveModule() {
-        swerveMotor.setPower(velocityVector.getMagnitude());
+        if (motorsAreForward) {
+            swerveMotor.setPower(velocityVector.getMagnitude());
+        } else {
+            swerveMotor.setPower(velocityVector.getMagnitude() * -1);
+        }
     }
 
 }

@@ -73,12 +73,33 @@ public class SwerveController {
 
 
         //Write the direction and speed of each module
-        flwModule.setVector(flwVector);
-        frwModule.setVector(frwVector);
-        blwModule.setVector(blwVector);
-        brwModule.setVector(brwVector);
+        flwModule.setVector(flwVector, motorsAreForward);
+        frwModule.setVector(frwVector, motorsAreForward);
+        blwModule.setVector(blwVector, motorsAreForward);
+        brwModule.setVector(brwVector, motorsAreForward);
 
         //TODO: Figure out if it is better to reverse motor direction (At some point in the near future)
+
+
+        final double distAsIs = flwModule.distForwardDirection() + frwModule.distForwardDirection() + blwModule.distForwardDirection() + brwModule.distForwardDirection();
+        final double distSwitched = flwModule.distReversedDirection() + frwModule.distReversedDirection() + blwModule.distReversedDirection() + brwModule.distReversedDirection();
+
+        if (distSwitched > distAsIs) {
+
+            //Toggle motorsAreForward
+            if (motorsAreForward) {
+                motorsAreForward = false;
+            } else {
+                motorsAreForward = true;
+            }
+
+            //Recalcuate ModuleDirection
+            flwModule.setVector(flwVector, motorsAreForward);
+            frwModule.setVector(frwVector, motorsAreForward);
+            blwModule.setVector(blwVector, motorsAreForward);
+            brwModule.setVector(brwVector, motorsAreForward);
+
+        }
 
         // Point modules
         flwModule.pointModule();

@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.HardwareControl;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import android.util.Log;
 
 import org.firstinspires.ftc.teamcode.resources.Vector;
 
@@ -12,7 +13,8 @@ import org.firstinspires.ftc.teamcode.resources.Vector;
 
 public class SwerveController {
 
-    private static final String TAG = "ftc9773 SwerveController";
+    private final String TAG = "9773 SwerveController";
+    private final boolean DEBUG = false;
 
     // Swerve Modules
     public SwerveModule flwModule;
@@ -78,14 +80,18 @@ public class SwerveController {
         blwModule.setVector(blwVector, motorsAreForward);
         brwModule.setVector(brwVector, motorsAreForward);
 
-        //TODO: Figure out if it is better to reverse motor direction (At some point in the near future)
 
+
+        /////// Choose whether to flip motor direction ///////////
 
         final double distAsIs = flwModule.distForwardDirection() + frwModule.distForwardDirection() + blwModule.distForwardDirection() + brwModule.distForwardDirection();
         final double distSwitched = flwModule.distReversedDirection() + frwModule.distReversedDirection() + blwModule.distReversedDirection() + brwModule.distReversedDirection();
 
-        if (distSwitched > distAsIs) {
+        if (DEBUG) { Log.e(TAG, "Forward Dist: " + distAsIs + "   Backwards Dist: " + distSwitched); }
 
+        if (distSwitched < distAsIs) {
+
+            if (DEBUG) { Log.e(TAG, "Switched Motor Direction"); }
             //Toggle motorsAreForward
             if (motorsAreForward) {
                 motorsAreForward = false;

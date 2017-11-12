@@ -7,7 +7,6 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
-import org.firstinspires.ftc.robotcore.internal.system.SystemProperties;
 import org.firstinspires.ftc.teamcode.infrastructure.SafeJsonReader;
 import org.firstinspires.ftc.teamcode.resources.Vector;
 
@@ -44,7 +43,8 @@ public class SwerveModule {
 
 
     private static final String TAG = "ftc9773 SwerveModule";
-    private boolean debug = false;
+    private boolean debugHere = false;
+    private final boolean DEBUG = false;
 
 
     //    PID / Error scaling STUFF   //
@@ -53,10 +53,11 @@ public class SwerveModule {
     private double proportionalCorrection;
     private double differentialCorrection;
 
-    private double lastTime = -1;
+    private long lastTime = -1;
     private double lastError;
 
     private double Kp;
+    private double Ke;
     private double Kd;
 
     // Step Function constants
@@ -80,7 +81,7 @@ public class SwerveModule {
     public SwerveModule(HardwareMap hwMap, String hardwareMapTag) {
         Log.e(TAG, "Building servo " + hardwareMapTag);
 
-        if (hardwareMapTag == "flw") { debug = true; }
+        if (hardwareMapTag == "flw") { debugHere = true; }
 
         // Pass the hardware map
         this.hwMap = hwMap;
@@ -95,6 +96,7 @@ public class SwerveModule {
 
         // Gets coefficients for PID
         Kp = myJsonCoefficients.getDouble("Kp");
+        Ke = myJsonCoefficients.getDouble("Ke");
         Kd = myJsonCoefficients.getDouble("Kd");
 
         // Gets coefficients for step function
@@ -133,13 +135,16 @@ public class SwerveModule {
     }
 
     //////// PID (not yet) //////////// Error scaling etc.
-
+    // input is error
     private double calculatePDCorrection(double input) {
 
         //PID
 
         //Proportional
-        proportionalCorrection = input * Kp;
+        proportionalCorrection = Math.pow(Math.abs(input), Ke) * Kp;
+        if (errorAmt < 0) {
+            proportionalCorrection *= -1;
+        }
 
         //Differential
         if (lastTime > 0) {
@@ -152,7 +157,9 @@ public class SwerveModule {
         lastTime = System.currentTimeMillis();
         lastError = input;
 
-        return 0.5 + proportionalCorrection + differentialCorrection;
+        if (DEBUG) { Log.e(TAG, "Prop: " + proportionalCorrection + "   Dif:" + differentialCorrection); }
+
+        return 0.5 - proportionalCorrection - differentialCorrection;
 
         //Step Function
         /*
@@ -187,7 +194,7 @@ public class SwerveModule {
         if (motorsAreForward) {
             velocityVector.set(true, newVector.getX(), newVector.getY());
         } else {
-            velocityVector.set(false, newVector.getMagnitude(), setOnTwoPI(newVector.getAngle()));
+            velocityVector.set(false, newVector.getMagnitude(), setOnTwoPI(newVector.getAngle() + Math.PI));
         }
 
         // Finds the current position
@@ -204,6 +211,8 @@ public class SwerveModule {
 
     // returns distance for servos to turn with motor direction switched
     public double distReversedDirection () {
+
+        if (DEBUG) { Log.e(TAG, "Forward Direction Dist: " + Math.abs(errorAmt) + "   Reverse Direction Dist: " + Math.abs(setOnTwoPI(errorAmt) - Math.PI)); }
         return Math.abs(setOnTwoPI(errorAmt) - Math.PI);
     }
 
@@ -211,13 +220,14 @@ public class SwerveModule {
     // Rotates the Module
     public void pointModule() {
         // ** Figure out how to move the servo **
-        if (debug) { Log.e(TAG, "Pointing Modules"); }
+        if (DEBUG) { if (debugHere) { Log.e(TAG, "Pointing Modules"); } }
 
         if (velocityVector.getMagnitude() > 0) {
-            if (debug) { Log.e(TAG, "Inside pid stuffing"); }
+            if (DEBUG) { if (debugHere) { Log.e(TAG, "Inside pid stuffing"); } }
+
             //Calculate PID
             tellServo = calculatePDCorrection(errorAmt);
-            if (debug) Log.e(TAG, "Servo Distance" + tellServo); Log.e(TAG, "Error Am");
+            if (DEBUG) { if (debugHere) Log.e(TAG, "Servo Distance" + tellServo); Log.e(TAG, "Error Am :" + errorAmt); }
 
             //Correct onto servo's range
             if (tellServo > 1) {
@@ -227,7 +237,7 @@ public class SwerveModule {
             }
 
         } else {
-            if (debug) { Log.e(TAG, "skipped stuffing"); }
+            if (DEBUG) { if (debugHere) { Log.e(TAG, "skipped stuffing"); } }
             tellServo = 0.5;
         }
 

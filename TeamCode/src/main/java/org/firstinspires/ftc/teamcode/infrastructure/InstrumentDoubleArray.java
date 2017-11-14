@@ -2,6 +2,38 @@ package org.firstinspires.ftc.teamcode.infrastructure;
 
 /**
  * Created by robocracy on 11/11/17.
+ *
+ * Create a new statistic by creating an object, passing the name, the number of double,
+ * a comma separated header string, and the tolerence for which you want to consider
+ * 2 consecutive numbers (in time) to be considered as the same.
+ *
+ * For the moment, we limit the number of doubles to less than 64.
+ *
+ * To push a stat, call push with a vector of new values.
+ *
+ * Stats can be enabled (default on) and disabled by calls to enable() and disabled()
+ *
+ * close() should be called before exiting.
+ *
+ * For example:
+ *
+ * // init
+ * InstrumentDoubleArray myMotorStat =
+ *   new InstrumentDoubleArray("myMotorStat", 2, "motor x, motor y", 10e-6)
+ *
+ * // push stat (ideally, the creating of the array is done only once, and is part of another object)
+ * double[] newStat = new double[2];
+ * newStat[0] = 0; newStat[1] = 1
+ * myMotorStat.push(newStat);
+ *
+ * // disable for a while
+ * myMotorStat.disable();
+ *
+ * // re-enable some time later
+ * myMotorStat.enable();
+ *
+ * // at the end
+ * myMotorStat.close()
  */
 
 public class InstrumentDoubleArray extends Instrumentation {
@@ -11,6 +43,14 @@ public class InstrumentDoubleArray extends Instrumentation {
     private double tolerence = 1e-6;
     private long identicalCount = -1;
     private boolean printedTitle = false;
+
+    /////////////////////////////////////////////////////////////////
+    // inherited user interface
+
+    // check Instrumentation's user interface (disable, enable, close)
+
+    /////////////////////////////////////////////////////////////////
+    // main user interface
 
     public InstrumentDoubleArray(String fileName, int num, String entryDescriptionCSV, double tolerence) {
         super(fileName);

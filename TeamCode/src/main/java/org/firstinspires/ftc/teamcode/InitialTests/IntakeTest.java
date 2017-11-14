@@ -8,7 +8,6 @@ import org.firstinspires.ftc.robotcore.external.Func;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.teamcode.infrastructure.InstrumentDoubleArray;
 import org.firstinspires.ftc.teamcode.infrastructure.Instrumentation;
-import org.firstinspires.ftc.teamcode.infrastructure.FileRW;
 
 import java.util.Locale;
 
@@ -63,7 +62,7 @@ public class IntakeTest extends LinearOpMode {
 
         // run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
-            Instrumentation.NextLoopIteration();
+            Instrumentation.nextLoopIteration();
             double stickX =  - Math.pow(gamepad1.right_stick_x,3) * .7;
             double stickY =  - gamepad1.right_stick_y;
 
@@ -72,9 +71,10 @@ public class IntakeTest extends LinearOpMode {
             motorLeftPower = forward + right;
             motorRightPower = forward - right;
             double max = Math.max(Math.abs(motorLeftPower), Math.abs(motorRightPower));
-            motorLeftPower = motorLeftPower / max;
-            motorRightPower = motorRightPower / max;
-
+            if (max>1) {
+                motorLeftPower = motorLeftPower / max;
+                motorRightPower = motorRightPower / max;
+            }
             leftMotor.setPower(motorLeftPower);
             rightMotor.setPower(motorRightPower);
 

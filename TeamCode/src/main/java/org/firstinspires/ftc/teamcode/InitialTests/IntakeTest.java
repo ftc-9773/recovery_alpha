@@ -1,13 +1,22 @@
 package org.firstinspires.ftc.teamcode.InitialTests;
 
+import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.Func;
+import org.firstinspires.ftc.robotcore.external.navigation.Acceleration;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
+import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
+import org.firstinspires.ftc.robotcore.external.navigation.Position;
+import org.firstinspires.ftc.robotcore.external.navigation.Velocity;
 import org.firstinspires.ftc.teamcode.infrastructure.InstrumentDoubleArray;
 import org.firstinspires.ftc.teamcode.infrastructure.Instrumentation;
+
 
 import java.util.Locale;
 
@@ -27,6 +36,10 @@ public class IntakeTest extends LinearOpMode {
     private double motorRightPower = 0;
     private double forward = 0;
     private double right = 0;
+    private double prevEncLeft = 0;
+    private double prevEncRight = 0;
+    private double currEncLeft = 0;
+    private double currEncRight = 0;
 
     @Override
     public void runOpMode() {
@@ -41,10 +54,12 @@ public class IntakeTest extends LinearOpMode {
         leftMotor.setPower(0);
         rightMotor.setPower(0);
 
-        // Set all motors to run without encoders.
+        // Set all motors to run without encoders. Also, we are going to reset the encoder values here.
         // May want to use RUN_USING_ENCODERS if encoders are installed.
-        leftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        rightMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        leftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        leftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        rightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         // Set up our telemetry dashboard
         composeTelemetry();
@@ -78,12 +93,49 @@ public class IntakeTest extends LinearOpMode {
             leftMotor.setPower(motorLeftPower);
             rightMotor.setPower(motorRightPower);
 
-            motorData[0] = forward;
-            motorData[1] = right;
-            motorStats.push(motorData);
+            //The following is being used to read the current MotorPosition
+            int leftPosition = leftMotor.getCurrentPosition() / 140;
+            int rightPosition = rightMotor.getCurrentPosition() / 140;
+            telemetry.addData("Left Motor Encoder Position", leftPosition);
+            telemetry.addData("Right Motor Encoder Position: ", rightPosition);
+            currEncLeft = leftPosition;
+            currEncRight = rightPosition;
+            double speedLeft = 0;
+            double speedRight = 0;
+            if (prevEncLeft != currEncLeft) {
+                speedLeft = currEncLeft - prevEncLeft;
+                prevEncLeft = currEncLeft;
+                //telemetry.addData ("The current speed is: ", speedLeft);
+                //telemetry.update();
+            } else if (prevEncLeft == currEncLeft){
+                telemetry.addData ("The motor is jammed at: ", currEncLeft);
+                telemetry.update();
+                telemetry.addData ("The current speed is: ", speedLeft);
+                telemetry.update();
+            } else {
+                telemetry.addData ("Impossible, this can't happen", leftPosition);
+                telemetry.addData ("The current speed is: ", speedLeft);
+                telemetry.update();
+            }
+            if (prevEncRight != currEncRight) {
+                speedRight = currEncRight - prevEncRight;
+                prevEncRight = currEncRight;
+                //telemetry.addData ("The current speed is: ", speedRight);
+                //telemetry.update();
+            } else if (prevEncRight == currEncRight) {
+                telemetry.addData ("The right motor is jammed at: ", currEncRight);
+                telemetry.update();
+                telemetry.addData ("The current speed is: ", speedRight);
+                telemetry.update();
+            } else {
+                telemetry.addData ("Impossible, this can't happen", rightPosition);
+                telemetry.addData ("The current speed is: ", speedRight);
+                telemetry.update();
+            }
+
             telemetry.update();
+
         }
-        motorStats.close();
     }
 
     //----------------------------------------------------------------------------------------------

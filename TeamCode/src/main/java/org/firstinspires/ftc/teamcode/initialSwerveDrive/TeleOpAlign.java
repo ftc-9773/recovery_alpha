@@ -14,7 +14,7 @@ import java.lang.*;
  * Created by Vikesh on 10/8/2017.
  */
 @TeleOp(name="TeleOpAlign")
-public class TeleOpAlign extends LinearOpMode{
+public class  TeleOpAlign extends LinearOpMode{
 
     private Servo swerveServo0;
     private Servo swerveServo1;

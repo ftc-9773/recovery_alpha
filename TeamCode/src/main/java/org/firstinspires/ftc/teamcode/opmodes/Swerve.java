@@ -19,6 +19,8 @@ public class Swerve extends LinearOpMode {
 
     private SwerveController mySwerveController;
 
+    //TEST cubeTray
+
     @Override
     public void runOpMode() throws InterruptedException {
         Log.e(TAG, "Started initializing");
@@ -26,6 +28,8 @@ public class Swerve extends LinearOpMode {
         mySwerveController = new SwerveController(hardwareMap);
         waitForStart();
         while(opModeIsActive()) {
+
+
 
             mySwerveController.pointDirection(gamepad1.left_stick_y * -1, gamepad1.left_stick_x * -1, gamepad1.right_stick_x);
 

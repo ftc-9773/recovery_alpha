@@ -1,9 +1,15 @@
 package org.firstinspires.ftc.teamcode.InitialTests;
 
+import android.util.Log;
+
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
+
+import org.firstinspires.ftc.teamcode.HardwareControl.CubeTray;
 
 /**
  * Created by eichen on 9/3/17.
@@ -11,17 +17,17 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 public class HardwareSwerveTest {
     /* Public OpMode members. */
-    public DcMotor swerveMotor   = null;
+    public DcMotor swerveMotor = null;
     public Servo swerveServo = null;
 
-    public static final double MID_SERVO       =  0.5 ;
+    public static final double MID_SERVO = 0.5;
 
     /* local OpMode members. */
-    HardwareMap hwMap           =  null;
-    private ElapsedTime period  = new ElapsedTime();
+    HardwareMap hwMap = null;
+    private ElapsedTime period = new ElapsedTime();
 
     /* Constructor */
-    public HardwareSwerveTest(){
+    public HardwareSwerveTest() {
 
     }
 
@@ -31,7 +37,7 @@ public class HardwareSwerveTest {
         hwMap = ahwMap;
 
         // Define and Initialize Motors
-        swerveMotor   = hwMap.dcMotor.get("swerve-motor");
+        swerveMotor = hwMap.dcMotor.get("swerve-motor");
         swerveMotor.setDirection(DcMotor.Direction.FORWARD); // Set to REVERSE if using AndyMark motors
 
         // Set all motors to zero power
@@ -56,7 +62,7 @@ public class HardwareSwerveTest {
      */
     public void waitForTick(long periodMs) {
 
-        long  remaining = periodMs - (long)period.milliseconds();
+        long remaining = periodMs - (long) period.milliseconds();
 
         // sleep for the remaining portion of the regular cycle period.
         if (remaining > 0) {

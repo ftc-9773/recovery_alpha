@@ -43,13 +43,25 @@ public class SwerveController {
 
 
     // Part One of Movement
-    public void pointDirection(double xComp, double yComp, double rotationSpeed) {
+    public void pointDirection(double xComp, double yComp, double rotationSpeed) {  // if feld centric is added, add heading and toggle
 
         // Calculate movement of each module
         flwVector.set(true, xComp, yComp);
         frwVector.set(true, xComp, yComp);
         blwVector.set(true, xComp, yComp);
         brwVector.set(true, xComp, yComp);
+
+        // TODO: add feild centric controlls
+        /*
+        if (feildCentric){
+            flwVector.set(false, flwVector.getMagnitude(), flwVector.getAngle() - heading);
+            frwVector.set(false, frwVector.getMagnitude(), frwVector.getAngle() - heading);
+            blwVector.set(false, blwVector.getMagnitude(), blwVector.getAngle() - heading);
+            brwVector.set(false, brwVector.getMagnitude(), brwVector.getAngle() - heading);
+        }
+
+         */
+
 
         // Scale rotation speed
         //rotationSpeed =
@@ -64,6 +76,7 @@ public class SwerveController {
 
         // Find the largest motor speed
         double max = Math.max( Math.max(flwVector.getMagnitude(), frwVector.getMagnitude()),Math.max(blwVector.getMagnitude(), brwVector.getMagnitude()));
+
 
         // if greater than 1, divide by largest
         if (max > 1) {

@@ -52,7 +52,6 @@ public class Swerve extends LinearOpMode {
             telemetry.addData("Front Left Servo Power: ", mySwerveController.flwModule.tellServo);
             telemetry.addData("Front Left Motor Power: ", mySwerveController.flwVector.getMagnitude());
 
-
             telemetry.update();
         }
     }

@@ -17,6 +17,8 @@ import java.util.Locale;
  */
 
 
+// Depricated - no longer in use
+
 @TeleOp(name="IntakeTest", group="SwerveTest with angle")
 //@Disabled
 public class IntakeTest extends LinearOpMode {

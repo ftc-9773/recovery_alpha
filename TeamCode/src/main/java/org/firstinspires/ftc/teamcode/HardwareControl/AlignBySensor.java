@@ -14,7 +14,7 @@ import org.firstinspires.ftc.teamcode.resources.ButtonStatus;
 /**
  * Created by Vikesh on 10/28/2017.
  */
-@TeleOp(name = "Align By Sensor")
+@TeleOp(name = "Allign Swerve Modules")
 public class AlignBySensor extends LinearOpMode {
     AnalogInput brwAbsEncoder;
     AnalogInput frwAbsEncoder;
@@ -25,7 +25,6 @@ public class AlignBySensor extends LinearOpMode {
 
     SafeJsonReader coefficientsFile = new SafeJsonReader("swervePIDCoefficients");
 
-    double[] modPositions = new double[4];
     @Override
     public void runOpMode() throws InterruptedException {
 

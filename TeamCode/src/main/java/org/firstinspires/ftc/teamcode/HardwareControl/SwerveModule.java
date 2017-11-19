@@ -43,7 +43,7 @@ public class SwerveModule {
 
 
     private static final String TAG = "ftc9773 SwerveModule";
-    private boolean debugHere = false;
+    private boolean debugHere = true;
     private final boolean DEBUG = false;
 
 

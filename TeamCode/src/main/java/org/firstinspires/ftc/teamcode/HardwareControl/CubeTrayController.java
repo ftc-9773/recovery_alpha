@@ -12,7 +12,7 @@ import com.qualcomm.robotcore.hardware.Servo;
  */
 
 
-public class CubeTray {
+public class CubeTrayController {
 
     // define servos & motor forthe tray
     private Servo leftFlap  ;
@@ -55,7 +55,7 @@ public class CubeTray {
     private static final double[] leftAnglePostions = {0.885, 0.554, 0.169, 0.169, 0.039} ;  // dump used to be .039
     private static final double[] rightAnglePostions = {0.07, 0.350, 0.754, 0.754,0.901 } ;   // dump used to be .901
 
-        public CubeTray (HardwareMap hwMap, Gamepad gamepad1){  // constructor takes hardware map
+        public CubeTrayController(HardwareMap hwMap, Gamepad gamepad1){  // constructor takes hardware map
 
             // attach all the servos to their hardware map components
             leftFlap = hwMap.servo.get("ctlfServo");
@@ -72,7 +72,7 @@ public class CubeTray {
 
         }
     // testing harware map consturctor - not for regular use
-    public CubeTray (HardwareMap hwMap, Gamepad gamepad1,Gamepad gamepad2){  // constructor takes hardware map
+    public CubeTrayController(HardwareMap hwMap, Gamepad gamepad1, Gamepad gamepad2){  // constructor takes hardware map
         // attach all the servos to their hardware map components
         leftFlap = hwMap.servo.get("ctlfServo");
         rightFlap = hwMap.servo.get("ctrfServo");
@@ -112,7 +112,8 @@ public class CubeTray {
          //   waitingForDump = false;
         //}
 
-        // testing
+        // testing - not activated if testing is not enabled
+        // allows user to tweak the servo values
         if (TESTING) {
             if (gamepad2.a) {
                 leftFlapPos -= increment;

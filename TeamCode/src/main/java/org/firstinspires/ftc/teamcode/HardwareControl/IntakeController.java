@@ -6,6 +6,8 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
+import org.firstinspires.ftc.teamcode.infrastructure.SafeJsonReader;
+
 /**
  * Created by nicky on 11/18/17.
  */
@@ -16,8 +18,10 @@ public class IntakeController {
 
     private static double LEFT_MOTOR_POWER = 1;
     private static double RIGHT_MOTOR_POWER = 1;
-    private static double MIN_SPEED = .005;
-    private static double REVERSE_DELAY = 100; // in milliseconds - time before the intake will be allowed to reverse again
+    private static double MIN_SPEED; // rotations per second
+    private static double REVERSE_DELAY; // in milliseconds - time before the intake will be allowed to reverse again
+    private static long REVERSE_DIST; // Encoder ticks
+    private static double REVERSE_SPEED;
 
     private long prevTime = 0;
     private long currTime = 0;
@@ -35,6 +39,8 @@ public class IntakeController {
     private boolean isForward = true;
     private Gamepad gamepad1;
 
+    private SafeJsonReader jsonParameters;
+
     static String TAG = "9773_IntakeController";
     static boolean DEBUG = true;
 
@@ -51,6 +57,13 @@ public class IntakeController {
         leftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         rightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         this.gamepad1 = gamepad1;
+
+        // Get JSON Values
+        jsonParameters = new SafeJsonReader("IntakeControllerParameters");
+        MIN_SPEED = jsonParameters.getDouble("MIN_SPEED");
+        REVERSE_DELAY = jsonParameters.getDouble("REVERSE_DELAY");
+        REVERSE_DIST =  jsonParameters.getInt("REVERSE_DIST");
+        REVERSE_SPEED = jsonParameters.getDouble("REVERSE_SPEED");
     }
 
     public void runIntake() {
@@ -67,18 +80,20 @@ public class IntakeController {
 
             if (DEBUG) { Log.e(TAG, "Trigger Pressed"); }
 
-            leftMotor.setPower(LEFT_MOTOR_POWER);
-            rightMotor.setPower(RIGHT_MOTOR_POWER);
+
 
             // If the intake is in the forwards state
+            if (DEBUG) { if (isForward) {  Log.e(TAG, "Is forward"); } else { Log.e(TAG, "Is backwards" ); } }
             if (isForward) {
-
-                // Make sure the it has been long enough since starting before checking to go backwards
-                if (currTime - lastTimeOff > REVERSE_DELAY) {
+                leftMotor.setPower(LEFT_MOTOR_POWER);
+                rightMotor.setPower(RIGHT_MOTOR_POWER);
+                        // Make sure the it has been long enough since starting before checking to go backwards
+                if (DEBUG) { Log.e(TAG, "Time since last off: " + (currTime - lastTimeOff)); }
+                    if (currTime - lastTimeOff > REVERSE_DELAY) {
 
                     // Calculate speed of each wheel
                     leftSpeed = (leftCurrPosition - leftPrevPosition) / (currTime - prevTime);
-                    rightSpeed = Math.abs((rightCurrPosition - rightPrevPosition) / (currTime - prevTime));
+                    rightSpeed = (rightCurrPosition - rightPrevPosition) / (currTime - prevTime);
 
                     if (DEBUG) { Log.e(TAG, "Left speed: " + leftSpeed + "   Right speed: " + rightSpeed); }
 
@@ -91,15 +106,17 @@ public class IntakeController {
                             leftMotor.setPower(-0.25);
 
                             //sets target positions
-                            leftRevPosition = leftCurrPosition - 35;
-                            rightRevPosition = rightCurrPosition + 35;
+                            leftRevPosition = leftCurrPosition - REVERSE_DIST;
+                            rightRevPosition = rightCurrPosition - REVERSE_DIST;
                             if (DEBUG) { Log.e(TAG, "Left target: " + leftRevPosition + "  Right target: " + rightRevPosition); }
                         }
                 }
 
             // If intake is in reverse state
             } else {
-                if (leftCurrPosition <= leftRevPosition || rightCurrPosition >= rightRevPosition) {
+                rightMotor.setPower(REVERSE_SPEED);
+                leftMotor.setPower(REVERSE_SPEED);
+                if (leftCurrPosition <= leftRevPosition || rightCurrPosition <= rightRevPosition) {
                     isForward = true;
                     leftMotor.setPower(LEFT_MOTOR_POWER);
                     rightMotor.setPower(RIGHT_MOTOR_POWER);

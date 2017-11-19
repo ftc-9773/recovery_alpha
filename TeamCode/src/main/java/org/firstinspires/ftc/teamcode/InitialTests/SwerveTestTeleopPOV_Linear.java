@@ -73,13 +73,14 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
 
+/*
 @TeleOp(name="SwerveTest: Teleop POV with angle", group="SwerveTest with angle")
 //@Disabled
 public class SwerveTestTeleopPOV_Linear extends LinearOpMode {
 
-    /* Declare OpMode members. */
+    /* Declare OpMode members.
     HardwareSwerveTest robot = new HardwareSwerveTest();   // Use a Pushbot's hardware
-    // could also use HardwarePushbotMatrix class.
+    // could also use HardwarePushbotMatrix class. **
 
     // The IMU sensor object
     BNO055IMU imu;
@@ -102,7 +103,7 @@ public class SwerveTestTeleopPOV_Linear extends LinearOpMode {
 
         /* Initialize the hardware variables.
          * The init() method of the hardware class does all the work here
-         */
+         **
         robot.init(hardwareMap);
         // Set up the parameters with which we will use our IMU. Note that integration
         // algorithm here just reports accelerations to the logcat log; it doesn't actually
@@ -276,3 +277,4 @@ public class SwerveTestTeleopPOV_Linear extends LinearOpMode {
     }
 }
 
+**/

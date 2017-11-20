@@ -1,7 +1,7 @@
 package org.firstinspires.ftc.teamcode.InitialTests;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.robotcore.external.Func;
@@ -17,6 +17,10 @@ import java.util.Locale;
  */
 
 
+// Depricated - no longer in use
+
+@TeleOp(name="IntakeTest", group="SwerveTest with angle")
+//@Disabled
 public class IntakeTest extends LinearOpMode {
 
 

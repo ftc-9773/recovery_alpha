@@ -37,8 +37,10 @@ public class SwerveController {
         frwModule = new SwerveModule(hardwareMap, "frw");
         blwModule = new SwerveModule(hardwareMap, "blw");
         brwModule = new SwerveModule(hardwareMap, "brw");
-        blwModule.swerveMotor.setDirection(DcMotor.Direction.REVERSE);
-        flwModule.swerveMotor.setDirection(DcMotor.Direction.REVERSE);
+        flwModule.swerveMotor.setDirection(DcMotor.Direction.FORWARD);
+        frwModule.swerveMotor.setDirection(DcMotor.Direction.FORWARD);
+        blwModule.swerveMotor.setDirection(DcMotor.Direction.FORWARD);
+        brwModule.swerveMotor.setDirection(DcMotor.Direction.FORWARD);
     }
 
 

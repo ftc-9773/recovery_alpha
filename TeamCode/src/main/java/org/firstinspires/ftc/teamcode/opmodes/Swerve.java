@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
+import org.firstinspires.ftc.teamcode.HardwareControl.IntakeController;
 import org.firstinspires.ftc.teamcode.HardwareControl.SwerveController;
 /**
  * Created by Vikesh on 10/29/2017.
@@ -18,6 +19,7 @@ public class Swerve extends LinearOpMode {
     private static final boolean ENABLEDRIVING = true ;
 
     private SwerveController mySwerveController;
+    private IntakeController myIntakeController;
 
     //TEST cubeTray
 
@@ -25,12 +27,15 @@ public class Swerve extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
         Log.e(TAG, "Started initializing");
 
+        // Create objects
         mySwerveController = new SwerveController(hardwareMap);
+        myIntakeController = new IntakeController(hardwareMap, gamepad1);
+
         waitForStart();
         while(opModeIsActive()) {
 
 
-
+            myIntakeController.runIntake();
             mySwerveController.pointDirection(gamepad1.left_stick_y * -1, gamepad1.left_stick_x * -1, gamepad1.right_stick_x);
 
             if (ENABLEDRIVING) {
@@ -46,7 +51,6 @@ public class Swerve extends LinearOpMode {
             telemetry.addData("Front Left Error Value: ", mySwerveController.flwModule.errorAmt);
             telemetry.addData("Front Left Servo Power: ", mySwerveController.flwModule.tellServo);
             telemetry.addData("Front Left Motor Power: ", mySwerveController.flwVector.getMagnitude());
-
 
             telemetry.update();
         }

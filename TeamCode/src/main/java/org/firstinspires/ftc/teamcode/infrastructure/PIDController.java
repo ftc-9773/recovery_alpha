@@ -17,23 +17,35 @@ public class PIDController {
     private long deltaTime;
     private boolean firstRun = true;
 
-    public PIDController(double KP, double KI, double KD){
+    private static int maxDeltaTime = 100;
+
+    public PIDController (double KP, double KI, double KD) {
         this.KP = KP;
         this.KI = KI;
         this.KD = KD;
     }
-    public double getPIDCorrection(double target, double actual){
-        //If this is the first time getPIDCorrection has been run, set lastTime to the current time to avoid excessive error.
-        if(firstRun) {
-            prevError = target-actual;
-            lastTime = System.currentTimeMillis();
-            firstRun = false;
-        }
+
+    public double getPIDCorrection(double target, double actual) {
+
+        // calculate helper variables
         deltaTime = System.currentTimeMillis() - lastTime;
-        error = target-actual;
-        integral = integral + (error*deltaTime);
-        derivative = (error-prevError)/deltaTime;
-        output = KP*error+KI*integral+KD*derivative;
+        error = target - actual;
+
+        // If it is the first run, just return proportional error as i and d cannot be cauculated yet
+        if (firstRun || deltaTime > maxDeltaTime) {
+            firstRun = false;
+            return error * KP;
+        } else {
+            // Calculate I and D errors
+            integral = integral + (error * deltaTime);
+            derivative = (error - prevError) / deltaTime;
+            output = KP * error + KI * integral + KD * derivative;
+        }
+        // Set previous values for next time
+
+        prevError = target - actual;
+        lastTime = System.currentTimeMillis();
+
         return output;
     }
 }

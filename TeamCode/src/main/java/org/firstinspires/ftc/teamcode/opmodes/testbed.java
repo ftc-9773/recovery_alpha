@@ -15,7 +15,7 @@ public class testbed extends LinearOpMode{
     @Override
     public void runOpMode() throws InterruptedException {
         String[] command = new String[4];
-        controlParser control = new controlParser("test.ibwt");
+        controlParser control = new controlParser("test", telemetry);
         command = control.getNextCommand();
 
         waitForStart();

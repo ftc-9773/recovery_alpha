@@ -2,6 +2,8 @@ package org.firstinspires.ftc.teamcode.infrastructure;
 
 import android.util.Log;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -19,14 +21,15 @@ public class controlParser {
     private String input;
     private BufferedReader buffReader = null;
     private int index = 0;
+    private Telemetry telemetry;
     FileReader fileReader = null;
 
     private static String TAG= "9773_ControlParser";
     private static boolean DEBUG = true;
 
-    public controlParser(String fileName){
+    public controlParser(String fileName, Telemetry telemetry){
         try {
-            fileReader = new FileReader("/sdcard/FIRST/team9773/ibwt18/" + fileName);
+            fileReader = new FileReader("/sdcard/FIRST/team9773/ibwt18/" + fileName + ".ibwt");
             buffReader = new BufferedReader(fileReader);
         }
         catch(IOException e){
@@ -48,6 +51,7 @@ public class controlParser {
             commandOut = commands[index].split(", ");
             index++;
         }
+        telemetry.addData("Current Action: ", commandOut[0]);
         return commandOut;
     }
 }

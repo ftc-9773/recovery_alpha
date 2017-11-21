@@ -78,7 +78,7 @@ public class SwerveModule {
 
 
     //INIT
-    public SwerveModule(HardwareMap hwMap, String hardwareMapTag) {
+    public SwerveModule(HardwareMap hwMap, String hardwareMapTag, DcMotor.RunMode mode) {
         Log.e(TAG, "Building servo " + hardwareMapTag);
 
         if (hardwareMapTag == "flw") { debugHere = true; }
@@ -89,6 +89,7 @@ public class SwerveModule {
         // Set the electronics
         swerveServo = hwMap.servo.get(hardwareMapTag + "Servo");
         swerveMotor = hwMap.dcMotor.get(hardwareMapTag + "Motor");
+        swerveMotor.setMode(mode);
         swerveAbsEncoder = hwMap.analogInput.get(hardwareMapTag + "AbsEncoder");
 
         //builds the json reader

@@ -33,10 +33,10 @@ public class SwerveController {
 
     //INIT
     public SwerveController (HardwareMap hardwareMap) {
-        flwModule = new SwerveModule(hardwareMap, "flw");
-        frwModule = new SwerveModule(hardwareMap, "frw");
-        blwModule = new SwerveModule(hardwareMap, "blw");
-        brwModule = new SwerveModule(hardwareMap, "brw");
+        flwModule = new SwerveModule(hardwareMap, "flw", DcMotor.RunMode.RUN_USING_ENCODER);
+        frwModule = new SwerveModule(hardwareMap, "frw", DcMotor.RunMode.RUN_USING_ENCODER);
+        blwModule = new SwerveModule(hardwareMap, "blw", DcMotor.RunMode.RUN_USING_ENCODER);
+        brwModule = new SwerveModule(hardwareMap, "brw", DcMotor.RunMode.RUN_USING_ENCODER);
         flwModule.swerveMotor.setDirection(DcMotor.Direction.FORWARD);
         frwModule.swerveMotor.setDirection(DcMotor.Direction.FORWARD);
         blwModule.swerveMotor.setDirection(DcMotor.Direction.FORWARD);

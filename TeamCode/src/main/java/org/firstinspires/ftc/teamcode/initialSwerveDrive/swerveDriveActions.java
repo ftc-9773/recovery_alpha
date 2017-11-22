@@ -38,9 +38,9 @@ public class swerveDriveActions extends LinearOpMode{
             gpx = gamepad1.left_stick_x;
             gpy = gamepad1.left_stick_y;
             if (gpx<0){
-                degrees = 180 + Math.atan(gpy/gpx)*(180/3.14159);
+                degrees = 180 + Math.atan(gpy/gpx)*(180/Math.PI);
             }else if (gpx > 0) {
-                degrees = Math.atan(gpy/gpx)*(180/3.14159);
+                degrees = Math.atan(gpy/gpx)*(180/Math.PI);
             }else if(gpx == 0 & gpy != 0){
                 degrees = 90;
             }
@@ -49,9 +49,9 @@ public class swerveDriveActions extends LinearOpMode{
             gpx = gamepad2.left_stick_x;
             gpy = gamepad2.left_stick_y;
             if (gpx<0){
-                degrees = 180 + Math.atan(gpy/gpx)*(180/3.14159);
+                degrees = 180 + Math.atan(gpy/gpx)*(180/Math.PI);
             }else if (gpx > 0) {
-                degrees = Math.atan(gpy/gpx)*(180/3.14159);
+                degrees = Math.atan(gpy/gpx)*(180/Math.PI);
             }else if(gpx == 0 & gpy != 0){
                 degrees = 90;
             }

@@ -37,14 +37,13 @@ public class IntakeController {
     private long rightRevPosition;
 
     private boolean isForward = true;
-    private Gamepad gamepad1;
 
     private SafeJsonReader jsonParameters;
 
     static String TAG = "9773_IntakeController";
     static boolean DEBUG = true;
 
-    public IntakeController(HardwareMap hardwareMap, Gamepad gamepad1) {
+    public IntakeController(HardwareMap hardwareMap) {
         leftMotor = hardwareMap.dcMotor.get("liMotor");
         rightMotor = hardwareMap.dcMotor.get("riMotor");
 
@@ -56,7 +55,6 @@ public class IntakeController {
 
         leftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         rightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        this.gamepad1 = gamepad1;
 
         // Get JSON Values
         jsonParameters = new SafeJsonReader("IntakeControllerParameters");
@@ -66,7 +64,7 @@ public class IntakeController {
         REVERSE_SPEED = jsonParameters.getDouble("REVERSE_SPEED");
     }
 
-    public void runIntake() {
+    public void runIntakeIn() {
 
         // Get current values
         leftCurrPosition = leftMotor.getCurrentPosition();
@@ -75,68 +73,77 @@ public class IntakeController {
 
         if (DEBUG) { Log.e(TAG, "left position: " + leftCurrPosition + "   right position: " + rightCurrPosition + "   current time : " + currTime); }
 
-        // If the trigger is pressed, run the intake
-        if (gamepad1.right_trigger > 0) {
+        if (DEBUG) { Log.e(TAG, "Trigger Pressed"); }
 
-            if (DEBUG) { Log.e(TAG, "Trigger Pressed"); }
+        // If the intake is in the forwards state
+        if (DEBUG) { if (isForward) {  Log.e(TAG, "Is forward"); } else { Log.e(TAG, "Is backwards" ); } }
+        if (isForward) {
+            leftMotor.setPower(LEFT_MOTOR_POWER);
+            rightMotor.setPower(RIGHT_MOTOR_POWER);
+            // Make sure the it has been long enough since starting before checking to go backwards
+            if (DEBUG) { Log.e(TAG, "Time since last off: " + (currTime - lastTimeOff)); }
+            if (currTime - lastTimeOff > REVERSE_DELAY) {
 
+                // Calculate speed of each wheel
+                leftSpeed = (leftCurrPosition - leftPrevPosition) / (currTime - prevTime);
+                rightSpeed = (rightCurrPosition - rightPrevPosition) / (currTime - prevTime);
 
+                if (DEBUG) { Log.e(TAG, "Left speed: " + leftSpeed + "   Right speed: " + rightSpeed); }
 
-            // If the intake is in the forwards state
-            if (DEBUG) { if (isForward) {  Log.e(TAG, "Is forward"); } else { Log.e(TAG, "Is backwards" ); } }
-            if (isForward) {
-                leftMotor.setPower(LEFT_MOTOR_POWER);
-                rightMotor.setPower(RIGHT_MOTOR_POWER);
-                        // Make sure the it has been long enough since starting before checking to go backwards
-                if (DEBUG) { Log.e(TAG, "Time since last off: " + (currTime - lastTimeOff)); }
-                    if (currTime - lastTimeOff > REVERSE_DELAY) {
+                // Check if either speed is too low
+                if (leftSpeed < MIN_SPEED || rightSpeed < MIN_SPEED) {
+                    isForward = false;
 
-                    // Calculate speed of each wheel
-                    leftSpeed = (leftCurrPosition - leftPrevPosition) / (currTime - prevTime);
-                    rightSpeed = (rightCurrPosition - rightPrevPosition) / (currTime - prevTime);
+                    //Reverses the motors
+                    rightMotor.setPower(-0.25);
+                    leftMotor.setPower(-0.25);
 
-                    if (DEBUG) { Log.e(TAG, "Left speed: " + leftSpeed + "   Right speed: " + rightSpeed); }
-
-                        // Check if either speed is too low
-                        if (leftSpeed < MIN_SPEED || rightSpeed < MIN_SPEED) {
-                            isForward = false;
-
-                            //Reverses the motors
-                            rightMotor.setPower(-0.25);
-                            leftMotor.setPower(-0.25);
-
-                            //sets target positions
-                            leftRevPosition = leftCurrPosition - REVERSE_DIST;
-                            rightRevPosition = rightCurrPosition - REVERSE_DIST;
-                            if (DEBUG) { Log.e(TAG, "Left target: " + leftRevPosition + "  Right target: " + rightRevPosition); }
-                        }
-                }
-
-            // If intake is in reverse state
-            } else {
-                rightMotor.setPower(REVERSE_SPEED);
-                leftMotor.setPower(REVERSE_SPEED);
-                if (leftCurrPosition <= leftRevPosition || rightCurrPosition <= rightRevPosition) {
-                    isForward = true;
-                    leftMotor.setPower(LEFT_MOTOR_POWER);
-                    rightMotor.setPower(RIGHT_MOTOR_POWER);
-
-                    lastTimeOff = currTime;
+                    //sets target positions
+                    leftRevPosition = leftCurrPosition - REVERSE_DIST;
+                    rightRevPosition = rightCurrPosition - REVERSE_DIST;
+                    if (DEBUG) { Log.e(TAG, "Left target: " + leftRevPosition + "  Right target: " + rightRevPosition); }
                 }
             }
 
-        // If the trigger is not pressed, set motor power to 0 and reset motor direction
+            // If intake is in reverse state
         } else {
-            isForward = true;
-            lastTimeOff = currTime;
+            rightMotor.setPower(REVERSE_SPEED);
+            leftMotor.setPower(REVERSE_SPEED);
+            if (leftCurrPosition <= leftRevPosition || rightCurrPosition <= rightRevPosition) {
+                isForward = true;
+                leftMotor.setPower(LEFT_MOTOR_POWER);
+                rightMotor.setPower(RIGHT_MOTOR_POWER);
 
-            leftMotor.setPower(0);
-            rightMotor.setPower(0);
+                lastTimeOff = currTime;
+            }
         }
-
-        // ANything at the end of the function
+        // Anything at the end of the function
         leftPrevPosition = leftCurrPosition;
         rightPrevPosition = rightCurrPosition;
         prevTime = currTime;
+    }
+
+    public void runIntakeOut() {
+        isForward = true;
+        lastTimeOff = System.currentTimeMillis();
+
+        leftMotor.setPower(-1);
+        rightMotor.setPower(-1);
+
+        leftPrevPosition = leftMotor.getCurrentPosition();
+        rightPrevPosition = rightMotor.getCurrentPosition();
+        prevTime = System.currentTimeMillis();
+    }
+
+    public void intakeOff() {
+        isForward = true;
+        lastTimeOff = System.currentTimeMillis();
+
+        leftMotor.setPower(0);
+        rightMotor.setPower(0);
+
+        leftPrevPosition = leftMotor.getCurrentPosition();
+        rightPrevPosition = rightMotor.getCurrentPosition();
+        prevTime = System.currentTimeMillis();
     }
 }

@@ -29,13 +29,22 @@ public class Swerve extends LinearOpMode {
 
         // Create objects
         mySwerveController = new SwerveController(hardwareMap);
-        myIntakeController = new IntakeController(hardwareMap, gamepad1);
+        myIntakeController = new IntakeController(hardwareMap);
 
         waitForStart();
         while(opModeIsActive()) {
 
 
-            myIntakeController.runIntake();
+            // Intake
+            if (gamepad1.right_trigger > 0) {
+                myIntakeController.runIntakeIn();
+            } else if (gamepad1.right_bumper) {
+                myIntakeController.runIntakeOut();
+            } else {
+                myIntakeController.intakeOff();
+            }
+
+
             mySwerveController.pointDirection(gamepad1.left_stick_y * -1, gamepad1.left_stick_x * -1, gamepad1.right_stick_x);
 
             if (ENABLEDRIVING) {

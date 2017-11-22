@@ -104,8 +104,8 @@ public class VuMarkIdentify extends LinearOpMode {
                 OpenGLMatrix pose = ((VuforiaTrackableDefaultListener)relicTemplate.getListener()).getPose();
                 telemetry.addData("Pose", format(pose));
 
-               /* We further illustrate how to decompose the pose into useful rotational and
-                * translational components */
+                /* We further illustrate how to decompose the pose into useful rotational and
+                 * translational components */
                 if (pose != null) {
                     VectorF trans = pose.getTranslation();
                     Orientation rot = Orientation.getOrientation(pose, AxesReference.EXTRINSIC, AxesOrder.XYZ, AngleUnit.DEGREES);

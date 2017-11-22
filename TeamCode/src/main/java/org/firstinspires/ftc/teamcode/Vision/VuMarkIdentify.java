@@ -24,6 +24,7 @@ public class VuMarkIdentify extends LinearOpMode {
     public static final String TAG = "Vuforia VuMark Sample";
 
     OpenGLMatrix lastLocation = null;
+    RelicRecoveryVuMark vuMark = null;
 
     /**
      * {@link #vuforia} is the variable we will use to store our instance of the Vuforia
@@ -89,7 +90,7 @@ public class VuMarkIdentify extends LinearOpMode {
              * UNKNOWN, LEFT, CENTER, and RIGHT. When a VuMark is visible, something other than
              * UNKNOWN will be returned by {@link RelicRecoveryVuMark#from(VuforiaTrackable)}.
              */
-            RelicRecoveryVuMark vuMark = RelicRecoveryVuMark.from(relicTemplate);
+            vuMark = RelicRecoveryVuMark.from(relicTemplate);
             if (vuMark != RelicRecoveryVuMark.UNKNOWN) {
 
                 /* Found an instance of the template. In the actual game, you will probably
@@ -130,5 +131,9 @@ public class VuMarkIdentify extends LinearOpMode {
 
     String format(OpenGLMatrix transformationMatrix) {
         return (transformationMatrix != null) ? transformationMatrix.formatAsTransform() : "null";
+    }
+
+    public RelicRecoveryVuMark vuMark(){
+        return vuMark;
     }
 }

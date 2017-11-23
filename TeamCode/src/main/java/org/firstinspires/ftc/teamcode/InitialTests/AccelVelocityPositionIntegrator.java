@@ -17,15 +17,15 @@ import org.firstinspires.ftc.robotcore.external.navigation.Velocity;
  * integrate accelerations, but merely reports them in the logcat log. This is a debugging
  * and demonstration tool, little more.
  */
-public class AccelVelocityPositionIntegrator implements BNO055IMU.AccelerationIntegrator
-{
+public class AccelVelocityPositionIntegrator implements BNO055IMU.AccelerationIntegrator  {
+
     BNO055IMU.Parameters parameters;
     Position lastPos, currPos;
     Velocity lastVelocity, currVelocity;
     Acceleration lastAccel, currAccel;
     long updateCount;
 
-    @Override public void initialize(BNO055IMU.Parameters parameters, Position initialPosition, Velocity initialVelocity)
+    @Override public void initialize (BNO055IMU.Parameters parameters, Position initialPosition, Velocity initialVelocity)
     {
         this.parameters = parameters;
         // grab position and speed, assuming identical acquisitionTime for both

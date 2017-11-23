@@ -71,16 +71,16 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * Use Android Studios to Copy this Class, and Paste it into your team's code folder with a new name.
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
- */
+ **
 
-/*
+
 @TeleOp(name="SwerveTest: Teleop POV with angle", group="SwerveTest with angle")
-//@Disabled
+@Disabled
 public class SwerveTestTeleopPOV_Linear extends LinearOpMode {
 
-    /* Declare OpMode members.
+    //Declare OpMode members.
     HardwareSwerveTest robot = new HardwareSwerveTest();   // Use a Pushbot's hardware
-    // could also use HardwarePushbotMatrix class. **
+    // could also use HardwarePushbotMatrix class.
 
     // The IMU sensor object
     BNO055IMU imu;

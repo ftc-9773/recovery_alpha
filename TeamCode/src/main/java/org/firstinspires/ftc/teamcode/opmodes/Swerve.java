@@ -8,6 +8,8 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.teamcode.HardwareControl.IntakeController;
 import org.firstinspires.ftc.teamcode.HardwareControl.SwerveController;
+import org.firstinspires.ftc.teamcode.PositionTracking.Gyro;
+
 /**
  * Created by Vikesh on 10/29/2017.
  */
@@ -16,10 +18,13 @@ import org.firstinspires.ftc.teamcode.HardwareControl.SwerveController;
 public class Swerve extends LinearOpMode {
 
     private static final String TAG = "ftc9773 Swerve";
-    private static final boolean ENABLEDRIVING = true ;
+    private static final boolean DEBUG = true;
+
+    private static final boolean ENABLEDRIVING = true;
 
     private SwerveController mySwerveController;
     private IntakeController myIntakeController;
+    private Gyro myGyro;
 
     //TEST cubeTray
 
@@ -30,10 +35,13 @@ public class Swerve extends LinearOpMode {
         // Create objects
         mySwerveController = new SwerveController(hardwareMap);
         myIntakeController = new IntakeController(hardwareMap);
+        myGyro = new Gyro(hardwareMap);
 
         waitForStart();
-        while(opModeIsActive()) {
+        while (opModeIsActive()) {
 
+
+            double timeStart = System.currentTimeMillis();
 
             // Intake
             if (gamepad1.right_trigger > 0) {
@@ -51,6 +59,8 @@ public class Swerve extends LinearOpMode {
                 mySwerveController.moveRobot();
             }
 
+            myGyro.logHeading();
+
             // Display gamepad values
             telemetry.addData("Gamepad x:", gamepad1.left_stick_x);
             telemetry.addData("Gamepad y:", gamepad1.left_stick_y);
@@ -62,6 +72,8 @@ public class Swerve extends LinearOpMode {
             telemetry.addData("Front Left Motor Power: ", mySwerveController.flwVector.getMagnitude());
 
             telemetry.update();
+
+            if (DEBUG) { Log.e(TAG, "Time Loop End : " + (System.currentTimeMillis() - timeStart)); }
         }
     }
 }

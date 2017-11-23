@@ -29,7 +29,7 @@ where are the file on the phone?
 /**
  * Created by robocracy on 10/30/17.
  */
-
+/*
 @TeleOp(name="JasonTester")
 public class JsonTester extends LinearOpMode {
 
@@ -78,4 +78,4 @@ public class JsonTester extends LinearOpMode {
         }
     }
 
-}
+} */

@@ -44,14 +44,17 @@ public class SwerveController {
     }
 
 
-    // Part One of Movement
-    public void pointDirection(double xComp, double yComp, double rotationSpeed) {  // if feld centric is added, add heading and toggle
+    // Part One of Movement     -   isCartesian - if the vector is in cartesian or polar form
+    //                          -   xComp_Magnitude - x component (in cartesian form) or magnitude (in polar form)
+    //                          -   yComp_Angle - y component (in cartesian form) or angle (in polar form)
+    // If you just want the direction, set isCartesian to false, magnitude to 1, and angle to whatever angle you want (in radians from 0 to 2pi)
+    public void pointDirection(boolean isCartesian, double xComp_Magnitude, double yComp_Angle, double rotationSpeed) {  // if feld centric is added, add heading and toggle
 
         // Calculate movement of each module
-        flwVector.set(true, xComp, yComp);
-        frwVector.set(true, xComp, yComp);
-        blwVector.set(true, xComp, yComp);
-        brwVector.set(true, xComp, yComp);
+        flwVector.set(isCartesian, xComp_Magnitude, yComp_Angle);
+        frwVector.set(isCartesian, xComp_Magnitude, yComp_Angle);
+        blwVector.set(isCartesian, xComp_Magnitude, yComp_Angle);
+        brwVector.set(isCartesian, xComp_Magnitude, yComp_Angle);
 
         // TODO: add feild centric controlls
         /*

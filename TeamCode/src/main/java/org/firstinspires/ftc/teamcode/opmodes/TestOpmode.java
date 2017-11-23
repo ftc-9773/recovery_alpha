@@ -15,7 +15,7 @@ import org.firstinspires.ftc.teamcode.HardwareControl.CubeTrayController;
 
 // an opmode to test teleop, based on the progress ew have made so far
 // should include all of the sub- assembleys made so far
-
+/*
 @TeleOp(name = "Swerve")
 public class TestOpmode extends LinearOpMode {
 
@@ -35,7 +35,7 @@ public class TestOpmode extends LinearOpMode {
 
         // Create objects
         mySwerveController = new SwerveController(hardwareMap);
-        myIntakeController = new IntakeController(hardwareMap, gamepad2);
+        myIntakeController = new IntakeController(hardwareMap);
         myCubeTrayController = new CubeTrayController(hardwareMap, gamepad2);
 
         waitForStart();
@@ -79,4 +79,4 @@ public class TestOpmode extends LinearOpMode {
             telemetry.addData("scaledLiftPosition:  ", myCubeTrayController.getliftPos());
         }
     }
-}
+} */

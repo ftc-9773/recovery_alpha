@@ -14,7 +14,7 @@ import org.firstinspires.ftc.teamcode.PositionTracking.Gyro;
  * Created by Vikesh on 10/29/2017.
  */
 
-@TeleOp(name = "Swerve")
+@TeleOp(name = "swerveOpMode")
 public class Swerve extends LinearOpMode {
 
     private static final String TAG = "ftc9773 Swerve";

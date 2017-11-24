@@ -16,29 +16,28 @@ public class CryptoboxNavigationTest extends LinearOpMode{
     @Override
     public void runOpMode() throws InterruptedException {
 
-        VumarkGlyphPattern pattern = new VumarkGlyphPattern(hardwareMap);
-        RelicRecoveryVuMark mark = pattern.getColumn();
-        telemetry.addData("column position: ", mark);
-
         Gyro gyro = new Gyro(hardwareMap);
         SwerveController swerveController = new SwerveController(hardwareMap, gyro, false);
         DriveWithPID driver = new DriveWithPID(swerveController, gyro);
         CubeTrayController cubeTrayController = new CubeTrayController(hardwareMap, null);
 
-        double dist = mark==RelicRecoveryVuMark.LEFT ? 43.0625 : mark==RelicRecoveryVuMark.CENTER ? 35.5625 : 28.0625;
-
-        telemetry.update();
+        VumarkGlyphPattern pattern = new VumarkGlyphPattern(hardwareMap);
+        double dist = 0;
 
         waitForStart();
 
-        while (opModeIsActive()){
-            driver.driveStraight(true, 1, 0, dist);
-            cubeTrayController.goToStowPos();
-            cubeTrayController.updateServos();
-
-
+        while(!opModeIsActive()) {
+            RelicRecoveryVuMark mark = pattern.getColumn();
+            dist = mark == RelicRecoveryVuMark.LEFT ? 43.0625 : mark == RelicRecoveryVuMark.CENTER ? 35.5625 : 28.0625;
+            telemetry.addData("column position: ", mark);
+            telemetry.update();
         }
 
+        while (opModeIsActive()){
+            driver.driveStraight(true, 1, 0, dist);
 
+            cubeTrayController.goToStowPos();
+            cubeTrayController.updateServos();
+        }
     }
 }

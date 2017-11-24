@@ -18,7 +18,10 @@ public class JewelColorDetectionTest extends LinearOpMode{
         waitForStart();
 
         while(opModeIsActive()){
-
+            String fileName = "/Users/";
+            JewelColorDetection obj = new JewelColorDetection(fileName);
+            telemetry.addData("verdict: ", obj.analyze());
+            telemetry.update();
         }
     }
 }

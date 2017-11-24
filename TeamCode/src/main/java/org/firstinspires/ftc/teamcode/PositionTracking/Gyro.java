@@ -20,14 +20,15 @@ public class Gyro {
 
     private double currentPosition;
 
-    private double lastReadTime = 0;
-    private static final int minReadDeltaTime = 50;
+    private double lastReadTime = -1;
+    private static final int minReadDeltaTime = 80;
 
-    private double zeroPoitionLeft = 0;
+    private double zeroPositionLeft = 0;
+
     //private double zeroPositionRight = 0;
 
     private static String TAG = "9773_Gyro";
-    private static boolean DEBUG = false;
+    private static boolean DEBUG = true;
 
     // Init
     public Gyro (HardwareMap hardwareMap) {
@@ -47,43 +48,31 @@ public class Gyro {
         //imuRight.initialize(parameters);
     }
 
+    private double getImuReading() {
+        return imuLeft.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.XYZ, AngleUnit.RADIANS).secondAngle;
+    }
+
     public double getHeading () {
 
-        // Only read again if it has been at least 50 ms
+        // Only read again if it has been at least 80 ms
         long currentTime = System.currentTimeMillis();
         if (currentTime - lastReadTime > minReadDeltaTime) {
             lastReadTime = currentTime;
-            currentPosition = imuLeft.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.YXY, AngleUnit.RADIANS).firstAngle - zeroPoitionLeft;
+            currentPosition = setOnZeroTwoPi(getImuReading() - zeroPositionLeft);
+            if (DEBUG) { Log.e(TAG, "Got new gyro position - Read: " + currentPosition); }
         }
 
-        // Return the current position on 0 to 2pi
-        return setOnZeroToPi(currentPosition) - zeroPoitionLeft;
+        return currentPosition;
     }
 
+
     public void setZeroPosition() {
-        this.zeroPoitionLeft = setOnZeroToPi(imuLeft.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.YXY, AngleUnit.RADIANS).firstAngle);
+        this.zeroPositionLeft = getImuReading();
         currentPosition = 0;
     }
 
 
-    public void logHeading () {
-        //double yawXLeft = imuLeft.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.XYZ, AngleUnit.RADIANS).firstAngle;
-        double yawYLeft = imuLeft.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.XYZ, AngleUnit.RADIANS).secondAngle;
-        //double yawZLeft = imuLeft.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.XYZ, AngleUnit.RADIANS).thirdAngle;
-
-        //double yawXRight = imuRight.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.XYZ, AngleUnit.RADIANS).firstAngle;
-        //double yawYRight = imuRight.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.XYZ, AngleUnit.RADIANS).secondAngle;
-        //double yawZRight = imuRight.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.XYZ, AngleUnit.RADIANS).thirdAngle;
-
-
-        //if (DEBUG) { Log.e(TAG, "Left - Time: " + System.currentTimeMillis() + "  Heading XYZ: " + yawXLeft + " " + yawYLeft + " " + yawZLeft); }
-        //if (DEBUG) { Log.e(TAG, "Right - Time: " + System.currentTimeMillis() + "  Heading XYZ: " + yawXRight + " " + yawYRight + " " + yawZRight); }
-
-
-        if (DEBUG) { Log.e(TAG, "Time: " + System.currentTimeMillis() + "Left - Right: " + yawYLeft); }
-    }
-
-    public double setOnZeroToPi(double angle) {
+    public double setOnZeroTwoPi(double angle) {
         while (angle > 2*Math.PI) {
             angle -= 2*Math.PI;
         }

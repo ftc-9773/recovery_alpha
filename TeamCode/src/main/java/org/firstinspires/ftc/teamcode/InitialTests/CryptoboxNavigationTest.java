@@ -25,12 +25,13 @@ public class CryptoboxNavigationTest extends LinearOpMode{
         DriveWithPID driver = new DriveWithPID(swerveController, gyro);
         CubeTrayController cubeTrayController = new CubeTrayController(hardwareMap, null);
 
+        double dist = mark==RelicRecoveryVuMark.LEFT ? 43.0625 : mark==RelicRecoveryVuMark.CENTER ? 35.5625 : 28.0625;
+
         telemetry.update();
 
         waitForStart();
 
         while (opModeIsActive()){
-            double dist = mark==RelicRecoveryVuMark.LEFT ? 43.0625 : mark==RelicRecoveryVuMark.CENTER ? 35.5625 : 28.0625;
             driver.driveStraight(true, 1, 0, dist);
             cubeTrayController.goToStowPos();
             cubeTrayController.updateServos();

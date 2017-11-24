@@ -9,6 +9,7 @@ import android.util.Log;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
+import org.firstinspires.ftc.teamcode.HardwareControl.CubeTray;
 import org.firstinspires.ftc.teamcode.HardwareControl.CubeTrayController;
 
 
@@ -16,15 +17,16 @@ import org.firstinspires.ftc.teamcode.HardwareControl.CubeTrayController;
 public class TrayTestTeleop extends LinearOpMode {
 
     private static final String TAG = "ftc9773 CubeTrayTest";
-    private CubeTrayController myCubeTrayController;
+    private CubeTray myCubeTrayController;
 
     @Override
     public void runOpMode() throws InterruptedException {
         Log.e(TAG, "Started initializing");
 
-        myCubeTrayController = new CubeTrayController(hardwareMap, gamepad1,gamepad2);
+        myCubeTrayController = new CubeTray(hardwareMap, gamepad1,gamepad2);
 
-        myCubeTrayController.goToStowPos();
+        myCubeTrayController.setServoPos(CubeTray.TrayPositions.STOWED);
+
 
         waitForStart();
 
@@ -35,7 +37,7 @@ public class TrayTestTeleop extends LinearOpMode {
             //allow user/tester to manually reset lift position
 
             if (gamepad2.right_bumper){
-                myCubeTrayController.resetLiftPos();
+                myCubeTrayController.setServoPos(CubeTray.TrayPositions.DUMP_A);
             }
             // send telemetry back to driver station
             composeTelemetry();

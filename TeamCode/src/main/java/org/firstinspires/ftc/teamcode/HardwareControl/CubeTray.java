@@ -57,13 +57,13 @@ public class CubeTray {
     private int zeroPos = 0;
 
     // setup variables for positioning
-    private static final int sensorPosTicks = 1570;
-    private static final int topPosTicks = 1500;
-    private static final int middlePosTicks = 500;
-    private static final int bottomPosTicks = 40;
-    private static final int loadPosTicks = 10;
+    private static final int sensorPosTicks = 3415;
+    private static final int topPosTicks = 3260;
+    private static final int middlePosTicks = 1850;
+    private static final int bottomPosTicks = 450;
+    private static final int loadPosTicks = 190;
 
-    private static final int positionTolerance = 15;
+    private static final int positionTolerance = 40;
 
     //TODO: migrate to a JSON config file for easy config
 
@@ -279,7 +279,7 @@ public class CubeTray {
         leftAngle.setPosition(leftAnglePos);
         rightAngle.setPosition(rightAnglePos);
     }
-    private void setServoPos(TrayPositions trayPos) {
+    public void setServoPos(TrayPositions trayPos) {
         int posNum = -1;
         trayState = trayPos ; // update TrayState
         switch (trayPos) {

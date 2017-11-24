@@ -17,7 +17,6 @@ public class VumarkGlyphPattern {
     VuforiaTrackable template;
     HardwareMap hardwareMap;
     VuforiaLocalizer vuforia;
-    RelicRecoveryVuMark vuMark = null;
 
     public VumarkGlyphPattern(HardwareMap hardwareMap){
         this.hardwareMap = hardwareMap;

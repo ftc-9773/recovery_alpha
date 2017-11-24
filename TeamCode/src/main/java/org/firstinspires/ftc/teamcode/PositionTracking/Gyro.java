@@ -27,7 +27,7 @@ public class Gyro {
     //private double zeroPositionRight = 0;
 
     private static String TAG = "9773_Gyro";
-    private static boolean DEBUG = true;
+    private static boolean DEBUG = false;
 
     // Init
     public Gyro (HardwareMap hardwareMap) {
@@ -56,12 +56,12 @@ public class Gyro {
             currentPosition = imuLeft.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.YXY, AngleUnit.RADIANS).firstAngle - zeroPoitionLeft;
         }
 
-        // Return the current position
-        return currentPosition;
+        // Return the current position on 0 to 2pi
+        return setOnZeroToPi(currentPosition) - zeroPoitionLeft;
     }
 
     public void setZeroPosition() {
-        this.zeroPoitionLeft = imuLeft.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.YXY, AngleUnit.RADIANS).firstAngle;
+        this.zeroPoitionLeft = setOnZeroToPi(imuLeft.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.YXY, AngleUnit.RADIANS).firstAngle);
         currentPosition = 0;
     }
 
@@ -83,6 +83,14 @@ public class Gyro {
         if (DEBUG) { Log.e(TAG, "Time: " + System.currentTimeMillis() + "Left - Right: " + yawYLeft); }
     }
 
-
+    public double setOnZeroToPi(double angle) {
+        while (angle > 2*Math.PI) {
+            angle -= 2*Math.PI;
+        }
+        while (angle < 0) {
+            angle += 2*Math.PI;
+        }
+        return angle;
+    }
 
 }

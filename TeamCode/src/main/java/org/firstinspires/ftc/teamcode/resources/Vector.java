@@ -64,6 +64,11 @@ public class Vector {
         }
     }
 
+    // Shift the angle
+    public void shiftAngle (double angle) {
+        set(false, getMagnitude(), getAngle() - angle);
+    }
+
     //Fetching values
     public double getX () { return xComponent; }
     public double getY () { return yComponent; }

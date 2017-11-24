@@ -5,6 +5,7 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import android.util.Log;
 
+import org.firstinspires.ftc.teamcode.PositionTracking.Gyro;
 import org.firstinspires.ftc.teamcode.resources.Vector;
 
 /**
@@ -13,8 +14,8 @@ import org.firstinspires.ftc.teamcode.resources.Vector;
 
 public class SwerveController {
 
-    private final String TAG = "9773 SwerveController";
-    private final boolean DEBUG = false;
+    private static final String TAG = "9773 SwerveController";
+    private static final boolean DEBUG = false;
 
     // Swerve Modules
     public SwerveModule flwModule;
@@ -22,25 +23,29 @@ public class SwerveController {
     public SwerveModule blwModule;
     public SwerveModule brwModule;
 
+    //Gyro
+    private Gyro myGyro;
+
     //Module Movement Vectors
     public Vector flwVector = new Vector(true, 0, 0);
     public Vector frwVector = new Vector(true, 0, 0);
     public Vector blwVector = new Vector(true, 0, 0);
     public Vector brwVector = new Vector(true, 0, 0);
 
+    private boolean useFieldCentricOrientation = true;
+
     // Variables
     private boolean motorsAreForward = true;
 
     //INIT
-    public SwerveController (HardwareMap hardwareMap) {
-        flwModule = new SwerveModule(hardwareMap, "flw", DcMotor.RunMode.RUN_USING_ENCODER);
-        frwModule = new SwerveModule(hardwareMap, "frw", DcMotor.RunMode.RUN_USING_ENCODER);
-        blwModule = new SwerveModule(hardwareMap, "blw", DcMotor.RunMode.RUN_USING_ENCODER);
-        brwModule = new SwerveModule(hardwareMap, "brw", DcMotor.RunMode.RUN_USING_ENCODER);
-        flwModule.swerveMotor.setDirection(DcMotor.Direction.FORWARD);
-        frwModule.swerveMotor.setDirection(DcMotor.Direction.FORWARD);
-        blwModule.swerveMotor.setDirection(DcMotor.Direction.FORWARD);
-        brwModule.swerveMotor.setDirection(DcMotor.Direction.FORWARD);
+    public SwerveController (HardwareMap hardwareMap, Gyro myGyro, boolean useFieldCentricOrientationDefault) {
+        flwModule = new SwerveModule(hardwareMap, "flw");
+        frwModule = new SwerveModule(hardwareMap, "frw");
+        blwModule = new SwerveModule(hardwareMap, "blw");
+        brwModule = new SwerveModule(hardwareMap, "brw");
+
+        this.myGyro = myGyro;
+        this.useFieldCentricOrientation = useFieldCentricOrientationDefault;
     }
 
 
@@ -57,6 +62,13 @@ public class SwerveController {
         brwVector.set(isCartesian, xComp_Magnitude, yComp_Angle);
 
         // TODO: add feild centric controlls
+        if (useFieldCentricOrientation) {
+            flwVector.shiftAngle(-myGyro.getHeading());
+            frwVector.shiftAngle(-myGyro.getHeading());
+            blwVector.shiftAngle(-myGyro.getHeading());
+            brwVector.shiftAngle(-myGyro.getHeading());
+        }
+
         /*
         if (feildCentric){
             flwVector.set(false, flwVector.getMagnitude(), flwVector.getAngle() - heading);
@@ -139,5 +151,21 @@ public class SwerveController {
         blwModule.driveModule();
         brwModule.driveModule();
     }
+
+    public void toggleFieldCentric () {
+        if (useFieldCentricOrientation) {
+            useFieldCentricOrientation = false;
+        } else {
+            useFieldCentricOrientation = true;
+        }
+    }
+    public boolean getFieldCentric() { return useFieldCentricOrientation; }
+
+    public boolean getIsTurning() { return (flwModule.getIsTurning() || frwModule.getIsTurning() || blwModule.getIsTurning() || brwModule.getIsTurning()); }
+
+    public long getFlwEncoderCount() { return flwModule.getEncoderCount(); }
+    public long getFrwEncoderCount() { return frwModule.getEncoderCount(); }
+    public long getBlwEncoderCount() { return blwModule.getEncoderCount(); }
+    public long getBrwEncoderCount() { return brwModule.getEncoderCount(); }
 
 }

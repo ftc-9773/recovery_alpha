@@ -91,8 +91,6 @@ public class SwerveModule {
         swerveMotor = hwMap.dcMotor.get(hardwareMapTag + "Motor");
 
         //Set up motor parameters
-        swerveMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        swerveMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         swerveMotor.setDirection(DcMotor.Direction.FORWARD);
 
 
@@ -220,7 +218,6 @@ public class SwerveModule {
     // returns distance for servos to turn with motor direction switched
     public double distReversedDirection () {
 
-        if (DEBUG) { Log.e(TAG, "Forward Direction Dist: " + Math.abs(errorAmt) + "   Reverse Direction Dist: " + Math.abs(setOnTwoPI(errorAmt) - Math.PI)); }
         return Math.abs(setOnTwoPI(errorAmt) - Math.PI);
     }
 
@@ -228,14 +225,11 @@ public class SwerveModule {
     // Rotates the Module
     public void pointModule() {
         // ** Figure out how to move the servo **
-        if (DEBUG) { if (debugHere) { Log.e(TAG, "Pointing Modules"); } }
 
         if (velocityVector.getMagnitude() > 0) {
-            if (DEBUG) { if (debugHere) { Log.e(TAG, "Inside pid stuffing"); } }
 
             //Calculate PID
             tellServo = calculatePDCorrection(errorAmt);
-            if (DEBUG) { if (debugHere) Log.e(TAG, "Servo Distance" + tellServo); Log.e(TAG, "Error Am :" + errorAmt); }
 
             //Correct onto servo's range
             if (tellServo > 1) {
@@ -245,7 +239,6 @@ public class SwerveModule {
             }
 
         } else {
-            if (DEBUG) { if (debugHere) { Log.e(TAG, "skipped stuffing"); } }
             tellServo = 0.5;
         }
         swerveServo.setPosition(tellServo);
@@ -272,7 +265,6 @@ public class SwerveModule {
     }
 
     public long getEncoderCount() {
-        Log.e(TAG, "Encoder: " + swerveMotor.getCurrentPosition());
         return swerveMotor.getCurrentPosition();
     }
 }

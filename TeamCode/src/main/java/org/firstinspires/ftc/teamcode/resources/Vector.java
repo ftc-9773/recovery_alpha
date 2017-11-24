@@ -43,13 +43,8 @@ public class Vector {
             xComponent = xMag;
             yComponent = yAng;
         } else {
-            if (xMag < 0) {
-                xMag *= -1;
-                yAng += Math.PI;
-            }
-
-            xComponent = Math.cos(modPi(yAng)) * xMag;
-            yComponent = Math.sin(modPi(yAng)) * xMag;
+            xComponent = Math.cos(yAng) * xMag;
+            yComponent = Math.sin(yAng) * xMag;
         }
     }
 

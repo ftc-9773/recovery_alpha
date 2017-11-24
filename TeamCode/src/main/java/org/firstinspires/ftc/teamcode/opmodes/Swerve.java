@@ -18,7 +18,7 @@ import org.firstinspires.ftc.teamcode.PositionTracking.Gyro;
 public class Swerve extends LinearOpMode {
 
     private static final String TAG = "ftc9773 Swerve";
-    private static final boolean DEBUG = true;
+    private static final boolean DEBUG = false;
 
     private static final boolean ENABLEDRIVING = true;
 
@@ -33,9 +33,11 @@ public class Swerve extends LinearOpMode {
         Log.e(TAG, "Started initializing");
 
         // Create objects
+        myGyro = new Gyro(hardwareMap);
         mySwerveController = new SwerveController(hardwareMap, myGyro, true);
         myIntakeController = new IntakeController(hardwareMap);
-        myGyro = new Gyro(hardwareMap);
+
+        myGyro.setZeroPosition();
 
         waitForStart();
         while (opModeIsActive()) {
@@ -58,8 +60,6 @@ public class Swerve extends LinearOpMode {
             if (ENABLEDRIVING) {
                 mySwerveController.moveRobot();
             }
-
-            myGyro.logHeading();
 
             // Display gamepad values
             telemetry.addData("Gamepad x:", gamepad1.left_stick_x);

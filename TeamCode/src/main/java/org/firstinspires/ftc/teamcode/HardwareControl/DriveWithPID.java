@@ -39,6 +39,7 @@ public class DriveWithPID {
 
     private static  SafeJsonReader myCoefficients;
 
+    // INIT
     public DriveWithPID (SwerveController mySwerveController, Gyro myGyro) {
         this.mySwerveController = mySwerveController;
         this.myGyro = myGyro;
@@ -50,18 +51,19 @@ public class DriveWithPID {
     }
 
     // Actual driving funftions
-    public void driveStraight(boolean isCartesian, double xMag, double yAngle, double distInches) throws InterruptedException {
+    public void driveStraight(boolean isCartesian, double xMag, double yAngleInDegrees, double distInches) throws InterruptedException {
 
+        // Convert angle to radians
         if (!isCartesian) {
-            yAngle = Math.toRadians(yAngle);
+            yAngleInDegrees = Math.toRadians(yAngleInDegrees);
         }
 
         // Point in the right direction
         do {
-            mySwerveController.pointDirection(isCartesian, xMag, yAngle, 0);
+            mySwerveController.pointDirection(isCartesian, xMag, yAngleInDegrees, 0);
         } while (mySwerveController.getIsTurning());
 
-        // Drive until it has gone the right distance //
+        //////// Drive until it has gone the right distance ////////
 
         // log the current position
         flwEncoderZero = mySwerveController.getFlwEncoderCount();
@@ -75,7 +77,7 @@ public class DriveWithPID {
         if (DEBUG) { Log.e(TAG, "Starting driving"); }
 
         while (averageEncoderDist() < encoderTicksPerInch * distInches) {
-            mySwerveController.pointDirection(isCartesian, xMag, yAngle, drivePID.getPIDCorrection(setOnNegToPosPi(myGyro.getHeading() - gyroAngleZero)));
+            mySwerveController.pointDirection(isCartesian, xMag, yAngleInDegrees, drivePID.getPIDCorrection(setOnNegToPosPi(myGyro.getHeading() - gyroAngleZero)));
             mySwerveController.moveRobot();
             if (DEBUG) { Log.e(TAG, "Distance so far: " + averageEncoderDist()); }
         }

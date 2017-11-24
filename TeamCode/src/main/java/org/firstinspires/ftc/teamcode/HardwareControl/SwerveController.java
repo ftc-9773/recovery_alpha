@@ -63,10 +63,10 @@ public class SwerveController {
 
         // TODO: add feild centric controlls
         if (useFieldCentricOrientation) {
-            flwVector.shiftAngle(-myGyro.getHeading());
-            frwVector.shiftAngle(-myGyro.getHeading());
-            blwVector.shiftAngle(-myGyro.getHeading());
-            brwVector.shiftAngle(-myGyro.getHeading());
+            flwVector.shiftAngle(myGyro.getHeading());
+            frwVector.shiftAngle(myGyro.getHeading());
+            blwVector.shiftAngle(myGyro.getHeading());
+            brwVector.shiftAngle(myGyro.getHeading());
         }
 
         /*

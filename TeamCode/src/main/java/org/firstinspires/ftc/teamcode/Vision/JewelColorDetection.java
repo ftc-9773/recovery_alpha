@@ -72,7 +72,7 @@ public class JewelColorDetection {
         long averageBlue = sumXB/bm.getWidth();
 
         String verdict = averageBlue<averageRed ? "BLUE IS LEFT" : "RED IS LEFT";
-//        if(DEBUG) Log.e(TAG,verdict);
+        if(DEBUG) Log.e(TAG,verdict);
         return verdict;
     }
 

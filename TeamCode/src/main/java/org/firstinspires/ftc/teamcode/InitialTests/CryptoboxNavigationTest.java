@@ -18,11 +18,14 @@ public class CryptoboxNavigationTest extends LinearOpMode{
 
         VumarkGlyphPattern pattern = new VumarkGlyphPattern(hardwareMap);
         RelicRecoveryVuMark mark = pattern.getColumn();
+        telemetry.addData("column position: ", mark);
 
         Gyro gyro = new Gyro(hardwareMap);
         SwerveController swerveController = new SwerveController(hardwareMap, gyro, false);
         DriveWithPID driver = new DriveWithPID(swerveController, gyro);
         CubeTrayController cubeTrayController = new CubeTrayController(hardwareMap, null);
+
+        telemetry.update();
 
         waitForStart();
 
@@ -31,6 +34,10 @@ public class CryptoboxNavigationTest extends LinearOpMode{
             driver.driveStraight(true, 1, 0, dist);
             cubeTrayController.goToStowPos();
             cubeTrayController.updateServos();
+
+
         }
+
+
     }
 }

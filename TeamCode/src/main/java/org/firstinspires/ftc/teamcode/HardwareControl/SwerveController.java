@@ -53,7 +53,7 @@ public class SwerveController {
     //                          -   xComp_Magnitude - x component (in cartesian form) or magnitude (in polar form)
     //                          -   yComp_Angle - y component (in cartesian form) or angle (in polar form)
     // If you just want the direction, set isCartesian to false, magnitude to 1, and angle to whatever angle you want (in radians from 0 to 2pi)
-    public void pointDirection(boolean isCartesian, double xComp_Magnitude, double yComp_Angle, double rotationSpeed) {  // if feld centric is added, add heading and toggle
+    public void pointDirection(boolean isCartesian, double xComp_Magnitude, double yComp_Angle, double rotationSpeed) {  // if field centric is added, add heading and toggle
 
         // Calculate movement of each module
         flwVector.set(isCartesian, xComp_Magnitude, yComp_Angle);
@@ -63,10 +63,11 @@ public class SwerveController {
 
         // TODO: add feild centric controlls
         if (useFieldCentricOrientation) {
-            flwVector.shiftAngle(myGyro.getHeading());
-            frwVector.shiftAngle(myGyro.getHeading());
-            blwVector.shiftAngle(myGyro.getHeading());
-            brwVector.shiftAngle(myGyro.getHeading());
+            double gyroHeading = myGyro.getHeading();
+            flwVector.shiftAngle(gyroHeading);
+            frwVector.shiftAngle(gyroHeading);
+            blwVector.shiftAngle(gyroHeading);
+            brwVector.shiftAngle(gyroHeading);
         }
 
         /*
@@ -92,7 +93,8 @@ public class SwerveController {
         /// Keep velocity vectors under 1  ///
 
         // Find the largest motor speed
-        double max = Math.max( Math.max(flwVector.getMagnitude(), frwVector.getMagnitude()),Math.max(blwVector.getMagnitude(), brwVector.getMagnitude()));
+        double max = Math.max( Math.max(flwVector.getMagnitude(), frwVector.getMagnitude()),
+                Math.max(blwVector.getMagnitude(), brwVector.getMagnitude()));
 
 
         // if greater than 1, divide by largest
@@ -111,11 +113,12 @@ public class SwerveController {
         brwModule.setVector(brwVector, motorsAreForward);
 
 
-
         /////// Choose whether to flip motor direction ///////////
 
-        final double distAsIs = flwModule.distForwardDirection() + frwModule.distForwardDirection() + blwModule.distForwardDirection() + brwModule.distForwardDirection();
-        final double distSwitched = flwModule.distReversedDirection() + frwModule.distReversedDirection() + blwModule.distReversedDirection() + brwModule.distReversedDirection();
+        final double distAsIs = flwModule.distForwardDirection() + frwModule.distForwardDirection() +
+                blwModule.distForwardDirection() + brwModule.distForwardDirection();
+        final double distSwitched = flwModule.distReversedDirection() + frwModule.distReversedDirection() +
+                blwModule.distReversedDirection() + brwModule.distReversedDirection();
 
         if (DEBUG) { Log.e(TAG, "Forward Dist: " + distAsIs + "   Backwards Dist: " + distSwitched); }
 
@@ -123,11 +126,7 @@ public class SwerveController {
 
             if (DEBUG) { Log.e(TAG, "Switched Motor Direction"); }
             //Toggle motorsAreForward
-            if (motorsAreForward) {
-                motorsAreForward = false;
-            } else {
-                motorsAreForward = true;
-            }
+            motorsAreForward = ! motorsAreForward;
 
             //Recalcuate ModuleDirection
             flwModule.setVector(flwVector, motorsAreForward);
@@ -153,11 +152,7 @@ public class SwerveController {
     }
 
     public void toggleFieldCentric () {
-        if (useFieldCentricOrientation) {
-            useFieldCentricOrientation = false;
-        } else {
-            useFieldCentricOrientation = true;
-        }
+        useFieldCentricOrientation = ! useFieldCentricOrientation;
     }
     public boolean getFieldCentric() { return useFieldCentricOrientation; }
 

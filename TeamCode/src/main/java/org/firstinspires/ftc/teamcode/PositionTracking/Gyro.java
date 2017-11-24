@@ -23,7 +23,8 @@ public class Gyro {
     private double lastReadTime = -1;
     private static final int minReadDeltaTime = 80;
 
-    private double zeroPoitionLeft = 0;
+    private double zeroPositionLeft = 0;
+
     //private double zeroPositionRight = 0;
 
     private static String TAG = "9773_Gyro";
@@ -47,23 +48,26 @@ public class Gyro {
         //imuRight.initialize(parameters);
     }
 
+    private double getImuReading() {
+        return imuLeft.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.XYZ, AngleUnit.RADIANS).secondAngle;
+    }
+
     public double getHeading () {
 
         // Only read again if it has been at least 80 ms
         long currentTime = System.currentTimeMillis();
         if (currentTime - lastReadTime > minReadDeltaTime) {
             lastReadTime = currentTime;
-
-            currentPosition = imuLeft.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.XYZ, AngleUnit.RADIANS).secondAngle;
-            currentPosition = setOnZeroTwoPi(currentPosition - zeroPoitionLeft);
+            currentPosition = setOnZeroTwoPi(getImuReading() - zeroPositionLeft);
             if (DEBUG) { Log.e(TAG, "Got new gyro position - Read: " + currentPosition); }
         }
 
         return currentPosition;
     }
 
+
     public void setZeroPosition() {
-        this.zeroPoitionLeft = getHeading();
+        this.zeroPositionLeft = getImuReading();
         currentPosition = 0;
     }
 

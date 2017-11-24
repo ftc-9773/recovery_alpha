@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.HardwareControl;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.AnalogInput;
@@ -10,7 +11,7 @@ import org.firstinspires.ftc.teamcode.resources.ButtonStatus;
  * Created by nicky on 11/11/17.
  */
 
-
+@Disabled
 @TeleOp(name = "Voltage Test")
 public class VoltageTest extends LinearOpMode {
 

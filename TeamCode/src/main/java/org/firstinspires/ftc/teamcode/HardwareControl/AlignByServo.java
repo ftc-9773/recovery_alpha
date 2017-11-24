@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.HardwareControl;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -14,6 +15,7 @@ import java.io.IOException;
 /**
  * Created by Vikesh on 10/25/2017.
  */
+@Disabled
 @TeleOp(name = "Align By Servo")
 public class AlignByServo extends LinearOpMode{
 

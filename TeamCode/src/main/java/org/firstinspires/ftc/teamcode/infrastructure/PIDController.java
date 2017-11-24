@@ -25,7 +25,7 @@ public class PIDController {
         this.KD = KD;
     }
 
-    public double getPIDCorrection(double target, double actual) {
+    public double getPIDCorrection(double target, double actual, double offset) {
 
         // calculate helper variables
         deltaTime = System.currentTimeMillis() - lastTime;
@@ -34,12 +34,13 @@ public class PIDController {
         // If it is the first run, just return proportional error as i and d cannot be cauculated yet
         if (firstRun || deltaTime > maxDeltaTime) {
             firstRun = false;
+            lastTime = System.currentTimeMillis();
             return error * KP;
         } else {
             // Calculate I and D errors
             integral = integral + (error * deltaTime);
             derivative = (error - prevError) / deltaTime;
-            output = KP * error + KI * integral + KD * derivative;
+            output = offset + KP * error + KI * integral + KD * derivative;
         }
         // Set previous values for next time
 
@@ -47,5 +48,8 @@ public class PIDController {
         lastTime = System.currentTimeMillis();
 
         return output;
+    }
+    public void resetController(){
+        firstRun = true;
     }
 }

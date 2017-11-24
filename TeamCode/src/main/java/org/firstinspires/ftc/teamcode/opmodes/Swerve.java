@@ -53,7 +53,7 @@ public class Swerve extends LinearOpMode {
             }
 
 
-            mySwerveController.pointDirection(gamepad1.left_stick_y * -1, gamepad1.left_stick_x * -1, gamepad1.right_stick_x);
+            mySwerveController.pointDirection(true,gamepad1.left_stick_y * -1, gamepad1.left_stick_x * -1, gamepad1.right_stick_x);
 
             if (ENABLEDRIVING) {
                 mySwerveController.moveRobot();

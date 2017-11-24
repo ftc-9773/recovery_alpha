@@ -17,16 +17,17 @@ import org.firstinspires.ftc.teamcode.infrastructure.SafeJsonReader;
 
 public class CubeTray {
     public enum TrayPositions { STOWED, LOADING, CARRYING, DUMP_A, DUMP_B, NA}
-    public enum LiftPositions {LOADING_HEIGHT, LOW, MID, HIGH, HOMING, INBETWEEN }
+    public enum LiftPositions {LOADING_HEIGHT, LOW, MID, HIGH, INBETWEEN }
     public enum LiftFinalStates {STOWED, LOADING, LOW, MID, HIGH, }
+    public boolean homing = false;
 
     // Json setup
     private SafeJsonReader myServoPositions;
 
     // create state machines
-    public TrayPositions trayState;
-    public LiftPositions liftState;
-    public LiftFinalStates liftFinalState;
+    public TrayPositions trayState = TrayPositions.STOWED;
+    public LiftPositions liftState = LiftPositions.MID;
+    public LiftFinalStates liftFinalState  = LiftFinalStates.STOWED;
     public boolean StillNeedsUpdating ;
 
     // define limit switch
@@ -128,8 +129,15 @@ public class CubeTray {
         updatePosition();
     }
     public void updatePosition(){
-        if ( trayState.equals(TrayPositions.LOADING)){
+        if ( trayState.equals(TrayPositions.STOWED)&& !liftFinalState.equals(LiftFinalStates.STOWED)){
             liftMotor.setTargetPosition(bottomPosTicks);
+            setToPosNum(1);
+            if(readLiftState().equals(LiftPositions.LOADING_HEIGHT)){
+                trayState = TrayPositions.LOADING;
+            }
+        }
+        if (homing){
+            return;
         }
         switch (readLiftState()){
             case INBETWEEN:
@@ -138,7 +146,7 @@ public class CubeTray {
                 switch (liftFinalState){
                     case STOWED:
                         liftMotor.setTargetPosition(middlePosTicks);
-                        setServoPos(TrayPositions.CARRYING);
+                        setServoPos(TrayPositions.LOADING);
                         break;
                     case MID:
                         liftMotor.setTargetPosition(middlePosTicks);
@@ -173,6 +181,9 @@ public class CubeTray {
                         break;
                     case MID:
                         break;
+                    case STOWED:
+                        setServoPos(TrayPositions.STOWED);
+                        liftMotor.setTargetPosition(topPosTicks);
                     default:
                         break;
                 }
@@ -299,13 +310,31 @@ public class CubeTray {
                 break;
         }
         if (posNum == -1) return;
+            setToPosNum(posNum);
+    }
+    private void setToPosNum(int posNum){
         // set the servos to their positions using the positions array
         leftFlapPos = leftFlapPositions[posNum];
         rightFlapPos = rightFlapPostions[posNum];
         leftAnglePos = leftAnglePostions[posNum];
         rightAnglePos = rightAnglePostions[posNum];
     }
-    //////////////////////////////////////////// _____ Testing ____
+    public void homeLift () {
+        if (trayState == TrayPositions.LOADING){ // lift cannot be in loading pos to start
+            setServoPos(TrayPositions.DUMP_A);                      // moves tray out of load to carry position
+        }
+        liftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);  // move the lift slowly upwards
+        liftMotor.setPower (.5);
+        homing = true;
+    }
+    private boolean testIfTop(){
+        if (limitSwitchIsPressed()) {
+            liftMotor.setPower(0);
+            liftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);   // stop motor and set reference position
+            setLiftZeroPos();
+            return true;
+        } else return false;
+    }    //////////////////////////////////////////// _____ Testing ____
     private void RunServoAdjustmentPotocol(){
         if (gamepad2.a) {
             leftFlapPos -= increment;

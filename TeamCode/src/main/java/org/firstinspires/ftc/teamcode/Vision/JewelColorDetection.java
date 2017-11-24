@@ -48,8 +48,8 @@ public class JewelColorDetection {
         int sumYR = 0;
         int sumXB = 0;
         int sumYB = 0;
-        for(int x = 0; x<bm.getWidth(); x++){
-            for(int y = 0; y<bm.getHeight(); y++){
+        for(int x = bm.getWidth()/2; x<bm.getWidth(); x++){
+            for(int y = bm.getHeight()/2; y<bm.getHeight(); y++){
                 int pixel = bm.getPixel(x,y);
                 int redValue = Color.red(pixel);
                 int blueValue = Color.blue(pixel);
@@ -68,10 +68,10 @@ public class JewelColorDetection {
             }
         }
 
-        long averageRed = sumXR/bm.getWidth();
+//        long averageRed = sumXR/bm.getWidth();
         long averageBlue = sumXB/bm.getWidth();
 
-        String verdict = averageBlue<averageRed ? "BLUE IS LEFT" : "RED IS LEFT";
+        String verdict = averageBlue>bm.getWidth()/2 && averageBlue<bm.getWidth() ? "BLUE IS LEFT" : "RED IS LEFT";
         if(DEBUG) Log.e(TAG,verdict);
         return verdict;
     }

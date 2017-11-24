@@ -42,7 +42,7 @@ public class TestOpmode extends LinearOpMode {
         while(opModeIsActive()) {
 
             // update the intake object
-            myIntakeController.runIntake();
+            myIntakeController.runIntakeIn();
 
             // update and move swerve drive
             mySwerveController.pointDirection(gamepad1.left_stick_y * -1, gamepad1.left_stick_x * -1, gamepad1.right_stick_x);

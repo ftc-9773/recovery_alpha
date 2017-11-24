@@ -78,7 +78,7 @@ public class SwerveModule {
 
 
     //INIT
-    public SwerveModule(HardwareMap hwMap, String hardwareMapTag, DcMotor.RunMode mode) {
+    public SwerveModule(HardwareMap hwMap, String hardwareMapTag) {
         Log.e(TAG, "Building servo " + hardwareMapTag);
 
         if (hardwareMapTag == "flw") { debugHere = true; }
@@ -89,7 +89,13 @@ public class SwerveModule {
         // Set the electronics
         swerveServo = hwMap.servo.get(hardwareMapTag + "Servo");
         swerveMotor = hwMap.dcMotor.get(hardwareMapTag + "Motor");
-        swerveMotor.setMode(mode);
+
+        //Set up motor parameters
+        swerveMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        swerveMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        swerveMotor.setDirection(DcMotor.Direction.FORWARD);
+
+
         swerveAbsEncoder = hwMap.analogInput.get(hardwareMapTag + "AbsEncoder");
 
         //builds the json reader
@@ -100,7 +106,7 @@ public class SwerveModule {
         Ke = myJsonCoefficients.getDouble("Ke");
         Kd = myJsonCoefficients.getDouble("Kd");
 
-        // Gets coefficients for step function
+        /* Gets coefficients for step function
         A1 = myJsonCoefficients.getDouble("A1");
         A2 = myJsonCoefficients.getDouble("A2");
         A3 = myJsonCoefficients.getDouble("A3");
@@ -108,6 +114,7 @@ public class SwerveModule {
         P1 = myJsonCoefficients.getDouble("P1");
         P2 = myJsonCoefficients.getDouble("P2");
         P3 = myJsonCoefficients.getDouble("P3");
+        */
 
         // Sets zero position
         zeroPosition = myJsonCoefficients.getDouble(hardwareMapTag + "StraightPosition");
@@ -135,7 +142,7 @@ public class SwerveModule {
         return input;
     }
 
-    //////// PID (not yet) //////////// Error scaling etc.
+    //////// PID //////////// Error scaling etc.
     // input is error
     private double calculatePDCorrection(double input) {
 
@@ -241,8 +248,13 @@ public class SwerveModule {
             if (DEBUG) { if (debugHere) { Log.e(TAG, "skipped stuffing"); } }
             tellServo = 0.5;
         }
-
         swerveServo.setPosition(tellServo);
+
+        if (Math.abs(tellServo - 0.5) < 0.04) {
+            isTurning = false;
+        }  else {
+            isTurning = true;
+        }
     }
 
 
@@ -255,4 +267,12 @@ public class SwerveModule {
         }
     }
 
+    public boolean getIsTurning() {
+        return isTurning;
+    }
+
+    public long getEncoderCount() {
+        Log.e(TAG, "Encoder: " + swerveMotor.getCurrentPosition());
+        return swerveMotor.getCurrentPosition();
+    }
 }

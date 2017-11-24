@@ -14,7 +14,7 @@ import org.firstinspires.ftc.teamcode.PositionTracking.Gyro;
  * Created by Vikesh on 10/29/2017.
  */
 
-@TeleOp(name = "Swerve")
+@TeleOp(name = "swerveOpMode")
 public class Swerve extends LinearOpMode {
 
     private static final String TAG = "ftc9773 Swerve";
@@ -33,7 +33,7 @@ public class Swerve extends LinearOpMode {
         Log.e(TAG, "Started initializing");
 
         // Create objects
-        mySwerveController = new SwerveController(hardwareMap);
+        mySwerveController = new SwerveController(hardwareMap, myGyro, true);
         myIntakeController = new IntakeController(hardwareMap);
         myGyro = new Gyro(hardwareMap);
 
@@ -53,7 +53,7 @@ public class Swerve extends LinearOpMode {
             }
 
 
-            mySwerveController.pointDirection(gamepad1.left_stick_y * -1, gamepad1.left_stick_x * -1, gamepad1.right_stick_x);
+            mySwerveController.pointDirection(true, gamepad1.left_stick_y * -1, gamepad1.left_stick_x * -1, gamepad1.right_stick_x);
 
             if (ENABLEDRIVING) {
                 mySwerveController.moveRobot();

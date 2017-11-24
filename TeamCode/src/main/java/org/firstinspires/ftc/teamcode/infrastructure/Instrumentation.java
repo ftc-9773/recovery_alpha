@@ -109,6 +109,7 @@ public class Instrumentation{
     // put at end of main loop, to cleanly close the log
     public void close(){
         if (! ENABLED)  return;
+        if (file == null) return; // closed it already
         try {
             bufferedWriter.flush();
             bufferedWriter.close();
@@ -118,6 +119,7 @@ public class Instrumentation{
         } catch (IOException e) {
             Log.e(TAG, "Error while trying to close to the csv file " + this.fileName, e);
         }
+        file = null;
     }
 
     /////////////////////////////////////////////////////////////////

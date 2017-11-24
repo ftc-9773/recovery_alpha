@@ -68,7 +68,7 @@ public class IntakeTest extends LinearOpMode {
         //myfile.fileWrite("hi alex");
         //myfile.close();
 
-        InstrumentDoubleArray motorStats = new InstrumentDoubleArray("motorSpeed", 2, "motor1, motor2", 1e-3);
+        InstrumentDoubleArray motorStats = new InstrumentDoubleArray("motorSpeed", 2, "motorLeft, motorRight", 1e-3);
         double[] motorData = new double[2];
 
         // Wait for the game to start (driver presses PLAY)
@@ -134,8 +134,10 @@ public class IntakeTest extends LinearOpMode {
             }
 
             telemetry.update();
-
+            motorData[0] = speedLeft; motorData[1] = speedRight;
+            motorStats.push(motorData);
         }
+        motorStats.close();
     }
 
     //----------------------------------------------------------------------------------------------

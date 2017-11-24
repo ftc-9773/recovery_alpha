@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.InitialTests;
+/*package org.firstinspires.ftc.teamcode.InitialTests;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -9,14 +9,14 @@ import org.firstinspires.ftc.teamcode.Vision.VumarkGlyphPattern;
 
 /**
  * Created by michaelzhou on 11/22/17.
- */
+ **
 
 @Autonomous(name = "Cryptobox Navigation", group="Navigation")
 public class CryptoboxNavigationTest extends LinearOpMode{
 SwerveController swerveController;
     @Override
     public void runOpMode() throws InterruptedException {
-        swerveController = new SwerveController(hardwareMap);
+        swerveController = new SwerveController(hardwareMap, );
 
         waitForStart();
 
@@ -32,3 +32,4 @@ SwerveController swerveController;
     //2. Move certain distance according to Vuforia reading
     //(3. Release the cub into the designated area)
 }
+*/

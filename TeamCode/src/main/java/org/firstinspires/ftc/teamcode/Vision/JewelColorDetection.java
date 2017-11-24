@@ -28,7 +28,7 @@ public class JewelColorDetection {
     ArrayList<PixelPosition> highReds = new ArrayList<PixelPosition>();
     ArrayList<PixelPosition> highBlues = new ArrayList<PixelPosition>();
     Color color = null;
-    double multiplier = 1.5;
+//    double multiplier = 1.5;
     Bitmap bm;
 
     int colOn = 160;
@@ -44,10 +44,7 @@ public class JewelColorDetection {
     public String analyze(){
         int[] argbPixels = new int[bm.getWidth() * bm.getHeight()];
         bm.getPixels(argbPixels, 0, bm.getWidth(), 0, 0, bm.getWidth(), bm.getHeight());
-        int sumXR = 0;
-        int sumYR = 0;
-        int sumXB = 0;
-        int sumYB = 0;
+
         for(int x = bm.getWidth()/2; x<bm.getWidth(); x++){
             for(int y = bm.getHeight()/2; y<bm.getHeight(); y++){
                 int pixel = bm.getPixel(x,y);
@@ -57,21 +54,14 @@ public class JewelColorDetection {
 
                 if(redValue>colOn && blueValue<colOff && greenValue<colOff){
                     highReds.add(new PixelPosition(x,y));
-                    sumXR+=x;
-                    sumYR+=y;
                 }
                 if(blueValue>colOn && redValue<colOff && greenValue<colOff) {
                     highBlues.add(new PixelPosition(x, y));
-                    sumXB+=x;
-                    sumYB+=y;
                 }
             }
         }
 
-//        long averageRed = sumXR/bm.getWidth();
-        long averageBlue = sumXB/bm.getWidth();
-
-        String verdict = averageBlue>bm.getWidth()/2 && averageBlue<bm.getWidth() ? "BLUE IS LEFT" : "RED IS LEFT";
+        String verdict = highBlues.size()>highReds.size() ? "BLUE IS LEFT" : "RED IS LEFT";
         if(DEBUG) Log.e(TAG,verdict);
         return verdict;
     }

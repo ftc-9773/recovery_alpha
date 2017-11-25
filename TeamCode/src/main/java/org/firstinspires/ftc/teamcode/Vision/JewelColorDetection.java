@@ -27,23 +27,35 @@ import java.util.ArrayList;
 public class JewelColorDetection {
     ArrayList<PixelPosition> highReds = new ArrayList<PixelPosition>();
     ArrayList<PixelPosition> highBlues = new ArrayList<PixelPosition>();
-    Color color = null;
-//    double multiplier = 1.5;
     Bitmap bm;
 
     int colOn = 160;
     int colOff = 80;
 
-    private static final String TAG = "ftc9773 SafeJasonReader";
+    private static final String TAG = "ftc9773 Jewel";
     private static final boolean DEBUG = true;//TODO: Change this to false during competitions. For testing only.
 
     public JewelColorDetection(String filename){
+        File f = new File(filename);
+        if(DEBUG) Log.e(TAG, !f.exists() ? "null" : filename);
         bm = BitmapFactory.decodeFile(filename);
+//        BitmapFactory.Options options = new BitmapFactory.Options();
+//        options.inJustDecodeBounds = false;
+//        options.inSampleSize = 3;
+//        bm = BitmapFactory.decodeFile(filename, options);
+//        if(DEBUG) Log.e(TAG,  );
+//        try{
+//            BitmapFactory.Options options = new BitmapFactory.Options();
+//            options.inJustDecodeBounds = false;
+//            bm = BitmapFactory.decodeFile(filename, options);
+//        }catch (OutOfMemoryError e){
+//            if(DEBUG) Log.e(TAG, "Size may be too big..");
+//        }
     }
 
     public String analyze(){
-        int[] argbPixels = new int[bm.getWidth() * bm.getHeight()];
-        bm.getPixels(argbPixels, 0, bm.getWidth(), 0, 0, bm.getWidth(), bm.getHeight());
+//        int[] argbPixels = new int[bm.getWidth() * bm.getHeight()];
+//        bm.getPixels(argbPixels, 0, bm.getWidth(), 0, 0, bm.getWidth(), bm.getHeight());
 
         for(int x = bm.getWidth()/2; x<bm.getWidth(); x++){
             for(int y = bm.getHeight()/2; y<bm.getHeight(); y++){

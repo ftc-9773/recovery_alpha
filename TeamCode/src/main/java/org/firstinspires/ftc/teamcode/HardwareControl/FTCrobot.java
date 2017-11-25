@@ -27,7 +27,7 @@ public class FTCrobot {
     // INIT
     public FTCrobot(HardwareMap hwmap, Gamepad gamepad1, Gamepad gamepad2){
         this.hwMap = hwmap;
-        myIntakeController = new IntakeController(hwMap);
+        this.myIntakeController = new IntakeController(hwMap);
         this.myGyro = new Gyro(hwMap);
         this.mySwerveController = new SwerveController(hwMap, myGyro, false);
         this.myDriveWithPID = new DriveWithPID(mySwerveController, myGyro);

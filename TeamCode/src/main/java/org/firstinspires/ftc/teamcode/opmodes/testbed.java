@@ -33,21 +33,11 @@ public class testbed extends LinearOpMode{
         waitForStart();
 
         while(opModeIsActive()) {
-            /*
-            switch (command[0]) {
-                case "m1":
-                    telemetry.addData("Command Type: ", "m1");
-                    break;
-                case "m2":
-                    telemetry.addData("Command Type: ", "m2");
-                    break;
-                default:
-                    telemetry.addData("Error: ", "No data found");
-                    break;
-            }
-            telemetry.update(); */
-            myDriveWithPID.driveStraight(false, 0.5, 90, 5);
-
+            mySwerveController.pointDirection(true, gamepad1.left_stick_x, gamepad1.left_stick_y * -1, gamepad1.right_stick_x);
+            mySwerveController.moveRobot();
+            telemetry.addData("Gyro Reading", myGyro.getImuReading());
+            telemetry.addData("Gyro heading", myGyro.getHeading());
+            telemetry.update();
         }
     }
 }

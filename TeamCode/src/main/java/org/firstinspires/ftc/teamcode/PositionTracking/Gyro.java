@@ -44,8 +44,8 @@ public class Gyro {
         imuLeft.initialize(parameters);
     }
 
-    private double getImuReading() {
-        return imuLeft.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.RADIANS).firstAngle;
+    public double getImuReading() {
+        return -imuLeft.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.RADIANS).firstAngle;
     }
 
     public double getHeading () {

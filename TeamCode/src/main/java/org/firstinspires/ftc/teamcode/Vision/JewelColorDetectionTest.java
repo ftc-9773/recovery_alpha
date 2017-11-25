@@ -6,7 +6,9 @@ import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.util.Log;
 
+import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 /**
  * Created by michaelzhou on 11/24/17.
@@ -14,13 +16,23 @@ import java.util.ArrayList;
 @Autonomous(name="Jewel Color Detection", group="Vision")
 public class JewelColorDetectionTest extends LinearOpMode{
 
+    private static final String TAG = "ftc9773 Jewel";
+    private static final boolean DEBUG = true;
+
     @Override
     public void runOpMode() throws InterruptedException {
         waitForStart();
 
         while(opModeIsActive()){
 //            for(String s : )
-            String fileName = "/Users/michaelzhou/Desktop/ball images/b1.jpg";
+            File folder = new File("/Users/michaelzhou/Desktop/ball images");
+            File[] files = folder.listFiles();
+//            for(File f : files){
+//                if(DEBUG) Log.e(TAG, f.getAbsolutePath());
+//            }
+            if(DEBUG) Log.e(TAG, Arrays.toString(files));
+
+            String fileName = "/Users/michaelzhou/Downloads/recovery_alpha/TeamCode/src/main/java/org/firstinspires/ftc/teamcode/Vision/b1.jpg";
             JewelColorDetection obj = new JewelColorDetection(fileName);
 //            try{
             telemetry.addData("verdict 1: ", obj.analyze());

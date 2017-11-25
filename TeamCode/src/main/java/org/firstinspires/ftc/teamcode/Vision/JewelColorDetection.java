@@ -38,11 +38,11 @@ public class JewelColorDetection {
     public JewelColorDetection(String filename){
         File f = new File(filename);
         if(DEBUG) Log.e(TAG, !f.exists() ? "null" : filename);
-
-        BitmapFactory.Options options = new BitmapFactory.Options();
-        options.inJustDecodeBounds = false;
-        options.inSampleSize = 3;
-        bm = BitmapFactory.decodeFile(filename, options);
+        bm = BitmapFactory.decodeFile(filename);
+//        BitmapFactory.Options options = new BitmapFactory.Options();
+//        options.inJustDecodeBounds = false;
+//        options.inSampleSize = 3;
+//        bm = BitmapFactory.decodeFile(filename, options);
 //        if(DEBUG) Log.e(TAG,  );
 //        try{
 //            BitmapFactory.Options options = new BitmapFactory.Options();

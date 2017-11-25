@@ -23,28 +23,29 @@ public class Gyro {
     private double lastReadTime = -1;
     private static final int minReadDeltaTime = 80;
 
-    private double zeroPoitionLeft = 0;
+    private double zeroPositionLeft = 0;
+
     //private double zeroPositionRight = 0;
 
     private static String TAG = "9773_Gyro";
-    private static boolean DEBUG = true;
+    private static boolean DEBUG = false;
 
     // Init
     public Gyro (HardwareMap hardwareMap) {
         ///// Initialize the IMU /////
         BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
+        parameters.angleUnit            = BNO055IMU.AngleUnit.RADIANS;
+        parameters.accelUnit            = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
+        parameters.loggingEnabled       = false;
+        parameters.mode                 = BNO055IMU.SensorMode.IMU;
+        parameters.loggingTag           = "IMU";
+        imuLeft                         = hardwareMap.get(BNO055IMU.class, "imuLeft");
 
-        parameters.angleUnit           = BNO055IMU.AngleUnit.RADIANS;
-        parameters.accelUnit           = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
-        parameters.calibrationDataFile = "BNO055IMUCalibration.json"; // see the calibration sample opmode
-        parameters.loggingEnabled      = true;
-        parameters.loggingTag          = "IMU";
-
-        imuLeft = hardwareMap.get(BNO055IMU.class, "imuLeft");
         imuLeft.initialize(parameters);
+    }
 
-        //imuRight = hardwareMap.get(BNO055IMU.class, "imuRight");
-        //imuRight.initialize(parameters);
+    private double getImuReading() {
+        return imuLeft.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.RADIANS).firstAngle;
     }
 
     public double getHeading () {
@@ -53,17 +54,16 @@ public class Gyro {
         long currentTime = System.currentTimeMillis();
         if (currentTime - lastReadTime > minReadDeltaTime) {
             lastReadTime = currentTime;
-
-            currentPosition = imuLeft.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.XYZ, AngleUnit.RADIANS).secondAngle;
-            currentPosition = setOnZeroTwoPi(currentPosition - zeroPoitionLeft);
-            if (DEBUG) { Log.e(TAG, "Got new gyro position - Read: " + currentPosition); }
+            currentPosition = setOnZeroTwoPi(getImuReading() - zeroPositionLeft);
+            if (DEBUG) { Log.e(TAG, "Got new gyro position - Read: " + currentPosition + "Actual position - " + getImuReading()); }
         }
 
         return currentPosition;
     }
 
+
     public void setZeroPosition() {
-        this.zeroPoitionLeft = getHeading();
+        this.zeroPositionLeft = getImuReading();
         currentPosition = 0;
     }
 

@@ -60,6 +60,7 @@ public class SwerveModule {
     private double Ke;
     private double Kd;
 
+    /*
     // Step Function constants
     private double A1; // 0.03
     private double A2; // 0.09
@@ -68,7 +69,7 @@ public class SwerveModule {
     private double P1; // -0.1
     private double P2; // -0.2
     private double P3; // -0.5
-
+*/
 
 
     // For outside access

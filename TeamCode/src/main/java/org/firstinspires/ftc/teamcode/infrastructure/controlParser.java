@@ -39,15 +39,20 @@ public class controlParser {
         try {
             input = buffReader.readLine();
         }
-        catch(IOException e){
-            if(DEBUG) { Log.e(TAG, "Failed to get input"); }
+        catch(IOException e) {
+            if (DEBUG) {
+                Log.e(TAG, "Failed to get input");
+            }
             e.printStackTrace();
         }
-        int y = input.length();
+        boolean condition = true;
+        index = 0;
         StringBuilder inputBuilder = new StringBuilder(input);
-        for(int x = 0; x<y; x++){
-            if(inputBuilder.charAt(x) == ' ') {
-                inputBuilder.deleteCharAt(x);
+        while(condition){
+            if(inputBuilder.length() > index) {
+                if (inputBuilder.charAt(index) == ' ') {
+                    inputBuilder.deleteCharAt(index);
+                }
             }
         }
         input = inputBuilder.toString();

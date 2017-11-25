@@ -2,6 +2,9 @@ package org.firstinspires.ftc.teamcode.HardwareControl;
 
 import android.util.Log;
 
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.PositionTracking.Gyro;
 import org.firstinspires.ftc.teamcode.infrastructure.PIDController;
 import org.firstinspires.ftc.teamcode.infrastructure.SafeJsonReader;
@@ -30,12 +33,19 @@ public class DriveWithPID {
     private long frwEncoderZero = 0;
     private long blwEncoderZero = 0;
     private long brwEncoderZero = 0;
+    private LinearOpMode linearOpMode = new LinearOpMode() {
+        @Override
+        public void runOpMode() throws InterruptedException {
+
+        }
+    }
 
     private double gyroAngleZero = 0;
 
     //Constants
     private static final double wheelDiameter = 3;
     private static final double encoderTicksPerInch = (19.8 * 28) / (wheelDiameter * Math.PI);
+    private double targetTicks;
 
     private static  SafeJsonReader myCoefficients;
 
@@ -75,8 +85,8 @@ public class DriveWithPID {
 
         if (DEBUG) { Log.e(TAG, "Finished setting heading"); }
         if (DEBUG) { Log.e(TAG, "Starting driving"); }
-
-        while (averageEncoderDist() < encoderTicksPerInch * distInches) {
+        targetTicks = encoderTicksPerInch * distInches;
+        while (Math.abs(averageEncoderDist() - targetTicks && linearOpMode.opModeIsActive())) {
             mySwerveController.pointDirection(isCartesian, xMag, yAngleInDegrees, drivePID.getPIDCorrection(setOnNegToPosPi(myGyro.getHeading() - gyroAngleZero)));
             mySwerveController.moveRobot();
             if (DEBUG) { Log.e(TAG, "Distance so far: " + averageEncoderDist()); }

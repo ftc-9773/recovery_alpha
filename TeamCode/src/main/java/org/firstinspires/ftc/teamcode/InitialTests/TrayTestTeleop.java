@@ -4,7 +4,7 @@ package org.firstinspires.ftc.teamcode.InitialTests;
  * Created by zacharye on 11/17/17.
  */
 
-import android.util.Log;
+/*import android.util.Log;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -56,7 +56,6 @@ public class TrayTestTeleop extends LinearOpMode {
         telemetry.addData("scaledLiftPosition:  ", myCubeTrayController.getliftPos());
 
     }
-}
-
+}*/
 
 

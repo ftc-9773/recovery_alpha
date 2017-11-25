@@ -19,9 +19,22 @@ public class JewelColorDetectionTest extends LinearOpMode{
 
         while(opModeIsActive()){
 //            for(String s : )
-            String fileName = "/Users/michaelzhou/Desktop/image recognition files/balls/b1/IMG_6114.JPG";
+            String fileName = "/Users/michaelzhou/Desktop/image recognition files/ball images/b1.jpg";
             JewelColorDetection obj = new JewelColorDetection(fileName);
-            telemetry.addData("verdict: ", obj.analyze());
+            telemetry.addData("verdict 1: ", obj.analyze());
+
+            String fileName2 = "/Users/michaelzhou/Desktop/image recognition files/ball images/b3.jpg";
+            JewelColorDetection obj2 = new JewelColorDetection(fileName2);
+            telemetry.addData("verdict 3: ", obj.analyze());
+
+            String fileName3 = "/Users/michaelzhou/Desktop/image recognition files/ball images/b4.jpg";
+            JewelColorDetection obj3 = new JewelColorDetection(fileName3);
+            telemetry.addData("verdict 4: ", obj.analyze());
+
+            String fileName4 = "/Users/michaelzhou/Desktop/image recognition files/ball images/b9.jpg";
+            JewelColorDetection obj4 = new JewelColorDetection(fileName4);
+            telemetry.addData("verdict 9: ", obj.analyze());
+
             telemetry.update();
         }
     }

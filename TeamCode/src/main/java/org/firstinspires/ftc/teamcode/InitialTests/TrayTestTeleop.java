@@ -23,10 +23,12 @@ public class TrayTestTeleop extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
         Log.e(TAG, "Started initializing");
 
+
         myCubeTrayController = new CubeTray(hardwareMap, gamepad1,gamepad2);
 
         myCubeTrayController.setServoPos(CubeTray.TrayPositions.STOWED);
 
+        myCubeTrayController.homeLiftVersA();
 
         waitForStart();
 

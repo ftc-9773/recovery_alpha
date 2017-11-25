@@ -58,7 +58,7 @@ public class CubeTray {
     private int zeroPos = 0;
 
     // setup variables for positioning
-    private static final int sensorPosTicks = 3415;
+    private static final int sensorPosTicks = 3615;
     private static final int topPosTicks = 3260;
     private static final int middlePosTicks = 1850;
     private static final int bottomPosTicks = 450;
@@ -84,12 +84,11 @@ public class CubeTray {
         leftAngle = hwMap.servo.get("ctlaServo");
         rightAngle = hwMap.servo.get("ctraServo");
         // passes gamepad, instead of gamepad values for ease of use
-        this.gamepad1 = gamepad1 ;
-        this.gamepad2 = gamepad2;
+        this.gamepad1 = gamepad1;
         // attach DC lift motor
         liftMotor = hwMap.dcMotor.get("ctlMotor");
 
-        limitSwitch = hwMap.analogInput.get("limitSwitch");
+        limitSwitch = hwMap.analogInput.get("ctlLimitSwitch");
 
         // TODO: initialise  JSON config file etc
         myServoPositions = new SafeJsonReader("CubeTrayServoPositions");
@@ -101,10 +100,11 @@ public class CubeTray {
         leftAngle = hwMap.servo.get("ctlaServo");
         rightAngle = hwMap.servo.get("ctraServo");
         // passes gamepad, instead of gamepad values for ease of use
-        this.gamepad1 = gamepad1 ;
+        this.gamepad1 = gamepad1;
         this.gamepad2 = gamepad2;
         // attach DC lift motor
         liftMotor = hwMap.dcMotor.get("ctlMotor");
+        limitSwitch = hwMap.analogInput.get("ctlLimitSwitch");
 
         // TODO: initialise  JSON config file etc
 
@@ -279,7 +279,7 @@ public class CubeTray {
     }
     // returns a boolean value if the limit switch is pressed
     private boolean limitSwitchIsPressed() {
-        return limitSwitch.getVoltage() > 1.5;
+        return (limitSwitch.getVoltage() > 1.5);
     }
 
     /// servo util functions
@@ -290,7 +290,7 @@ public class CubeTray {
         leftAngle.setPosition(leftAnglePos);
         rightAngle.setPosition(rightAnglePos);
     }
-    public void setServoPos(TrayPositions trayPos) {
+    public void setServoPos(TrayPositions trayPos){
         int posNum = -1;
         trayState = trayPos ; // update TrayState
         switch (trayPos) {
@@ -319,13 +319,16 @@ public class CubeTray {
         leftAnglePos = leftAnglePostions[posNum];
         rightAnglePos = rightAnglePostions[posNum];
     }
-    public void homeLift () {
+    public void homeLiftVersA () {
         if (trayState == TrayPositions.LOADING){ // lift cannot be in loading pos to start
             setServoPos(TrayPositions.DUMP_A);                      // moves tray out of load to carry position
         }
         liftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);  // move the lift slowly upwards
         liftMotor.setPower (.5);
-        homing = true;
+        while (!limitSwitchIsPressed()){ }
+        liftMotor.setPower(0);
+        setLiftZeroPos();
+        liftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
     }
     private boolean testIfTop(){
         if (limitSwitchIsPressed()) {
@@ -351,5 +354,4 @@ public class CubeTray {
             rightAnglePos -= increment;
         }
     }
-
 }

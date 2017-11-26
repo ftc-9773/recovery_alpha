@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.sample_camera_opmodes;
 
 import android.graphics.Bitmap;
+import android.hardware.Camera;
 
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -46,7 +47,7 @@ public class LinearDetectColor extends LinearOpModeCamera {
 
             telemetry.addLine("Wait for camera to finish initializing!");
             telemetry.update();
-            startCamera();  // can take a while.
+            startCamera(Camera.CameraInfo.CAMERA_FACING_BACK);  // can take a while.
             // best started before waitForStart
             telemetry.addLine("Camera ready!");
             telemetry.update();

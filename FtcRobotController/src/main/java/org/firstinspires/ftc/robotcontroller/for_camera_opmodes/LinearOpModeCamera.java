@@ -112,12 +112,17 @@ public class LinearOpModeCamera extends LinearOpMode {
     return cam;
   }
 
-  public void startCamera() {
+  public void startCamera(int dir) {
 
-    camera = openCamera(Camera.CameraInfo.CAMERA_FACING_FRONT);
+    // Camera.CameraInfo.CAMERA_FACING_FRONT
+    camera = openCamera(dir);
     camera.setPreviewCallback(previewCallback);
 
-    if (DEBUG)  Log.e(TAG, "hi alex ");
+
+    if (DEBUG)  {
+      if (dir==Camera.CameraInfo.CAMERA_FACING_FRONT) Log.e(TAG, "hi alex, using the forward facing camera ");
+      else Log.e(TAG, "hi alex, using the back facing camera ");
+    }
 
     Camera.Parameters parameters = camera.getParameters();
 

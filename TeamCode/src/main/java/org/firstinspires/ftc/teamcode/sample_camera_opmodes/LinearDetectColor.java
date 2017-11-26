@@ -18,9 +18,6 @@ import org.firstinspires.ftc.robotcontroller.for_camera_opmodes.LinearOpModeCame
 //@Disabled
 public class LinearDetectColor extends LinearOpModeCamera {
 
-//    DcMotor motorRight;
-//    DcMotor motorLeft;
-
     int ds2 = 2;  // additional downsampling of the image
     // set to 1 to disable further downsampling
     int colOn = 160;
@@ -59,16 +56,6 @@ public class LinearDetectColor extends LinearOpModeCamera {
 
             waitForStart();
 
-            // LinearOpMode, so could do stuff like this too.
-            /*
-            motorLeft.setPower(1);  // drive forward
-            motorRight.setPower(1);
-            sleep(1000);            // for a second.
-            motorLeft.setPower(0);  // stop drive motors.
-            motorRight.setPower(0);
-            sleep(1000);            // wait a second.
-            */
-
             while (opModeIsActive()) {
                 if (imageReady()) { // only do this if an image has been returned from the camera
                     int redValue = 0;
@@ -86,32 +73,13 @@ public class LinearDetectColor extends LinearOpModeCamera {
                                 redValue++;
                             if (Color.blue(pixel) > colOn && Color.green(pixel) < colOff && Color.red(pixel) < colOff)
                                 blueValue++;
-//                            redValue += red(pixel);
-//                            blueValue += blue(pixel);
-//                            greenValue += green(pixel);
                         }
                     }
 
                     telemetry.addData("RED: ", redValue);
                     telemetry.addData("BLUE: ", blueValue);
-//                    telemetry.addData("GREEN: ", green);
+
                     colorString = redValue < 5000 ? "BLUE is left" : "RED is left";
-//                    int color = highestColor(redValue, greenValue, blueValue);
-//
-//                    switch (color) {
-//                        case 0:
-//                            colorString = "RED";
-//                            break;
-//                        case 1:
-//                            colorString = "GREEN";
-//                            break;
-//                        case 2:
-//                            colorString = "BLUE";
-//                    }
-//
-//                } else {
-//                    colorString = "NONE";
-//                }
 
                     telemetry.addData("Color:", "Color detected is: " + colorString);
                     telemetry.update();

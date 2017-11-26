@@ -62,7 +62,7 @@ public class FTCrobot {
         //relic grabber
         if(dpaddownStatus.isJustOn() && state <= 2) {
             myRelicSystem.runSequence((-0.975*myGamepad2.left_stick_y+0.025), state);
-            if(state == 2){
+            if(state == 3){
                 state = 0;
             } else{
                 state++;
@@ -70,7 +70,7 @@ public class FTCrobot {
         }else if(dpadupStatus.isJustOn() && state >= 0) {
             myRelicSystem.runSequence((-0.975*myGamepad2.left_stick_y+0.025), state);
             if(state == 0){
-                state = 2;
+                state = 3;
             } else{
                 state-=1;
             }

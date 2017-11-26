@@ -42,9 +42,12 @@ public class RelicSystem {
                 grabServo.setPosition(.35);
                 break;
             case 2:
-                armServo.setPosition(.05);
+                armServo.setPosition(1);
                 grabServo.setPosition(.69);
                 break;
+            case 3:
+                armServo.setPosition(0.05);
+                grabServo.setPosition(0.69);
             default:
                 break;
         }

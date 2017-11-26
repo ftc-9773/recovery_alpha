@@ -1,10 +1,10 @@
 package org.firstinspires.ftc.teamcode.sample_camera_opmodes;
 
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.hardware.Camera;
 
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
 import org.firstinspires.ftc.robotcontroller.for_camera_opmodes.LinearOpModeCamera;
 
@@ -14,7 +14,7 @@ import org.firstinspires.ftc.robotcontroller.for_camera_opmodes.LinearOpModeCame
  * Enables control of the robot via the gamepad
  */
 
-@TeleOp(name = "LinearDetectColor", group = "ZZOpModeCameraPackage")
+@Autonomous(name = "LinearDetectColor", group = "ZZOpModeCameraPackage")
 //@Disabled
 public class LinearDetectColor extends LinearOpModeCamera {
 
@@ -23,6 +23,11 @@ public class LinearDetectColor extends LinearOpModeCamera {
 
     int ds2 = 2;  // additional downsampling of the image
     // set to 1 to disable further downsampling
+    int colOn = 160;
+    int colOff = 80;
+
+    int redCount = 0;
+    int blueCount = 0;
 
     @Override
     public void runOpMode() {
@@ -74,34 +79,45 @@ public class LinearDetectColor extends LinearOpModeCamera {
                     Bitmap rgbImage;
                     rgbImage = convertYuvImageToRgb(yuvImage, width, height, ds2);
 
-                    for (int x = 0; x < rgbImage.getWidth(); x++) {
-                        for (int y = 0; y < rgbImage.getHeight(); y++) {
+                    for (int x = rgbImage.getWidth() / 2; x < rgbImage.getWidth(); x++) {
+                        for (int y = rgbImage.getHeight() / 2; y < rgbImage.getHeight(); y++) {
                             int pixel = rgbImage.getPixel(x, y);
-                            redValue += red(pixel);
-                            blueValue += blue(pixel);
-                            greenValue += green(pixel);
+                            if (Color.red(pixel) > colOn && Color.green(pixel) < colOff && Color.blue(pixel) < colOff)
+                                redValue++;
+                            if (Color.blue(pixel) > colOn && Color.green(pixel) < colOff && Color.red(pixel) < colOff)
+                                blueValue++;
+//                            redValue += red(pixel);
+//                            blueValue += blue(pixel);
+//                            greenValue += green(pixel);
                         }
                     }
-                    int color = highestColor(redValue, greenValue, blueValue);
 
-                    switch (color) {
-                        case 0:
-                            colorString = "RED";
-                            break;
-                        case 1:
-                            colorString = "GREEN";
-                            break;
-                        case 2:
-                            colorString = "BLUE";
-                    }
+                    telemetry.addData("RED: ", redValue);
+                    telemetry.addData("BLUE: ", blueValue);
+//                    telemetry.addData("GREEN: ", green);
+                    colorString = redValue < 5000 ? "BLUE is left" : "RED is left";
+//                    int color = highestColor(redValue, greenValue, blueValue);
+//
+//                    switch (color) {
+//                        case 0:
+//                            colorString = "RED";
+//                            break;
+//                        case 1:
+//                            colorString = "GREEN";
+//                            break;
+//                        case 2:
+//                            colorString = "BLUE";
+//                    }
+//
+//                } else {
+//                    colorString = "NONE";
+//                }
 
-                } else {
-                    colorString = "NONE";
+                    telemetry.addData("Color:", "Color detected is: " + colorString);
+                    telemetry.update();
+                    sleep(10);
                 }
 
-                telemetry.addData("Color:", "Color detected is: " + colorString);
-                telemetry.update();
-                sleep(10);
             }
             stopCamera();
         }

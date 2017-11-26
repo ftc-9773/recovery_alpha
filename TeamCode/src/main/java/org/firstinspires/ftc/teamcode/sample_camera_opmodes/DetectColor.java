@@ -62,6 +62,11 @@ public class DetectColor extends OpModeCamera {
           greenValue += green(pixel);
         }
       }
+
+      telemetry.addData("RED: ", redValue);
+      telemetry.addData("BLUE: ", blueValue);
+      telemetry.addData("GREEN: ", greenValue);
+
       int color = highestColor(redValue, greenValue, blueValue);
       String colorString = "";
       switch (color) {

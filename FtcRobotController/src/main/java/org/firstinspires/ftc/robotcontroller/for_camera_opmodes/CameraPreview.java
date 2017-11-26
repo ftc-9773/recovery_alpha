@@ -16,7 +16,7 @@ import java.io.IOException;
 public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback {
     private SurfaceHolder mHolder;
     private Camera mCamera;
-    private static String TAG = "DEBUG";
+    private static String TAG = "ftc9773";
     private Camera.PreviewCallback previewCallback;
 
     public CameraPreview(Context context, Camera camera, Camera.PreviewCallback previewCallback) {

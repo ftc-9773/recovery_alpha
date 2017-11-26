@@ -8,6 +8,7 @@ import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
+import org.firstinspires.ftc.teamcode.infrastructure.PIDController;
 import org.firstinspires.ftc.teamcode.infrastructure.SafeJsonReader;
 
 /**
@@ -16,19 +17,21 @@ import org.firstinspires.ftc.teamcode.infrastructure.SafeJsonReader;
 
 
 public class CubeTray {
-    public enum TrayPositions { STOWED, LOADING, CARRYING, DUMP_A, DUMP_B, NA}
-    public enum LiftPositions {LOADING_HEIGHT, LOW, MID, HIGH, INBETWEEN }
-    public enum LiftFinalStates {STOWED, LOADING, LOW, MID, HIGH, }
+    public enum TrayPositions {STOWED, LOADING, CARRYING, DUMP_A}
+    public enum OverallStates {LOADING, CARRY, STOWED, TO_LOADING, FROM_STOWED, TO_CARRY}
+    public enum LiftFinalStates {STOWED, LOADING, LOW, MID, HIGH}
     public boolean homing = false;
 
     // Json setup
-    private SafeJsonReader myServoPositions;
+    private SafeJsonReader myCubeTrayPositions;
 
     // create state machines
-    public TrayPositions trayState = TrayPositions.STOWED;
-    public LiftPositions liftState = LiftPositions.MID;
-    public LiftFinalStates liftFinalState  = LiftFinalStates.STOWED;
-    public boolean StillNeedsUpdating ;
+    // TODO: make this initialised or automated for start
+    public TrayPositions trayState = TrayPositions.CARRYING;
+    public OverallStates overallState = OverallStates.CARRY;
+    public LiftFinalStates liftFinalState  = LiftFinalStates.HIGH;
+    public long transitionTimer ;
+    private static int trayUpTime = 250; // time in miliseconds given to angle up
 
     // define limit switch
     private AnalogInput limitSwitch;
@@ -37,12 +40,15 @@ public class CubeTray {
     private Servo rightFlap ;
     private Servo leftAngle ;
     private Servo rightAngle ;
-    private DcMotor liftMotor ;
+    public DcMotor liftMotor ;
     // define gamepad value
     private Gamepad gamepad1;
 
     private double liftMotorPower = 0;
-    private int liftTargetPosition ;
+    public int liftTargetPosition = 0;  // change to private
+    //DEBUGING
+    private static final boolean DEBUG = true;
+    private static final String TAG = "ftc9773 CubeTray" ;
 
     // servo position variables for testing
     public double leftFlapPos ;
@@ -54,17 +60,19 @@ public class CubeTray {
     private boolean TESTING = false;
     private Gamepad gamepad2 ;
     private static final double increment =.001;
-
+    //HOMING variables
     private int zeroPos = 0;
 
     // setup variables for positioning
-    private static final int sensorPosTicks = 3615;
-    private static final int topPosTicks = 3260;
-    private static final int middlePosTicks = 1850;
-    private static final int bottomPosTicks = 450;
-    private static final int loadPosTicks = 190;
+    private static int sensorPosTicks = 3615;
+    private static int topPosTicks = 3260;
+    private static int middlePosTicks = 1850;
+    private static int bottomPosTicks = 450;
+    private static int loadPosTicks = 190;
 
     private static final int positionTolerance = 40;
+
+    private PIDController liftHeightPidController;
 
     //TODO: migrate to a JSON config file for easy config
 
@@ -76,23 +84,7 @@ public class CubeTray {
     private static final double[] leftAnglePostions = {0.885, 0.554, 0.169, 0.169, 0.039} ;  // dump used to be .039
     private static final double[] rightAnglePostions = {0.07, 0.350, 0.754, 0.754,0.901 } ;   // dump used to be .901
 
-    public CubeTray(HardwareMap hwMap, Gamepad gamepad1){  // constructor takes hardware map
 
-        // attach all the servos to their hardware map components
-        leftFlap = hwMap.servo.get("ctlfServo");
-        rightFlap = hwMap.servo.get("ctrfServo");
-        leftAngle = hwMap.servo.get("ctlaServo");
-        rightAngle = hwMap.servo.get("ctraServo");
-        // passes gamepad, instead of gamepad values for ease of use
-        this.gamepad1 = gamepad1;
-        // attach DC lift motor
-        liftMotor = hwMap.dcMotor.get("ctlMotor");
-
-        limitSwitch = hwMap.analogInput.get("ctlLimitSwitch");
-
-        // TODO: initialise  JSON config file etc
-        myServoPositions = new SafeJsonReader("CubeTrayServoPositions");
-    }
     public CubeTray(HardwareMap hwMap, Gamepad gamepad1, Gamepad gamepad2){  // constructor takes hardware map
         // attach all the servos to their hardware map components
         leftFlap = hwMap.servo.get("ctlfServo");
@@ -102,16 +94,32 @@ public class CubeTray {
         // passes gamepad, instead of gamepad values for ease of use
         this.gamepad1 = gamepad1;
         this.gamepad2 = gamepad2;
+
         // attach DC lift motor
         liftMotor = hwMap.dcMotor.get("ctlMotor");
         limitSwitch = hwMap.analogInput.get("ctlLimitSwitch");
 
         // TODO: initialise  JSON config file etc
+        sensorPosTicks = myCubeTrayPositions.getInt("sensorPos");
+        topPosTicks = myCubeTrayPositions.getInt("topPos");
+        middlePosTicks = myCubeTrayPositions.getInt("middlePos");
+        bottomPosTicks = myCubeTrayPositions.getInt("bottomPos");
+        loadPosTicks = myCubeTrayPositions.getInt("loadPos");
+        //todo: finish tuning PID
+
+        // setup PID for lift
+        Double kp = myCubeTrayPositions.getDouble("liftHeightP");
+        Double ki = myCubeTrayPositions.getDouble("liftHeightI");
+        Double kd = myCubeTrayPositions.getDouble("liftHeightD");
+        liftHeightPidController = new PIDController(kp,ki,kd);
+
 
         //TESTING
-        this.gamepad2 = gamepad2;
-        TESTING = true;
+        if (gamepad2!= null ){
+            TESTING = true;
+        }
     }
+
     /// DEAFAULT INTERFACE
     public void updateFromGamepad(){
         if(gamepad1.x){
@@ -128,115 +136,109 @@ public class CubeTray {
         }
         updatePosition();
     }
-    public void updatePosition(){
-        if ( trayState.equals(TrayPositions.STOWED)&& !liftFinalState.equals(LiftFinalStates.STOWED)){
-            liftMotor.setTargetPosition(bottomPosTicks);
-            setToPosNum(1);
-            if(readLiftState().equals(LiftPositions.LOADING_HEIGHT)){
-                trayState = TrayPositions.LOADING;
-            }
-        }
-        if (homing){
-            return;
-        }
-        switch (readLiftState()){
-            case INBETWEEN:
-                // leave as is
-            case LOW:
-                switch (liftFinalState){
-                    case STOWED:
-                        liftMotor.setTargetPosition(middlePosTicks);
-                        setServoPos(TrayPositions.LOADING);
-                        break;
-                    case MID:
-                        liftMotor.setTargetPosition(middlePosTicks);
-                        setServoPos(TrayPositions.CARRYING);
-                        break;
-                    case HIGH:
-                        liftMotor.setTargetPosition(topPosTicks);
-                        setServoPos(TrayPositions.CARRYING);
-                        break;
-                    case LOADING:
-                        liftMotor.setTargetPosition(loadPosTicks);
-                        setServoPos(TrayPositions.LOADING);
-                        break;
-                    default:
-                        break;
 
+    private void updateOverallState(){
+        if(!liftMotor.getMode().equals(DcMotor.RunMode.RUN_TO_POSITION)){
+            liftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        }
+        switch (liftFinalState) {
+            case LOW:
+                if(overallState == OverallStates.STOWED) {
+                    overallState = OverallStates.FROM_STOWED;
+                } else if (!overallState.equals(OverallStates.CARRY)&&!overallState.equals(OverallStates.TO_CARRY)) {
+                    overallState = OverallStates.TO_CARRY;
+                    transitionTimer = System.currentTimeMillis();
                 }
                 break;
+
             case MID:
-                switch (liftFinalState) {
-                    case LOADING:
-                        setServoPos(TrayPositions.CARRYING);
-                        liftMotor.setTargetPosition(bottomPosTicks);
-                        break;
-                    case LOW:
-                        setServoPos(TrayPositions.CARRYING);
-                        liftMotor.setTargetPosition(bottomPosTicks);
-                        break;
-                    case HIGH:
-                        setServoPos(TrayPositions.CARRYING);
-                        liftMotor.setTargetPosition(topPosTicks);
-                        break;
-                    case MID:
-                        break;
-                    case STOWED:
-                        setServoPos(TrayPositions.STOWED);
-                        liftMotor.setTargetPosition(topPosTicks);
-                    default:
-                        break;
+                if(overallState == OverallStates.STOWED) {
+                    overallState = OverallStates.FROM_STOWED;
+                } else if (!overallState.equals(OverallStates.CARRY)&&!overallState.equals(OverallStates.TO_CARRY)) {
+                    overallState = OverallStates.TO_CARRY;
+                    transitionTimer = System.currentTimeMillis();
                 }
                 break;
 
             case HIGH:
-                switch (liftFinalState) {
-                    case LOADING:
-                        setServoPos(TrayPositions.CARRYING);
-                        liftMotor.setTargetPosition(bottomPosTicks);
-                        break;
-                    case LOW:
-                        setServoPos(TrayPositions.CARRYING);
-                        liftMotor.setTargetPosition(bottomPosTicks);
-                        break;
-
-                    case MID:
-                        setServoPos(TrayPositions.CARRYING);
-                        liftMotor.setTargetPosition(bottomPosTicks);
-                        break;
-                    case HIGH:
-                        break;
-                    default:
-                        break;
-
+                if(overallState == OverallStates.STOWED) {
+                    overallState = OverallStates.FROM_STOWED;
+                } else if (!overallState.equals(OverallStates.CARRY)&&!overallState.equals(OverallStates.TO_CARRY)) {
+                    overallState = OverallStates.TO_CARRY;
+                    transitionTimer = System.currentTimeMillis();
+                }
+                break;
+            case LOADING:
+                if(overallState == OverallStates.STOWED) {
+                    overallState = OverallStates.FROM_STOWED;
+                } else if (!overallState.equals(OverallStates.LOADING)&&!overallState.equals(OverallStates.TO_LOADING)) {
+                    overallState = OverallStates.TO_LOADING;
                 }
                 break;
 
-            case LOADING_HEIGHT:
-                switch (liftFinalState) {
-                    case LOW:
-                        setServoPos(TrayPositions.CARRYING);
-                        liftMotor.setTargetPosition(bottomPosTicks);
-                        break;
-                    case MID:
-                        setServoPos(TrayPositions.CARRYING);
-                        liftMotor.setTargetPosition(bottomPosTicks);
-                        break;
-
-                    case HIGH:
-                        setServoPos(TrayPositions.CARRYING);
-                        liftMotor.setTargetPosition(bottomPosTicks);
-                        break;
-
-                    case LOADING:
-                        break;
-                    default:
-                        break;
-                }
-                break;
             default:
-                Log.d("CubeTray", "updatePosition: no case used");
                 break;
+        }
+
+    }
+    public void updatePosition(){
+        updateOverallState();
+        switch (overallState) {
+            case LOADING:
+                liftTargetPosition = loadPosTicks;
+                setServoPos(TrayPositions.LOADING);
+                break;
+            case CARRY:
+                switch (liftFinalState){
+                    case LOW:
+                        liftTargetPosition = bottomPosTicks;
+                        break;
+                    case MID:
+                        liftTargetPosition = middlePosTicks;
+                        break;
+                    case HIGH:
+                        liftTargetPosition = topPosTicks;
+                        break;
+                    default:
+                        break;
+                }
+                break;
+            case STOWED:
+                break;
+            case TO_LOADING:
+                // if the lift is above the threshold, set target to be threshold
+                if (liftMotor.getCurrentPosition() >= bottomPosTicks + positionTolerance) {
+                    liftTargetPosition = loadPosTicks;
+                    setServoPos(TrayPositions.CARRYING);
+                } else {
+                    // otherwise, set to loadingState
+                    overallState = OverallStates.LOADING;
+                    liftTargetPosition = loadPosTicks;
+                    setServoPos(TrayPositions.LOADING);
+                }
+                break;
+            case TO_CARRY:
+                liftTargetPosition = bottomPosTicks;
+                setServoPos(TrayPositions.CARRYING);
+                if (System.currentTimeMillis()-transitionTimer >= trayUpTime){
+                    overallState = OverallStates.CARRY ;
+                }
+                break;
+            case FROM_STOWED:
+                setServoPos(TrayPositions.LOADING);
+                liftTargetPosition = loadPosTicks ;
+                if (liftMotor.getCurrentPosition() <= loadPosTicks + positionTolerance){
+                    overallState = OverallStates.LOADING ;
+                }
+                break;
+        }
+        //liftMotor.setTargetPosition(scalePosition(liftTargetPosition));
+       // liftMotor.setPower(.6);
+        setToPoitionPID(liftTargetPosition);
+        updateServos();
+        printInfo();
+        if (limitSwitchIsPressed()){
+            liftMotor.setPower(0);
         }
     }
 
@@ -245,25 +247,11 @@ public class CubeTray {
     /////////////////////////////////////// ______ UTIL __
 
     /// Lift motor util functions
-    public LiftPositions readLiftState(){
-        int liftTics = getliftPos();
-        if (Math.abs(liftTics-topPosTicks) < positionTolerance ){
-            liftState = LiftPositions.HIGH ;
-        } else  if ( liftTics< topPosTicks - positionTolerance && liftTics> bottomPosTicks+positionTolerance) {
-            liftState = LiftPositions.MID;
-        } else if (Math.abs(liftTics-bottomPosTicks)< positionTolerance){
-            liftState = LiftPositions.LOW;
-        } else if (Math.abs(liftTics-loadPosTicks)< positionTolerance) {
-            liftState = LiftPositions.LOADING_HEIGHT;
-        } else if ( liftTics < sensorPosTicks + positionTolerance && liftTics > bottomPosTicks-positionTolerance) {
-            liftState = LiftPositions.INBETWEEN;
-        }   else {
-            Log.d("Lift State Reader", "Not able to read Lift position");
-        }
-        return liftState ;
+
+
+    private int scalePosition(int input){
+        return zeroPos - input;
     }
-
-
     // resets the zero position of the lift
     public void setLiftZeroPos(){
         zeroPos = liftMotor.getCurrentPosition() - sensorPosTicks;
@@ -280,6 +268,14 @@ public class CubeTray {
     // returns a boolean value if the limit switch is pressed
     private boolean limitSwitchIsPressed() {
         return (limitSwitch.getVoltage() > 1.5);
+    }
+    public void setToPoitionPID(int targetPos){
+        if (!liftMotor.getMode().equals(DcMotor.RunMode.RUN_WITHOUT_ENCODER)){
+            liftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        }
+        double correction = liftHeightPidController.getPIDCorrection(targetPos, getliftPos());
+        correction *= .0001;
+        liftMotor.setPower(correction);
     }
 
     /// servo util functions
@@ -319,17 +315,24 @@ public class CubeTray {
         leftAnglePos = leftAnglePostions[posNum];
         rightAnglePos = rightAnglePostions[posNum];
     }
+
+
     public void homeLiftVersA () {
         if (trayState == TrayPositions.LOADING){ // lift cannot be in loading pos to start
             setServoPos(TrayPositions.DUMP_A);                      // moves tray out of load to carry position
         }
         liftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);  // move the lift slowly upwards
-        liftMotor.setPower (.5);
+        liftMotor.setPower (.35);
         while (!limitSwitchIsPressed()){ }
         liftMotor.setPower(0);
         setLiftZeroPos();
         liftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        overallState = OverallStates.CARRY;
+        trayState = TrayPositions.CARRYING;
+        liftFinalState = LiftFinalStates.HIGH;
     }
+
+
     private boolean testIfTop(){
         if (limitSwitchIsPressed()) {
             liftMotor.setPower(0);
@@ -338,6 +341,8 @@ public class CubeTray {
             return true;
         } else return false;
     }    //////////////////////////////////////////// _____ Testing ____
+
+
     private void RunServoAdjustmentPotocol(){
         if (gamepad2.a) {
             leftFlapPos -= increment;
@@ -352,6 +357,19 @@ public class CubeTray {
         } else if (gamepad2.x) {
             leftAnglePos += increment;
             rightAnglePos -= increment;
+        }
+    }
+
+    private void printInfo(){
+        if(DEBUG){
+            Log.e(TAG, "overall state: " + overallState);
+            Log.e(TAG,"Final State: " + liftFinalState);
+            Log.e(TAG, "cubeTray state: "+ trayState);
+            Log.e(TAG, "lift cur target pos: " + liftTargetPosition);
+            Log.e(TAG, "liftTargetPosition :  " + liftMotor.getTargetPosition());
+            Log.e(TAG, "lift current dPosition :  " + liftMotor.getCurrentPosition());
+            Log.e(TAG, "lift motor current mode " + liftMotor.getMode());
+
         }
     }
 }

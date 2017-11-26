@@ -1,7 +1,15 @@
 {
   "LeftFlapStowPos" : 0.503,
-  "LeftFlapLoadPos" : 0.503
+  "LeftFlapLoadPos" : 0.503,
 
+   "sensorPos"      : 3615,
+   "topPosTicks"    : 3260,
+   "middlePos"      : 1850,
+   "bottomPosTicks" : 650,
+  "loadPosTicks"    : 450,
 
+  "liftHeightP" : 0.05,
+  "liftHeightI" : 0.0,
+  "LiftHeightD" : 0.0
 
   }

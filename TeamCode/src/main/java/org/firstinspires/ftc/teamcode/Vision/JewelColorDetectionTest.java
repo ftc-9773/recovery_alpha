@@ -2,13 +2,6 @@ package org.firstinspires.ftc.teamcode.Vision;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import android.graphics.Bitmap;
-import android.graphics.Color;
-import android.util.Log;
-
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Arrays;
 
 /**
  * Created by michaelzhou on 11/24/17.
@@ -21,39 +14,63 @@ public class JewelColorDetectionTest extends LinearOpMode{
 
     @Override
     public void runOpMode() throws InterruptedException {
+//        Bitmap bm = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+
+//        Intent i = new Intent("android.media.action.IMAGE_CAPTURE");
+//        Bitmap bm = (Bitmap) i.getExtras().get("data");
+//         = (Bitmap) extras.get("data");
+//        Camera camera = ;
+////        camera =
+//        Camera.Parameters parameters = camera.getParameters();
+//        int width = parameters.getPreviewSize().width;
+//        int height = parameters.getPreviewSize().height;
+//
+//        ByteArrayOutputStream out = new ByteArrayOutputStream();
+//        byte[] imageBytes = out.toByteArray();
+
+//        YuvImage yuvImage = new YuvImage(imageBytes, ImageFormat.NV21, width, height, null);
+//        yuvImage.compressToJpeg(new Rect(0, 0, width, height), 0, out);
+//
+////        Bitmap bm = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length);
+//        Camera camera = Camera.open(0);
+//        State state Vuforia.sta
+//
+//        Image imageRGB565 = null;
+//        Frame frame = state.getFrame();
+//
+//        for (int i = 0; i < frame.getNumImages(); ++i) {
+//            Image image = frame.getImage(i);
+//            if (image.getFormat() == PIXEL_FORMAT.RGB565) {
+//                imageRGB565 = image;
+//                break;
+//            }
+//        }
+//
+//        if (imageRGB565 != null) {
+//            ByteBuffer pixels = imageRGB565.getPixels();
+//            byte[] pixelArray = new byte[pixels.remaining()];
+//            pixels.get(pixelArray, 0, pixelArray.length());
+//            int imageWidth = imageRGB565.getWidth();
+//            int imageHeight = imageRGB565.getHeight();
+//            int stride = imageRGB565.getStride();
+//
+//            BitmapFactory.Options opts = new BitmapFactory.Options();
+//            opts.inPreferredConfig = Bitmap.Config.RGB_656;
+//            Bitmap bm = BitmapFactory.decodeByByteArray(pixelArray, 0, pixelArray.length, opts);
+//
+//            // m_ivCamera is a android.widget.ImageView object.
+//            camera.setImageBitmap(bm);
+
         waitForStart();
 
+
         while(opModeIsActive()){
-//            for(String s : )
-            File folder = new File("/Users/michaelzhou/Desktop/ball images");
-            File[] files = folder.listFiles();
-//            for(File f : files){
-//                if(DEBUG) Log.e(TAG, f.getAbsolutePath());
-//            }
-            if(DEBUG) Log.e(TAG, Arrays.toString(files));
 
-            String fileName = "/Users/michaelzhou/Downloads/recovery_alpha/TeamCode/src/main/java/org/firstinspires/ftc/teamcode/Vision/b1.jpg";
-            JewelColorDetection obj = new JewelColorDetection(fileName);
-//            try{
-            telemetry.addData("verdict 1: ", obj.analyze());
-//            }catch (OutOfMemoryError e){
-//                Log.e("ftc9773: ", "Size is too big!!!");
-//            }
-
-
-            String fileName2 = "/Users/michaelzhou/Desktop/ball images/b3.jpg";
-            JewelColorDetection obj2 = new JewelColorDetection(fileName2);
-            telemetry.addData("verdict 3: ", obj2.analyze());
-
-            String fileName3 = "/Users/michaelzhou/Desktop/ball images/b4.jpg";
-            JewelColorDetection obj3 = new JewelColorDetection(fileName3);
-            telemetry.addData("verdict 4: ", obj3.analyze());
-
-            String fileName4 = "/Users/michaelzhou/Desktop/ball images/b9.jpg";
-            JewelColorDetection obj4 = new JewelColorDetection(fileName4);
-            telemetry.addData("verdict 9: ", obj4.analyze());
-
+            JewelColorDetection obj = new JewelColorDetection();
+//            telemetry.addData("verdict 1: ", obj.analyze());
+//            telemetry.addData(TAG, obj);
             telemetry.update();
+//            telemetry.update();
         }
     }
 }

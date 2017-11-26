@@ -1,28 +1,7 @@
 package org.firstinspires.ftc.teamcode.Vision;
 
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Color;
-import android.graphics.ImageFormat;
-import android.graphics.Rect;
-import android.graphics.YuvImage;
-import android.hardware.Camera;
-import android.opengl.GLES20;
-import android.os.Environment;
-import android.util.Log;
-import android.widget.ImageView;
 
-import com.vuforia.Frame;
-import com.vuforia.Image;
-import com.vuforia.PIXEL_FORMAT;
-import com.vuforia.State;
-import com.vuforia.ar.pl.DebugLog;
-
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.nio.ByteBuffer;
-import java.nio.IntBuffer;
 import java.util.ArrayList;
 
 /**
@@ -40,39 +19,41 @@ public class JewelColorDetection {
     private static final String TAG = "ftc9773 Jewel";
     private static final boolean DEBUG = true;//TODO: Change this to false during competitions. For testing only.
 
-    public JewelColorDetection(Camera camera){
-        Camera.Parameters parameters = camera.getParameters();
-        byte[] data = parameters.flatten().getBytes();
-        int width = parameters.getPreviewSize().width;
-        int height = parameters.getPreviewSize().height;
-        YuvImage yuvImage = new YuvImage(data, ImageFormat.NV21, width, height, null);//RGB_565 or NV21
 
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        yuvImage.compressToJpeg(new Rect(0, 0, width, height), 0, out);
-        byte[] imageBytes = out.toByteArray();
-        bm = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length);
+
+    public JewelColorDetection(){
+//        Camera camera = Camera.open(0);
+        analyze();
+
+//        ByteArrayOutputStream out = new ByteArrayOutputStream();
+//        byte[] imageBytes = out.toByteArray();
+//        Bundle extras = data.getExtras();
+//        extras.getParcelable("data");
+//        YuvImage yuvImage = new YuvImage(imageBytes, ImageFormat.NV21, width, height, null);
+//        yuvImage.compressToJpeg(new Rect(0, 0, width, height), 0, out);
+//        byte[] data = parameters.flatten().getBytes();
+
+//        YuvImage yuvImage = new YuvImage(data, ImageFormat.RGB_565, width, height, null);//RGB_565 or NV21
+
+//        ByteArrayOutputStream output = new ByteArrayOutputStream();
+
+//        byte[] imageBytes = output.toByteArray();
+//        bm = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length);
     }
 
-    public String analyze(){
-        for(int x = bm.getWidth()/2; x<bm.getWidth(); x++){
-            for(int y = bm.getHeight()/2; y<bm.getHeight(); y++){
-                int pixel = bm.getPixel(x,y);
-                int redValue = Color.red(pixel);
-                int blueValue = Color.blue(pixel);
-                int greenValue = Color.green(pixel);
+    public void analyze(){
 
-                if(redValue>colOn && blueValue<colOff && greenValue<colOff){
-                    highReds.add(new PixelPosition(x,y));
-                }
-                if(blueValue>colOn && redValue<colOff && greenValue<colOff) {
-                    highBlues.add(new PixelPosition(x, y));
-                }
-            }
-        }
 
-        String verdict = highBlues.size()>highReds.size() ? "BLUE IS LEFT" : "RED IS LEFT";
-        if(DEBUG) Log.e(TAG,verdict);
-        return verdict;
+//        Camera.PreviewCallback callback = new Camera.PreviewCallback() {
+//            String verdict;
+//            @Override
+//            public void onPreviewFrame(byte[] data, Camera camera) {
+//
+////                return verdict;
+//            }
+//        };
+
+
     }
 
 //    private void saveScreenShot(int x, int y, int w, int h, String filename) {

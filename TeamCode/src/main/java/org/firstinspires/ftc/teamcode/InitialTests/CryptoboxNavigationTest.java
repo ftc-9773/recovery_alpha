@@ -17,7 +17,7 @@ public class CryptoboxNavigationTest extends LinearOpMode{
     public void runOpMode() throws InterruptedException {
 
         Gyro gyro = new Gyro(hardwareMap);
-        SwerveController swerveController = new SwerveController(hardwareMap, gyro, false);
+        SwerveController swerveController = new SwerveController(hardwareMap, gyro, false, telemetry);
         DriveWithPID driver = new DriveWithPID(swerveController, gyro);
         CubeTrayController cubeTrayController = new CubeTrayController(hardwareMap, null);
 

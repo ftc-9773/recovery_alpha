@@ -36,7 +36,7 @@ public class FTCrobot {
         this.myTelemetry = telemetry;
         myIntakeController = new IntakeController(hwMap);
         this.myGyro = new Gyro(hwMap);
-        this.mySwerveController = new SwerveController(hwMap, myGyro, false);
+        this.mySwerveController = new SwerveController(hwMap, myGyro, false, telemetry);
         this.myDriveWithPID = new DriveWithPID(mySwerveController, myGyro);
         this.myGamepad1 = gamepad1;
         this.myGamepad2 = gamepad2;

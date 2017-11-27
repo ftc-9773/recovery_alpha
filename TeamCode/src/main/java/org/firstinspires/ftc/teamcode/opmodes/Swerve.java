@@ -34,7 +34,7 @@ public class Swerve extends LinearOpMode {
 
         // Create objects
         myGyro = new Gyro(hardwareMap);
-        mySwerveController = new SwerveController(hardwareMap, myGyro, false);
+        mySwerveController = new SwerveController(hardwareMap, myGyro, false, telemetry);
         myIntakeController = new IntakeController(hardwareMap);
 
         myGyro.setZeroPosition();

@@ -19,7 +19,7 @@ public class AutonomousRed extends LinearOpMode {
     Gyro myGyro;
     @Override
     public void runOpMode() throws InterruptedException {
-        mySwerveController = new SwerveController(hardwareMap, myGyro, false);
+        mySwerveController = new SwerveController(hardwareMap, myGyro, false, telemetry);
         ftcRobot = new FTCrobot(hardwareMap, telemetry, gamepad1, gamepad2);
         myGyro = new Gyro(hardwareMap);
         mydriveWithPID = new DriveWithPID(mySwerveController, myGyro);

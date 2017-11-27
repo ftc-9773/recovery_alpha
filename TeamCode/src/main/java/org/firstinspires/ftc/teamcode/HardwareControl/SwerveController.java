@@ -5,6 +5,8 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import android.util.Log;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.teamcode.PositionTracking.CoordinateSystem;
 import org.firstinspires.ftc.teamcode.PositionTracking.Gyro;
 import org.firstinspires.ftc.teamcode.resources.Vector;
 
@@ -31,21 +33,23 @@ public class SwerveController {
     public Vector frwVector = new Vector(true, 0, 0);
     public Vector blwVector = new Vector(true, 0, 0);
     public Vector brwVector = new Vector(true, 0, 0);
+    private double strafeOnlyHeading = 0;
 
     private boolean useFieldCentricOrientation = true;
+    private CoordinateSystem myCoordinateSystem;
 
     // Variables
     private boolean motorsAreForward = true;
 
     //INIT
-    public SwerveController (HardwareMap hardwareMap, Gyro myGyro, boolean useFieldCentricOrientationDefault) {
+    public SwerveController (HardwareMap hardwareMap, Gyro myGyro, boolean useFieldCentricOrientationDefault, Telemetry telemetry) {
         flwModule = new SwerveModule(hardwareMap, "flw");
         frwModule = new SwerveModule(hardwareMap, "frw");
         blwModule = new SwerveModule(hardwareMap, "blw");
         brwModule = new SwerveModule(hardwareMap, "brw");
-
         this.myGyro = myGyro;
         this.useFieldCentricOrientation = useFieldCentricOrientationDefault;
+        myCoordinateSystem = new CoordinateSystem(0,0,myGyro, telemetry);
     }
 
 
@@ -61,6 +65,7 @@ public class SwerveController {
         frwVector.set(true, tempVector.getX(), tempVector.getY());
         blwVector.set(true, tempVector.getX(), tempVector.getY());
         brwVector.set(true, tempVector.getX(), tempVector.getY());
+        strafeOnlyHeading = brwVector.getAngle();
 
         if (useFieldCentricOrientation) {
             double gyroHeading = myGyro.getHeading();
@@ -137,10 +142,12 @@ public class SwerveController {
 
     // Part Two of Movement
     public void moveRobot() {
+        myCoordinateSystem.endPositionUpdate((flwModule.getEncoderCount()+frwModule.getEncoderCount())/2);
         flwModule.driveModule();
         frwModule.driveModule();
         blwModule.driveModule();
         brwModule.driveModule();
+        myCoordinateSystem.beginPositionUpdate((flwModule.getEncoderCount()+frwModule.getEncoderCount())/2, strafeOnlyHeading);
     }
 
     public void toggleFieldCentric () {

@@ -6,6 +6,8 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import android.util.Log;
 
 import org.firstinspires.ftc.teamcode.PositionTracking.Gyro;
+import org.firstinspires.ftc.teamcode.infrastructure.PIDController;
+import org.firstinspires.ftc.teamcode.infrastructure.SafeJsonReader;
 import org.firstinspires.ftc.teamcode.resources.Vector;
 
 /**
@@ -32,10 +34,25 @@ public class SwerveController {
     public Vector blwVector = new Vector(true, 0, 0);
     public Vector brwVector = new Vector(true, 0, 0);
 
+    //Orientation tracking variables
     private boolean useFieldCentricOrientation = true;
+    private boolean goToCardinalDirection = false;
+    private SafeJsonReader myPIDCoefficients;
+    private PIDController turningPID;
 
     // Variables
     private boolean motorsAreForward = true;
+
+    // Helper Functions
+    private double negToPosPi (double num) {
+        if (num < -Math.PI) {
+            return num + 2*Math.PI;
+        } else if (num > Math.PI) {
+            return num - 2*Math.PI;
+        } else {
+            return num;
+        }
+    }
 
     //INIT
     public SwerveController (HardwareMap hardwareMap, Gyro myGyro, boolean useFieldCentricOrientationDefault) {
@@ -46,6 +63,14 @@ public class SwerveController {
 
         this.myGyro = myGyro;
         this.useFieldCentricOrientation = useFieldCentricOrientationDefault;
+
+        myPIDCoefficients = new SafeJsonReader("");
+        double Kp = myPIDCoefficients.getDouble("Kp");
+        double Ki = myPIDCoefficients.getDouble("Ki");
+        double Kd = myPIDCoefficients.getDouble("Kd");
+
+        Log.e(TAG, "Coefficients: " + Kp + " " + Ki + " " + Kd);
+        turningPID = new PIDController(Kp, Ki, Kd);
     }
 
 
@@ -53,7 +78,33 @@ public class SwerveController {
     //                          -   xComp_Magnitude - x component (in cartesian form) or magnitude (in polar form)
     //                          -   yComp_Angle - y component (in cartesian form) or angle (in polar form)
     // If you just want the direction, set isCartesian to false, magnitude to 1, and angle to whatever angle you want (in radians from 0 to 2pi)
-    public void pointDirection(boolean isCartesian, double xComp_Magnitude, double yComp_Angle, double rotationSpeed) {  // if field centric is added, add heading and toggle
+
+    public void steerSwerve(boolean isCartesian, double xMag, double yAng, double rotation, double directionLock) {
+        // direction lock  - -1 is not pressed, 0 is straight, 1 is left, 2 is back, 3 is right
+
+        // handle cardinal directions
+        if (directionLock != -1 && useFieldCentricOrientation) {
+            goToCardinalDirection = true;
+        }
+
+        // Unlock cardinal direction if the robot is turned
+        if (Math.abs(rotation) > 0) {
+            goToCardinalDirection = false;
+        }
+
+        if (goToCardinalDirection) {
+
+            // Calculate Error
+            double error = negToPosPi(directionLock * Math.PI / 2 - myGyro.getHeading());
+            rotation = turningPID.getPIDCorrection(error);
+            Log.e(TAG, "true error: " + error + "  rotation: " + rotation);
+        }
+
+        //Have pointModules do the brunt work
+        pointModules(isCartesian, xMag, yAng, rotation);
+    }
+
+    public void pointModules(boolean isCartesian, double xComp_Magnitude, double yComp_Angle, double rotationSpeed) {
 
         // Calculate movement of each module
         Vector tempVector = new Vector(isCartesian, xComp_Magnitude, yComp_Angle);
@@ -71,10 +122,7 @@ public class SwerveController {
         }
 
         // Scale rotation speed
-        if (useFieldCentricOrientation) {
-        } else {
-            rotationSpeed = Math.pow(rotationSpeed,3) * 1.5;
-        }
+        rotationSpeed = Math.pow(rotationSpeed,3) * 1.5;
 
         // Add rotation vectors
         flwVector.addVector(false, rotationSpeed, 0.25 * Math.PI);
@@ -103,7 +151,6 @@ public class SwerveController {
         blwModule.setVector(blwVector, motorsAreForward);
         brwModule.setVector(brwVector, motorsAreForward);
 
-        Log.e(TAG, "flw x: " + flwVector.getX() + "  y: " + flwVector.getY());
 
         /////// Choose whether to flip motor direction ///////////
 

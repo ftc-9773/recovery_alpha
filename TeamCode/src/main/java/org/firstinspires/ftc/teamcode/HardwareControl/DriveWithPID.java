@@ -64,7 +64,7 @@ public class DriveWithPID {
 
         // Point in the right direction
         do {
-            mySwerveController.pointDirection(isCartesian, xMag, yAngleInDegrees, 0);
+            mySwerveController.pointModules(isCartesian, xMag, yAngleInDegrees, 0);
         } while (mySwerveController.getIsTurning());
 
         //////// Drive until it has gone the right distance ////////
@@ -81,12 +81,12 @@ public class DriveWithPID {
         if (DEBUG) { Log.e(TAG, "Starting driving"); }
         targetTicks = encoderTicksPerInch * distInches;
         while (Math.abs(averageEncoderDist()) < targetTicks) {
-            mySwerveController.pointDirection(isCartesian, xMag, yAngleInDegrees, drivePID.getPIDCorrection(setOnNegToPosPi(myGyro.getHeading() - gyroAngleZero)));
+            mySwerveController.pointModules(isCartesian, xMag, yAngleInDegrees, drivePID.getPIDCorrection(setOnNegToPosPi(myGyro.getHeading() - gyroAngleZero)));
             mySwerveController.moveRobot();
             if (DEBUG) { Log.e(TAG, "Distance so far: " + averageEncoderDist()); }
         }
         //Stop the robot
-        mySwerveController.pointDirection(true, 0, 0, 0);
+        mySwerveController.pointModules(true, 0, 0, 0);
         mySwerveController.moveRobot();
 
     }

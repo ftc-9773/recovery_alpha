@@ -33,7 +33,7 @@ public class testbed extends LinearOpMode{
         waitForStart();
 
         while(opModeIsActive()) {
-            mySwerveController.pointDirection(true, gamepad1.left_stick_x, gamepad1.left_stick_y * -1, gamepad1.right_stick_x);
+            mySwerveController.pointModules(true, gamepad1.left_stick_x, gamepad1.left_stick_y * -1, gamepad1.right_stick_x);
             mySwerveController.moveRobot();
             telemetry.addData("Gyro Reading", myGyro.getImuReading());
             telemetry.addData("Gyro heading", myGyro.getHeading());

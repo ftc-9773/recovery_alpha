@@ -17,7 +17,7 @@ public class PIDController {
     private long deltaTime;
     private boolean firstRun = true;
 
-    private static int maxDeltaTime = 500;
+    private static int maxDeltaTime = 800;
 
     public PIDController (double KP, double KI, double KD) {
         this.KP = KP;

@@ -38,7 +38,7 @@ public class FTCrobot {
     public void runGamepadCommands(){
 
         //Driving - gamepad 1 left and right joysticks
-        mySwerveController.pointDirection(true, myGamepad1.left_stick_y * -1, myGamepad1.left_stick_x * -1, myGamepad1.right_stick_x);
+        mySwerveController.pointModules(true, myGamepad1.left_stick_y * -1, myGamepad1.left_stick_x * -1, myGamepad1.right_stick_x);
         mySwerveController.moveRobot();
 
         // Intake - Gamepad 1 right trigger and bumper

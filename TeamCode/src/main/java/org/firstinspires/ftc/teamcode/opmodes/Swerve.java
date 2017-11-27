@@ -34,9 +34,8 @@ public class Swerve extends LinearOpMode {
 
         // Create objects
         myGyro = new Gyro(hardwareMap);
-        mySwerveController = new SwerveController(hardwareMap, myGyro, true);
+        mySwerveController = new SwerveController(hardwareMap, myGyro, false, telemetry);
         myIntakeController = new IntakeController(hardwareMap);
-
 
         myGyro.setZeroPosition();
 
@@ -55,18 +54,8 @@ public class Swerve extends LinearOpMode {
                 myIntakeController.intakeOff();
             }
 
-            int positionLock = -1;
-            if (gamepad1.dpad_up) {
-                positionLock = 0;
-            } else if (gamepad1.dpad_right) {
-                positionLock = 1;
-            } else if (gamepad1.dpad_down) {
-                positionLock = 2;
-            } else if (gamepad1.dpad_left) {
-                positionLock = 3;
-            }
 
-            mySwerveController.steerSwerve(true, gamepad1.left_stick_x, gamepad1.left_stick_y * -1, gamepad1.right_stick_x, positionLock);
+            mySwerveController.pointDirection(true, gamepad1.left_stick_x, gamepad1.left_stick_y * -1, gamepad1.right_stick_x);
 
             if (ENABLEDRIVING) {
                 mySwerveController.moveRobot();

@@ -27,7 +27,7 @@ public class testbed extends LinearOpMode{
         */
 
         myGyro = new Gyro(hardwareMap);
-        mySwerveController = new SwerveController(hardwareMap, myGyro, false);
+        mySwerveController = new SwerveController(hardwareMap, myGyro, false, telemetry);
         myDriveWithPID = new DriveWithPID(mySwerveController, myGyro);
 
         waitForStart();

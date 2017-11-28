@@ -15,6 +15,8 @@ import org.firstinspires.ftc.teamcode.opmodes.Swerve;
 
 public class FTCrobot {
     private SwerveController mySwerveController;
+    private double directionLock = -1;
+
     private Gyro myGyro;
     private controlParser opModeControl;
     private String[] currentCommand;
@@ -46,11 +48,34 @@ public class FTCrobot {
     public void runGamepadCommands(){
         dpaddownStatus.recordNewValue(myGamepad2.dpad_down);
         dpadupStatus.recordNewValue(myGamepad2.dpad_up);
-        //Driving - gamepad 1 left and right joysticks
-        mySwerveController.pointModules(true, myGamepad1.left_stick_y * -1, myGamepad1.left_stick_x * -1, myGamepad1.right_stick_x);
+
+
+        /////// Driving - gamepad 1 left and right joysticks & Dpad /////
+
+        // Direction Lock
+        double rotation = myGamepad1.right_stick_x;
+
+        if (rotation == 0) {
+            // Disable rotation lock if driver spins the robot
+            directionLock = -1;
+        } else {
+            if (myGamepad1.dpad_up) {
+                directionLock = 0;
+            } else if (myGamepad1.dpad_right) {
+                directionLock = 90;
+            } else if (myGamepad1.dpad_down) {
+                directionLock = 180;
+            } else if (myGamepad1.dpad_left) {
+                directionLock = 270;
+            }
+        }
+
+        // Actual driving
+        mySwerveController.steerSwerve(true, myGamepad1.left_stick_y * -1, myGamepad1.left_stick_x * -1, rotation, directionLock);
         mySwerveController.moveRobot();
 
-        // Intake - Gamepad 1 right trigger and bumper
+
+        /////// Intake - Gamepad 1 right trigger and bumper /////
         if (myGamepad1.right_trigger > 0) {
             myIntakeController.runIntakeOut();
         } else if (myGamepad1.right_bumper) {

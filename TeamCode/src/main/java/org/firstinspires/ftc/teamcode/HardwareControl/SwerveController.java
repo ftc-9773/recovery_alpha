@@ -85,22 +85,14 @@ public class SwerveController {
     // If you just want the direction, set isCartesian to false, magnitude to 1, and angle to whatever angle you want (in radians from 0 to 2pi)
 
     public void steerSwerve(boolean isCartesian, double xMag, double yAng, double rotation, double directionLock) {
-        // direction lock  - -1 is not pressed, 0 is straight, 1 is left, 2 is back, 3 is right
+        // direction lock  - in Degrees
 
         // handle cardinal directions
         if (directionLock != -1 && useFieldCentricOrientation) {
             goToCardinalDirection = true;
-        }
-
-        // Unlock cardinal direction if the robot is turned
-        if (Math.abs(rotation) > 0) {
-            goToCardinalDirection = false;
-        }
-
-        if (goToCardinalDirection) {
 
             // Calculate Error
-            double error = negToPosPi(directionLock * Math.PI / 2 - myGyro.getHeading());
+            double error = negToPosPi(Math.toRadians(directionLock) - myGyro.getHeading());
             rotation = turningPID.getPIDCorrection(error);
             Log.e(TAG, "true error: " + error + "  rotation: " + rotation);
         }

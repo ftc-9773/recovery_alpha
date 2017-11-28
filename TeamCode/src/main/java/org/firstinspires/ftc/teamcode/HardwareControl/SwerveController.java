@@ -34,6 +34,8 @@ public class SwerveController {
     public Vector blwVector = new Vector(true, 0, 0);
     public Vector brwVector = new Vector(true, 0, 0);
 
+    // Cordinate System
+    private static final boolean RUN_CORD_SYSTEM = true;
     private double strafeOnlyHeading = 0;
     private CoordinateSystem myCoordinateSystem;
 
@@ -58,14 +60,13 @@ public class SwerveController {
     }
 
     //INIT
-    public SwerveController (HardwareMap hardwareMap, Gyro myGyro, boolean useFieldCentricOrientationDefault, Telemetry telemetry) {
+    public SwerveController (HardwareMap hardwareMap, Gyro myGyro, Telemetry telemetry) {
         flwModule = new SwerveModule(hardwareMap, "flw");
         frwModule = new SwerveModule(hardwareMap, "frw");
         blwModule = new SwerveModule(hardwareMap, "blw");
         brwModule = new SwerveModule(hardwareMap, "brw");
 
         this.myGyro = myGyro;
-        this.useFieldCentricOrientation = useFieldCentricOrientationDefault;
 
         myPIDCoefficients = new SafeJsonReader("");
         double Kp = myPIDCoefficients.getDouble("Kp");
@@ -75,7 +76,7 @@ public class SwerveController {
         Log.e(TAG, "Coefficients: " + Kp + " " + Ki + " " + Kd);
         turningPID = new PIDController(Kp, Ki, Kd);
 
-        myCoordinateSystem = new CoordinateSystem(0,0,myGyro, telemetry);
+        if (RUN_CORD_SYSTEM) { myCoordinateSystem = new CoordinateSystem(0,0,myGyro, telemetry); }
     }
 
 
@@ -111,7 +112,7 @@ public class SwerveController {
         brwVector.set(true, tempVector.getX(), tempVector.getY());
 
         // For position tracking
-        strafeOnlyHeading = tempVector.getAngle();
+        if (RUN_CORD_SYSTEM) { strafeOnlyHeading = tempVector.getAngle(); }
 
         if (useFieldCentricOrientation) {
             double gyroHeading = myGyro.getHeading();
@@ -185,12 +186,12 @@ public class SwerveController {
     // Part Two of Movement
     public void moveRobot() {
 
-        myCoordinateSystem.endPositionUpdate((flwModule.getEncoderCount()+frwModule.getEncoderCount())/2);
+        if (RUN_CORD_SYSTEM) { myCoordinateSystem.endPositionUpdate((flwModule.getEncoderCount()+frwModule.getEncoderCount())/2); }
         flwModule.driveModule();
         frwModule.driveModule();
         blwModule.driveModule();
         brwModule.driveModule();
-        myCoordinateSystem.beginPositionUpdate((flwModule.getEncoderCount()+frwModule.getEncoderCount())/2, strafeOnlyHeading);
+        if (RUN_CORD_SYSTEM) { myCoordinateSystem.beginPositionUpdate((flwModule.getEncoderCount()+frwModule.getEncoderCount())/2, strafeOnlyHeading); }
     }
 
     public void toggleFieldCentric () {

@@ -22,10 +22,6 @@ public class DriveWithPID {
     private static SwerveController mySwerveController;
     private static Gyro myGyro;
 
-    // New objects
-    private static PIDController drivePID;
-    private static PIDController turnPID;
-
     // Variables
     static double tempZeroPosition;
 
@@ -41,31 +37,23 @@ public class DriveWithPID {
     private static final double encoderTicksPerInch = (19.8 * 28) / (wheelDiameter * Math.PI);
     private double targetTicks;
 
-    private static  SafeJsonReader myCoefficients;
-
     // INIT
     public DriveWithPID (SwerveController mySwerveController, Gyro myGyro) {
         this.mySwerveController = mySwerveController;
         this.myGyro = myGyro;
-
-
-        myCoefficients = new SafeJsonReader("DrivePIDParameters");
-        drivePID = new PIDController(myCoefficients.getDouble("DriveKp"), myCoefficients.getDouble("DriveKi"), myCoefficients.getDouble("DriveKd"));
-        turnPID = new PIDController(myCoefficients.getDouble("TurnKp"), myCoefficients.getDouble("TurnKi"), myCoefficients.getDouble("TurnKd"));
     }
 
     // Actual driving funftions
-    public void driveStraight(boolean isCartesian, double xMag, double yAngleInDegrees, double distInches) throws InterruptedException {
+    public void driveStraight(boolean isCartesian, double xMag, double yAngleDegrees, double robotOrientationDegrees, double distInches) throws InterruptedException {
 
-        // Convert angle to radians
-        if (!isCartesian) {
-            yAngleInDegrees = Math.toRadians(yAngleInDegrees);
-        }
+        double yAngleRadians = Math.toRadians(yAngleDegrees);
 
         // Point in the right direction
         do {
-            mySwerveController.pointModules(isCartesian, xMag, yAngleInDegrees, 0);
+            mySwerveController.pointModules(isCartesian, xMag, yAngleRadians, 0);
         } while (mySwerveController.getIsTurning());
+
+        if (DEBUG) { Log.e(TAG, "Finished setting heading"); }
 
         //////// Drive until it has gone the right distance ////////
 
@@ -75,20 +63,22 @@ public class DriveWithPID {
         blwEncoderZero = mySwerveController.getBlwEncoderCount();
         brwEncoderZero = mySwerveController.getBrwEncoderCount();
 
-        gyroAngleZero = myGyro.getHeading();
-
-        if (DEBUG) { Log.e(TAG, "Finished setting heading"); }
-        if (DEBUG) { Log.e(TAG, "Starting driving"); }
         targetTicks = encoderTicksPerInch * distInches;
+        if (DEBUG) { Log.e(TAG, "Target Ticks: " + targetTicks); }
+
         while (Math.abs(averageEncoderDist()) < targetTicks) {
-            mySwerveController.pointModules(isCartesian, xMag, yAngleInDegrees, drivePID.getPIDCorrection(setOnNegToPosPi(myGyro.getHeading() - gyroAngleZero)));
+
+            // While the robot has not driven far enough
+            mySwerveController.steerSwerve(isCartesian, xMag, yAngleRadians, 0, robotOrientationDegrees);
             mySwerveController.moveRobot();
+
             if (DEBUG) { Log.e(TAG, "Distance so far: " + averageEncoderDist()); }
         }
+
         //Stop the robot
         mySwerveController.pointModules(true, 0, 0, 0);
         mySwerveController.moveRobot();
-
+        if (DEBUG) { Log.e(TAG, "Extra Distance: " + (Math.abs(averageEncoderDist()) - targetTicks)); }
     }
 
     // Helper functions

@@ -1,5 +1,5 @@
 {
-  "MIN_SPEED": 0.1,
+  "MIN_SPEED": 0.08,
   "REVERSE_DELAY": 100,
   "REVERSE_DIST": 40,
   "REVERSE_SPEED": -1

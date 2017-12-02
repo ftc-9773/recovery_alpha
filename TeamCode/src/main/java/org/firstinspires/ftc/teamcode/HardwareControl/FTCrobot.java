@@ -8,6 +8,7 @@ import org.firstinspires.ftc.teamcode.PositionTracking.Gyro;
 import org.firstinspires.ftc.teamcode.infrastructure.ButtonStatus;
 import org.firstinspires.ftc.teamcode.infrastructure.controlParser;
 import org.firstinspires.ftc.teamcode.opmodes.Swerve;
+import android.util.Log;
 
 /**
  * Created by Vikesh on 11/22/2017.
@@ -32,20 +33,24 @@ public class FTCrobot {
     private ButtonStatus dpadupStatus = new ButtonStatus();
     private ButtonStatus dpaddownStatus = new ButtonStatus();
 
+    private static final String TAG = "9773_FTCrobot";
+    private static final boolean DEBUG = true;
+
     // INIT
     public FTCrobot(HardwareMap hwmap, Telemetry telemetry, Gamepad gamepad1, Gamepad gamepad2){
         this.hwMap = hwmap;
         this.myTelemetry = telemetry;
         myIntakeController = new IntakeController(hwMap);
         this.myGyro = new Gyro(hwMap);
-        this.mySwerveController = new SwerveController(hwMap, myGyro, false, telemetry);
+        this.mySwerveController = new SwerveController(hwMap, myGyro, telemetry);
         this.myDriveWithPID = new DriveWithPID(mySwerveController, myGyro);
+        this.myRelicSystem = new RelicSystem(myTelemetry, hwMap);
         this.myGamepad1 = gamepad1;
         this.myGamepad2 = gamepad2;
-        this.myRelicSystem = new RelicSystem(myTelemetry, hwMap);
     }
 
     public void runGamepadCommands(){
+
         dpaddownStatus.recordNewValue(myGamepad2.dpad_down);
         dpadupStatus.recordNewValue(myGamepad2.dpad_up);
 
@@ -55,23 +60,29 @@ public class FTCrobot {
         // Direction Lock
         double rotation = myGamepad1.right_stick_x;
 
-        if (rotation == 0) {
+        if (rotation != 0) {
+            Log.e(TAG, "Rotation is 0");
             // Disable rotation lock if driver spins the robot
             directionLock = -1;
         } else {
+            Log.e(TAG, "Checking dpad");
             if (myGamepad1.dpad_up) {
+                Log.e(TAG, "Up dpad pressed");
                 directionLock = 0;
             } else if (myGamepad1.dpad_right) {
+                Log.e(TAG, "Right dpad pressed");
                 directionLock = 90;
             } else if (myGamepad1.dpad_down) {
+                Log.e(TAG, "down dpad pressed");
                 directionLock = 180;
             } else if (myGamepad1.dpad_left) {
+                Log.e(TAG, "Left dpad pressed");
                 directionLock = 270;
             }
         }
 
         // Actual driving
-        mySwerveController.steerSwerve(true, myGamepad1.left_stick_y * -1, myGamepad1.left_stick_x * -1, rotation, directionLock);
+        mySwerveController.steerSwerve(true, myGamepad1.left_stick_x, myGamepad1.left_stick_y * -1, rotation, directionLock);
         mySwerveController.moveRobot();
 
 
@@ -104,6 +115,13 @@ public class FTCrobot {
         }
     }
 
+    public void doTelemetry() {
+
+        myTelemetry.addData("Gamepad x", myGamepad1.left_stick_x);
+        myTelemetry.addData("Gamepad y", myGamepad1.left_stick_y);
+        myTelemetry.update();
+    }
+
     public void runRASI(String filename){
         opModeControl = new controlParser(filename);
         int index = 0;
@@ -112,7 +130,7 @@ public class FTCrobot {
             switch (currentCommand[0]) {
                 case "drv":
                     try {
-                        myDriveWithPID.driveStraight(false, Double.valueOf(currentCommand[1]), Double.valueOf(currentCommand[2]), Double.valueOf(currentCommand[3]));
+                        myDriveWithPID.driveStraight(false, Double.valueOf(currentCommand[1]), Double.valueOf(currentCommand[2]), Double.valueOf(currentCommand[3]), Double.valueOf(currentCommand[4]));
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }

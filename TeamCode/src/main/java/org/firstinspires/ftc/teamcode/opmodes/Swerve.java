@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
+import org.firstinspires.ftc.teamcode.HardwareControl.FTCrobot;
 import org.firstinspires.ftc.teamcode.HardwareControl.IntakeController;
 import org.firstinspires.ftc.teamcode.HardwareControl.SwerveController;
 import org.firstinspires.ftc.teamcode.PositionTracking.Gyro;
@@ -20,24 +21,14 @@ public class Swerve extends LinearOpMode {
     private static final String TAG = "ftc9773 Swerve";
     private static final boolean DEBUG = false;
 
-    private static final boolean ENABLEDRIVING = true;
-
-    private SwerveController mySwerveController;
-    private IntakeController myIntakeController;
-    private Gyro myGyro;
-
-    //TEST cubeTray
+    private static FTCrobot myRobot;
 
     @Override
     public void runOpMode() throws InterruptedException {
         Log.e(TAG, "Started initializing");
 
         // Create objects
-        myGyro = new Gyro(hardwareMap);
-        mySwerveController = new SwerveController(hardwareMap, myGyro, false, telemetry);
-        myIntakeController = new IntakeController(hardwareMap);
-
-        myGyro.setZeroPosition();
+        myRobot = new FTCrobot(hardwareMap, telemetry, gamepad1, gamepad2);
 
         waitForStart();
         while (opModeIsActive()) {
@@ -45,31 +36,13 @@ public class Swerve extends LinearOpMode {
 
             double timeStart = System.currentTimeMillis();
 
-            // Intake
-            if (gamepad1.right_trigger > 0) {
-                myIntakeController.runIntakeIn();
-            } else if (gamepad1.right_bumper) {
-                myIntakeController.runIntakeOut();
-            } else {
-                myIntakeController.intakeOff();
-            }
-
-
-            mySwerveController.pointDirection(true, gamepad1.left_stick_x, gamepad1.left_stick_y * -1, gamepad1.right_stick_x);
-
-            if (ENABLEDRIVING) {
-                mySwerveController.moveRobot();
-            }
+            myRobot.runGamepadCommands();
+            myRobot.doTelemetry();
 
             // Display gamepad values
             telemetry.addData("Gamepad x:", gamepad1.left_stick_x);
             telemetry.addData("Gamepad y:", gamepad1.left_stick_y);
 
-            telemetry.addData("Front Left Heading: ", Math.toDegrees(mySwerveController.flwVector.getAngle()));
-            telemetry.addData("Front Left Position: ", Math.toDegrees(mySwerveController.flwModule.currentPosition));
-            telemetry.addData("Front Left Error Value: ", mySwerveController.flwModule.errorAmt);
-            telemetry.addData("Front Left Servo Power: ", mySwerveController.flwModule.tellServo);
-            telemetry.addData("Front Left Motor Power: ", mySwerveController.flwVector.getMagnitude());
 
             telemetry.update();
 

@@ -41,7 +41,6 @@ public class SwerveController {
 
     //Orientation tracking variables
     private boolean useFieldCentricOrientation = true;
-    private boolean goToCardinalDirection = false;
     private SafeJsonReader myPIDCoefficients;
     private PIDController turningPID;
 
@@ -68,7 +67,7 @@ public class SwerveController {
 
         this.myGyro = myGyro;
 
-        myPIDCoefficients = new SafeJsonReader("");
+        myPIDCoefficients = new SafeJsonReader("RobotTurningPIDCoefficients");
         double Kp = myPIDCoefficients.getDouble("Kp");
         double Ki = myPIDCoefficients.getDouble("Ki");
         double Kd = myPIDCoefficients.getDouble("Kd");
@@ -90,8 +89,6 @@ public class SwerveController {
 
         // handle cardinal directions
         if (directionLock != -1 && useFieldCentricOrientation) {
-            goToCardinalDirection = true;
-
             // Calculate Error
             double error = negToPosPi(Math.toRadians(directionLock) - myGyro.getHeading());
             rotation = turningPID.getPIDCorrection(error);

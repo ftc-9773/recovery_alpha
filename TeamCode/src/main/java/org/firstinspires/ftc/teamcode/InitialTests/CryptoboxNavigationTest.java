@@ -17,8 +17,8 @@ public class CryptoboxNavigationTest extends LinearOpMode{
     public void runOpMode() throws InterruptedException {
 
         Gyro gyro = new Gyro(hardwareMap);
-        SwerveController swerveController = new SwerveController(hardwareMap, gyro, false, telemetry);
-        DriveWithPID driver = new DriveWithPID(swerveController, gyro);
+        //SwerveController swerveController = new SwerveController(hardwareMap, gyro, false, telemetry);
+        //DriveWithPID driver = new DriveWithPID(swerveController, gyro);
         CubeTrayController cubeTrayController = new CubeTrayController(hardwareMap, null);
 
         VumarkGlyphPattern pattern = new VumarkGlyphPattern(hardwareMap);
@@ -34,7 +34,7 @@ public class CryptoboxNavigationTest extends LinearOpMode{
         }
 
         while (opModeIsActive()){
-            driver.driveStraight(true, 1, 0, dist);
+//            driver.driveStraight(true, 1, 0, dist);
 
             cubeTrayController.goToStowPos();
             cubeTrayController.updateServos();

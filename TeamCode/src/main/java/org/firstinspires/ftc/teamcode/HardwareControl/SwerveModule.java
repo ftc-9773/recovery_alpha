@@ -83,7 +83,7 @@ public class SwerveModule {
 
     //INIT
     public SwerveModule(HardwareMap hwMap, String hardwareMapTag) {
-        Log.e(TAG, "Building servo " + hardwareMapTag);
+        Log.d(TAG, "Building servo " + hardwareMapTag);
 
         if (hardwareMapTag == "flw") { debugHere = true; }
 
@@ -167,7 +167,7 @@ public class SwerveModule {
         lastTime = System.currentTimeMillis();
         lastError = input;
 
-        if (DEBUG) { Log.e(TAG, "Prop: " + proportionalCorrection + "   Dif:" + differentialCorrection); }
+        if (DEBUG) { Log.d(TAG, "Prop: " + proportionalCorrection + "   Dif:" + differentialCorrection); }
 
         return 0.5 - proportionalCorrection - differentialCorrection;
 

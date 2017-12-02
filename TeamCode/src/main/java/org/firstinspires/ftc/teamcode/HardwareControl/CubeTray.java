@@ -15,6 +15,45 @@ import org.firstinspires.ftc.teamcode.infrastructure.SafeJsonReader;
  * Created by zacharye on 11/12/17.
  */
 
+/**
+ ---------------------------------------------------------------------------------------------------
+ *                              :How to use this class properly:
+ ---------------------------------------------------------------------------------------------------
+ *
+ * this class uses state logic, and is made to work iteratively, to accomplish tasks without needing
+ * to 'steal' time from the rest of the robot.
+ *
+ * HOWEVER, it must be called regularly in a loop to ensure it
+ * functions correctly
+ *
+ * for deafault Tele-op operation, use the updateFromGamepad(); command in the loop. it preforms all necessary actions
+ *
+ * if, for some reason, you need to avoid the deafault operation mode, (say in autonomous) use:
+ *          the SetToPos() function in order to write a position
+ *          This NEEDS to be followed by the updatePosition(); method
+ *
+ * Miscilanious methods:
+ *
+ *  homeLift();   // homes the lift: NOTE: as of now, the lift must not be in the loading position for this to work
+ *
+ *  defineStartPosition(); // sets the start position of the lift as of yet, the program cannot tell what the starting
+ *                         // position of the lift is, so it is necessary to set this when transitioning between opmodes
+ *                         // put at the
+ *
+ *
+ * ----------------------------------------------------------------------------------------------------
+ * To change PID parameters, go to swervePIDCoefficients.json under the JSON package and change the value
+ *
+ * To go to the dirrectory:
+ * cd TeamCode/src/main/java/org/firstinspires/ftc/teamcode/JSON/
+ *
+ * To push the file:
+ * ~/Library/Android/sdk/platform-tools/adb push CubeTayServoPositions.json /sdcard/FIRST/team9773/json18/
+ *
+ * To pull the file:
+ *
+ */
+
 
 public class CubeTray {
     public enum TrayPositions {STOWED, LOADING, CARRYING, DUMP_A}
@@ -31,7 +70,7 @@ public class CubeTray {
     public OverallStates overallState = OverallStates.CARRY;
     public LiftFinalStates liftFinalState  = LiftFinalStates.HIGH;
     public long transitionTimer ;
-    private static int trayUpTime = 250; // time in miliseconds given to angle up
+    private static int trayUpTime = 30; // time in miliseconds given to angle up
 
     // define limit switch
     private AnalogInput limitSwitch;
@@ -46,6 +85,7 @@ public class CubeTray {
 
     private double liftMotorPower = 0;
     public int liftTargetPosition = 0;  // change to private
+
     //DEBUGING
     private static final boolean DEBUG = true;
     private static final String TAG = "ftc9773 CubeTray" ;
@@ -69,6 +109,7 @@ public class CubeTray {
     private static int middlePosTicks = 1850;
     private static int bottomPosTicks = 450;
     private static int loadPosTicks = 190;
+    private int toLoadingThreshold  = 500;
 
     private static final int positionTolerance = 40;
 
@@ -99,19 +140,31 @@ public class CubeTray {
         liftMotor = hwMap.dcMotor.get("ctlMotor");
         limitSwitch = hwMap.analogInput.get("ctlLimitSwitch");
 
+        myCubeTrayPositions = new SafeJsonReader("CubeTrayServoPositions");
+
         // TODO: initialise  JSON config file etc
-        sensorPosTicks = myCubeTrayPositions.getInt("sensorPos");
-        topPosTicks = myCubeTrayPositions.getInt("topPos");
-        middlePosTicks = myCubeTrayPositions.getInt("middlePos");
-        bottomPosTicks = myCubeTrayPositions.getInt("bottomPos");
-        loadPosTicks = myCubeTrayPositions.getInt("loadPos");
+
+        sensorPosTicks = myCubeTrayPositions.getInt("sensorPosTicks");
+        topPosTicks = myCubeTrayPositions.getInt("topPosTicks");
+        middlePosTicks = myCubeTrayPositions.getInt("middlePosTicks");
+        bottomPosTicks = myCubeTrayPositions.getInt("bottomPosTicks");
+        loadPosTicks = myCubeTrayPositions.getInt("loadPosTicks");
+        toLoadingThreshold = myCubeTrayPositions.getInt("toLoadingThreshold");
+
+        if (DEBUG) {
+            Log.d(TAG, "sensor position set to: " + sensorPosTicks);
+            Log.d(TAG, "TopPosTicks set to: " + topPosTicks);
+            Log.d(TAG, "middle position ticks set to: " + middlePosTicks);
+            Log.d(TAG, "bottom position set to: " + bottomPosTicks);
+            Log.d(TAG, "load position set to: " + loadPosTicks);
+        }
         //todo: finish tuning PID
 
         // setup PID for lift
         Double kp = myCubeTrayPositions.getDouble("liftHeightP");
         Double ki = myCubeTrayPositions.getDouble("liftHeightI");
         Double kd = myCubeTrayPositions.getDouble("liftHeightD");
-        liftHeightPidController = new PIDController(kp,ki,kd);
+        liftHeightPidController = new PIDController(kp, ki, kd);
 
 
         //TESTING
@@ -137,6 +190,77 @@ public class CubeTray {
         updatePosition();
     }
 
+    // to update without taking joystick input
+    public void updatePosition(){
+        // update state prior to carrying out actions
+        updateOverallState();
+        // state machine is now ready to set to positions
+        switch (overallState) {
+            case LOADING:
+                // when the state is loading, sets both lift and tray to loading position
+                liftTargetPosition = loadPosTicks;
+                setServoPos(TrayPositions.LOADING);
+                break;
+
+            case CARRY:
+
+                switch (liftFinalState){
+                    // when in carry position, can set directly to target position
+                    case LOW:
+                        liftTargetPosition = bottomPosTicks;
+                        break;
+                    case MID:
+                        liftTargetPosition = middlePosTicks;
+                        break;
+                    case HIGH:
+                        liftTargetPosition = topPosTicks;
+                        break;
+                    default:
+                        // otherwise do nothing
+                        break;
+                }
+                break;
+            case STOWED:  // as of now no instructions to go to stowed position
+                break;
+                        //
+            case TO_LOADING:
+                // if the lift is above the threshold, set target to be threshold
+                if (getliftPos() >= toLoadingThreshold) {
+                    liftTargetPosition = loadPosTicks;
+                    setServoPos(TrayPositions.CARRYING);
+                } else {
+                    // otherwise, set to loadingState
+                    overallState = OverallStates.LOADING;
+                    liftTargetPosition = loadPosTicks;
+                    setServoPos(TrayPositions.LOADING);
+                }
+                break;
+            case TO_CARRY:
+                liftTargetPosition = bottomPosTicks;
+                setServoPos(TrayPositions.CARRYING);
+                if (System.currentTimeMillis()-transitionTimer >= trayUpTime){
+                    overallState = OverallStates.CARRY ;
+                }
+                break;
+            case FROM_STOWED:
+                setServoPos(TrayPositions.LOADING);
+                liftTargetPosition = loadPosTicks ;
+                if (getRawLiftPos() <= loadPosTicks + positionTolerance){
+                    overallState = OverallStates.LOADING ;
+                }
+                break;
+        }
+        //liftMotor.setTargetPosition(scalePosition(liftTargetPosition));
+        // liftMotor.setPower(.6);
+        setToPoitionPID(liftTargetPosition);
+        updateServos();
+        printInfo();
+        if (limitSwitchIsPressed()){
+            liftMotor.setPower(0);
+        }
+    }
+
+    // util function to translate final positions into overall positions based on position - the brains of the state machine
     private void updateOverallState(){
         if(!liftMotor.getMode().equals(DcMotor.RunMode.RUN_TO_POSITION)){
             liftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -181,66 +305,6 @@ public class CubeTray {
         }
 
     }
-    public void updatePosition(){
-        updateOverallState();
-        switch (overallState) {
-            case LOADING:
-                liftTargetPosition = loadPosTicks;
-                setServoPos(TrayPositions.LOADING);
-                break;
-            case CARRY:
-                switch (liftFinalState){
-                    case LOW:
-                        liftTargetPosition = bottomPosTicks;
-                        break;
-                    case MID:
-                        liftTargetPosition = middlePosTicks;
-                        break;
-                    case HIGH:
-                        liftTargetPosition = topPosTicks;
-                        break;
-                    default:
-                        break;
-                }
-                break;
-            case STOWED:
-                break;
-            case TO_LOADING:
-                // if the lift is above the threshold, set target to be threshold
-                if (liftMotor.getCurrentPosition() >= bottomPosTicks + positionTolerance) {
-                    liftTargetPosition = loadPosTicks;
-                    setServoPos(TrayPositions.CARRYING);
-                } else {
-                    // otherwise, set to loadingState
-                    overallState = OverallStates.LOADING;
-                    liftTargetPosition = loadPosTicks;
-                    setServoPos(TrayPositions.LOADING);
-                }
-                break;
-            case TO_CARRY:
-                liftTargetPosition = bottomPosTicks;
-                setServoPos(TrayPositions.CARRYING);
-                if (System.currentTimeMillis()-transitionTimer >= trayUpTime){
-                    overallState = OverallStates.CARRY ;
-                }
-                break;
-            case FROM_STOWED:
-                setServoPos(TrayPositions.LOADING);
-                liftTargetPosition = loadPosTicks ;
-                if (liftMotor.getCurrentPosition() <= loadPosTicks + positionTolerance){
-                    overallState = OverallStates.LOADING ;
-                }
-                break;
-        }
-        //liftMotor.setTargetPosition(scalePosition(liftTargetPosition));
-       // liftMotor.setPower(.6);
-        setToPoitionPID(liftTargetPosition);
-        updateServos();
-        printInfo();
-        if (limitSwitchIsPressed()){
-            liftMotor.setPower(0);
-        }
-    }
 
 
 
@@ -274,7 +338,7 @@ public class CubeTray {
             liftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         }
         double correction = liftHeightPidController.getPIDCorrection(targetPos, getliftPos());
-        correction *= .0001;
+
         liftMotor.setPower(correction);
     }
 
@@ -317,13 +381,13 @@ public class CubeTray {
     }
 
 
-    public void homeLiftVersA () {
+    public void homeLiftVersA () throws InterruptedException { // might help use
         if (trayState == TrayPositions.LOADING){ // lift cannot be in loading pos to start
             setServoPos(TrayPositions.DUMP_A);                      // moves tray out of load to carry position
         }
         liftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);  // move the lift slowly upwards
         liftMotor.setPower (.35);
-        while (!limitSwitchIsPressed()){ }
+        while (!limitSwitchIsPressed() ){ }
         liftMotor.setPower(0);
         setLiftZeroPos();
         liftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -362,14 +426,42 @@ public class CubeTray {
 
     private void printInfo(){
         if(DEBUG){
-            Log.e(TAG, "overall state: " + overallState);
-            Log.e(TAG,"Final State: " + liftFinalState);
-            Log.e(TAG, "cubeTray state: "+ trayState);
-            Log.e(TAG, "lift cur target pos: " + liftTargetPosition);
-            Log.e(TAG, "liftTargetPosition :  " + liftMotor.getTargetPosition());
-            Log.e(TAG, "lift current dPosition :  " + liftMotor.getCurrentPosition());
-            Log.e(TAG, "lift motor current mode " + liftMotor.getMode());
+            Log.d(TAG, "overall state: " + overallState);
+            Log.d(TAG,"Final State: " + liftFinalState);
+            Log.d(TAG, "cubeTray state: "+ trayState);
+            Log.d(TAG, "lift cur target pos: " + liftTargetPosition);
+            Log.d(TAG, "lift current dPosition :  " + liftMotor.getCurrentPosition());
+            Log.d(TAG, "lift motor current mode " + liftMotor.getMode());
 
+
+        }
+    }
+
+    // non-joystick update functions
+    public void DefineStartPosition(LiftFinalStates state){
+        liftFinalState  = state;
+        switch (state){
+            case STOWED:
+                trayState = TrayPositions.STOWED;
+                overallState = OverallStates.STOWED;
+                break;
+            case LOW:
+            case MID:
+            case HIGH:
+                trayState = TrayPositions.STOWED;
+                overallState = OverallStates.STOWED;
+                break;
+            case LOADING:
+                trayState = TrayPositions.LOADING;
+                overallState = OverallStates.LOADING;
+                break;
+        }
+    }
+    public void SetToPos(LiftFinalStates state){
+        if (!state.equals(LiftFinalStates.STOWED)) {
+            liftFinalState = state;
+        } else{
+            Log.w(TAG, "SetToPos is unnable to set to STOWED position as of now. Sorry.");
         }
     }
 }

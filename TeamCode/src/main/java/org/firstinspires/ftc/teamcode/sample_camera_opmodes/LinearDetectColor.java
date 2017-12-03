@@ -72,8 +72,7 @@ public class LinearDetectColor extends LinearOpModeCamera {
 //                    int maxG = 0;
 //                    int minG = 0;
 
-                    int minRGB = 0;
-                    int maxRGB = 1;
+
 
 
                     // get image, rotated so (0,0) is in the bottom left of the preview window
@@ -102,6 +101,9 @@ public class LinearDetectColor extends LinearOpModeCamera {
                     int avgredValues = redValues / ((rgbImage.getWidth()/2)*(rgbImage.getHeight()/2));
                     int avgblueValues = blueValues / ((rgbImage.getWidth()/2)*(rgbImage.getHeight()/2));
 
+                    int minRGB = 0;//TODO: Figure out why avgredValues - minRGB = 0 and avgblueValues - minRGB
+                    int maxRGB = 1;
+
                     int newR = ((avgredValues - minRGB)/(maxRGB-minRGB));
                     int newB = ((avgblueValues - minRGB)/(maxRGB-minRGB));
 
@@ -110,7 +112,7 @@ public class LinearDetectColor extends LinearOpModeCamera {
 
                     //Color.red & blue goes to 255
 //                    telemetry.addData("Test BLUE: ", Color.blue(rgbImage.getPixel(rgbImage.getWidth() / 2, rgbImage.getHeight()/2)));
-                    colorString = newR-newB > 30 ? "RED is left" : "BLUE is left";
+                    colorString = newR-newB > 25 ? "RED is left" : "BLUE is left";
 
                     telemetry.addData("Threshold:", newR-newB);
                     telemetry.addData("Color:", "Color detected is: " + colorString);

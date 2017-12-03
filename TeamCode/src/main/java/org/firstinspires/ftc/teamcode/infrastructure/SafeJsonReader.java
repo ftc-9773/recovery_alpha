@@ -55,7 +55,7 @@ public class SafeJsonReader {
         this.modified = false;
         // read file
         String filePath = FullName();
-        if (DEBUG) Log.e(TAG, "try to read json file " + filePath);
+        if (DEBUG) Log.d(TAG, "try to read json file " + filePath);
         FileReader fileReader = null;
         BufferedReader bufReader = null;
         StringBuilder strBuilder = new StringBuilder();
@@ -153,7 +153,7 @@ public class SafeJsonReader {
             Log.e(TAG, "Error while getting string value for key " + name + " in jason file " + this.fileName, e);
         }
         if (DEBUG) {
-            if (value!=null) Log.e(TAG, "read string for key " + name + " and got " + value);
+            if (value!=null) Log.d(TAG, "read string for key " + name + " and got " + value);
             else Log.e(TAG, "read string for key " + name + " and got null");
         }
         return (value);
@@ -167,10 +167,10 @@ public class SafeJsonReader {
             if (! oldValue.equals(newValue)) {
                 this.jsonRoot.put(key, newValue);
                 this.modified = true;
-                if (DEBUG) Log.e(TAG, "write string for key " + name + " with new value " + newValue);
+                if (DEBUG) Log.d(TAG, "write string for key " + name + " with new value " + newValue);
             }
         } catch (JSONException e) {
-            Log.e(TAG, "Error while setting string value for key " + name + " to " + newValue + " in jason file " + this.fileName, e);
+            Log.d(TAG, "Error while setting string value for key " + name + " to " + newValue + " in jason file " + this.fileName, e);
         }
 
     }
@@ -183,7 +183,7 @@ public class SafeJsonReader {
         } catch (JSONException e) {
             Log.e(TAG, "Error while getting int value for key " + name + " in jason file " + this.fileName, e);
         }
-        if (DEBUG) Log.e(TAG, "read int for key " + name + " and got " + value);
+        if (DEBUG) Log.d(TAG, "read int for key " + name + " and got " + value);
         return (value);
     }
 
@@ -194,7 +194,7 @@ public class SafeJsonReader {
             if (oldValue != newValue) {
                 this.jsonRoot.put(key, newValue);
                 this.modified = true;
-                if (DEBUG) Log.e(TAG, "write int for key " + name + " with new value " + newValue);
+                if (DEBUG) Log.d(TAG, "write int for key " + name + " with new value " + newValue);
 
             }
         } catch (JSONException e) {
@@ -213,7 +213,7 @@ public class SafeJsonReader {
         } catch (JSONException e) {
             Log.e(TAG, "Error while getting double value for key " + name + " in jason file " + this.fileName, e);
         }
-        if (DEBUG) Log.e(TAG, "read double for key " + name + " and got " + value);
+        if (DEBUG) Log.d(TAG, "read double for key " + name + " and got " + value);
         return (value);
     }
 
@@ -224,7 +224,7 @@ public class SafeJsonReader {
             if (oldValue != newValue) {
                 this.jsonRoot.put(key, newValue);
                 this.modified = true;
-                if (DEBUG) Log.e(TAG, "write double for key " + name + " with new value " + newValue);
+                if (DEBUG) Log.d(TAG, "write double for key " + name + " with new value " + newValue);
             }
         } catch (JSONException e) {
             Log.e(TAG, "Error while modifying double value for key " + name + " to " + newValue + " in jason file " + this.fileName, e);
@@ -241,7 +241,7 @@ public class SafeJsonReader {
         } catch (JSONException e) {
             Log.e(TAG, "Error while getting boolean value for key " + name + " in jason file " + this.fileName, e);
         }
-        if (DEBUG) Log.e(TAG, "read boolean for key " + name + " and got " + value);
+        if (DEBUG) Log.d(TAG, "read boolean for key " + name + " and got " + value);
         return (value);
     }
 
@@ -252,11 +252,11 @@ public class SafeJsonReader {
             if (oldValue != newValue) {
                 this.jsonRoot.put(key, newValue);
                 this.modified = true;
-                if (DEBUG) Log.e(TAG, "write boolean for key " + name + " with new value " + newValue);
+                if (DEBUG) Log.d(TAG, "write boolean for key " + name + " with new value " + newValue);
 
             }
         } catch (JSONException e) {
-            Log.e(TAG, "Error while modifying boolean value for key " + name + " to " + newValue + " in jason file " + this.fileName, e);
+            Log.e(TAG, "Error while modifying boolean value for key " + name + " to " + newValue + " in json file " + this.fileName, e);
         }
     }
 
@@ -268,7 +268,7 @@ public class SafeJsonReader {
             key = getRealKeyIgnoreCase(obj, name);
             value = obj.getJSONObject(key);
         } catch (JSONException e) {
-            Log.e(TAG, "Error while getting json object value for key " + name + " in jason file " + this.fileName, e);
+            Log.e(TAG, "Error while getting json object value for key " + name + " in json file " + this.fileName, e);
         }
         return (value);
     }
@@ -281,7 +281,7 @@ public class SafeJsonReader {
             key = getRealKeyIgnoreCase(obj, name);
             value = obj.getJSONArray(key);
         } catch (JSONException e) {
-            Log.e(TAG, "Error while getting json array value for key " + name + " in jason file " + this.fileName, e);
+            Log.e(TAG, "Error while getting json array value for key " + name + " in json file " + this.fileName, e);
         }
         return (value);
     }

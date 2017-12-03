@@ -29,11 +29,12 @@ public class TrayTestTeleop extends LinearOpMode {
 
         myCubeTrayController.setServoPos(CubeTray.TrayPositions.STOWED);
 
-        myCubeTrayController.homeLiftVersA();
+            myCubeTrayController.homeLiftVersA();
 
-        myCubeTrayController.liftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
 
         waitForStart();
+        myCubeTrayController.setServoPos(CubeTray.TrayPositions.CARRYING);
 
         while (opModeIsActive()) {
             // integrated lift controlls - what would normally be used

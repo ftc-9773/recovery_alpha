@@ -101,7 +101,7 @@ public class LinearDetectColor extends LinearOpModeCamera {
                     int avgredValues = redValues / ((rgbImage.getWidth()/2)*(rgbImage.getHeight()/2));
                     int avgblueValues = blueValues / ((rgbImage.getWidth()/2)*(rgbImage.getHeight()/2));
 
-                    int minRGB = 0;//TODO: Figure out why avgredValues - minRGB = 0 and avgblueValues - minRGB
+                    int minRGB = 0;//TODO: Figure out why avgredValues - minRGB = 0 and avgblueValues - minRGB.
                     int maxRGB = 1;
 
                     int newR = ((avgredValues - minRGB)/(maxRGB-minRGB));

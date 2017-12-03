@@ -5,6 +5,7 @@ import android.graphics.Color;
 import android.hardware.Camera;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcontroller.for_camera_opmodes.LinearOpModeCamera;
 
@@ -26,6 +27,8 @@ public class LinearDetectColor extends LinearOpModeCamera {
     int redCount = 0;
     int blueCount = 0;
 
+    ElapsedTime time;
+
     @Override
     public void runOpMode() {
 
@@ -37,6 +40,8 @@ public class LinearDetectColor extends LinearOpModeCamera {
         motorRight = hardwareMap.dcMotor.get("motor_2");
         motorLeft.setDirection(DcMotor.Direction.REVERSE);
         */
+
+
 
         if (isCameraAvailable()) {
 
@@ -54,40 +59,71 @@ public class LinearDetectColor extends LinearOpModeCamera {
             telemetry.addLine("Camera ready!");
             telemetry.update();
 
-            waitForStart();
-
-            while (opModeIsActive()) {
+            while (!opModeIsActive()) {
                 if (imageReady()) { // only do this if an image has been returned from the camera
                     int redValue = 0;
                     int blueValue = 0;
                     int greenValue = 0;
 
+                    int minR = 0;
+                    int maxR = 0;
+                    int minB = 0;
+                    int maxB = 0;
+//                    int maxG = 0;
+//                    int minG = 0;
+
+                    int minRGB = 0;
+                    int maxRGB = 1;
+
+
                     // get image, rotated so (0,0) is in the bottom left of the preview window
                     Bitmap rgbImage;
                     rgbImage = convertYuvImageToRgb(yuvImage, width, height, ds2);
+                    int redValues = 0, blueValues = 0;
 
                     for (int x = rgbImage.getWidth() / 2; x < rgbImage.getWidth(); x++) {
                         for (int y = rgbImage.getHeight() / 2; y < rgbImage.getHeight(); y++) {
                             int pixel = rgbImage.getPixel(x, y);
-                            if (Color.red(pixel) > colOn && Color.green(pixel) < colOff && Color.blue(pixel) < colOff)
-                                redValue++;
-                            if (Color.blue(pixel) > colOn && Color.green(pixel) < colOff && Color.red(pixel) < colOff)
-                                blueValue++;
+
+//                            telemetry.addData("ValueR: ", Color.red(pixel));
+//                            telemetry.addData("ValueB: ", Color.blue(pixel));
+
+                            if(Color.red(pixel) < minR) minR = Color.red(pixel);
+                            if(Color.red(pixel) > maxR) maxR = Color.red(pixel);
+                            if(Color.blue(pixel) < minB) minB = Color.blue(pixel);
+                            if(Color.blue(pixel) > maxB) maxB = Color.blue(pixel);
+//                            if(Color.green(pixel) < minG) minG = Color.green(pixel);
+//                            if(Color.green(pixel) > maxG) maxG = Color.green(pixel);
+                            redValues+=Color.red(pixel);
+                            blueValues+=Color.blue(pixel);
                         }
                     }
 
-                    telemetry.addData("RED: ", redValue);
-                    telemetry.addData("BLUE: ", blueValue);
+                    int avgredValues = redValues / ((rgbImage.getWidth()/2)*(rgbImage.getHeight()/2));
+                    int avgblueValues = blueValues / ((rgbImage.getWidth()/2)*(rgbImage.getHeight()/2));
 
-                    colorString = redValue < 5000 ? "BLUE is left" : "RED is left";
+                    int newR = ((avgredValues - minRGB)/(maxRGB-minRGB));
+                    int newB = ((avgblueValues - minRGB)/(maxRGB-minRGB));
 
+                    telemetry.addData("RED: ", newR);
+                    telemetry.addData("BLUE: ", newB);
+
+                    //Color.red & blue goes to 255
+//                    telemetry.addData("Test BLUE: ", Color.blue(rgbImage.getPixel(rgbImage.getWidth() / 2, rgbImage.getHeight()/2)));
+                    colorString = newR-newB > 30 ? "RED is left" : "BLUE is left";
+
+                    telemetry.addData("Threshold:", newR-newB);
                     telemetry.addData("Color:", "Color detected is: " + colorString);
                     telemetry.update();
                     sleep(10);
                 }
-
             }
-            stopCamera();
+
+            waitForStart();
+
+            while (opModeIsActive()) {
+                stopCamera();
+            }
         }
     }
 }

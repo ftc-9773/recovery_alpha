@@ -5,9 +5,10 @@ import android.graphics.Color;
 import android.hardware.Camera;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcontroller.for_camera_opmodes.LinearOpModeCamera;
+import org.firstinspires.ftc.robotcore.external.navigation.RelicRecoveryVuMark;
+import org.firstinspires.ftc.teamcode.Vision.VumarkGlyphPattern;
 
 /**
  * TeleOp Mode
@@ -21,111 +22,88 @@ public class LinearDetectColor extends LinearOpModeCamera {
 
     int ds2 = 2;  // additional downsampling of the image
     // set to 1 to disable further downsampling
-    int colOn = 160;
-    int colOff = 80;
 
-    int redCount = 0;
-    int blueCount = 0;
-
-    ElapsedTime time;
+    String colorString;
+    RelicRecoveryVuMark mark;
+    static final int THRESHOLD = 10;//red - blue
 
     @Override
     public void runOpMode() {
-
-        String colorString = "NONE";
-
-        // linear OpMode, so could do stuff like this too.
-        /*
-        motorLeft = hardwareMap.dcMotor.get("motor_1");
-        motorRight = hardwareMap.dcMotor.get("motor_2");
-        motorLeft.setDirection(DcMotor.Direction.REVERSE);
-        */
+        VumarkGlyphPattern pattern = new VumarkGlyphPattern(hardwareMap);
 
 
-
-        if (isCameraAvailable()) {
-
-            setCameraDownsampling(8);
-            // parameter determines how downsampled you want your images
-            // 8, 4, 2, or 1.
-            // higher number is more downsampled, so less resolution but faster
-            // 1 is original resolution, which is detailed but slow
-            // must be called before super.init sets up the camera
-
-            telemetry.addLine("Wait for camera to finish initializing!");
+        while (!opModeIsActive()) {
+            mark = pattern.getColumn();
+            telemetry.addData("vuMark", mark);
             telemetry.update();
-            startCamera(Camera.CameraInfo.CAMERA_FACING_BACK);  // can take a while.
-            // best started before waitForStart
-            telemetry.addLine("Camera ready!");
+        }
+
+        setCameraDownsampling(8);
+        startCamera(Camera.CameraInfo.CAMERA_FACING_BACK);
+        waitForStart();
+
+        while (opModeIsActive()) {
+            if(colorString==null){
+                detectJewelColor();
+            }
+            telemetry.addData("Jewel Color ", colorString);
+            telemetry.addData("vuMark", mark);
+
             telemetry.update();
+        }
+        stopCamera();
 
-            while (!opModeIsActive()) {
-                if (imageReady()) { // only do this if an image has been returned from the camera
-                    int redValue = 0;
-                    int blueValue = 0;
-                    int greenValue = 0;
+    }
 
-                    int minR = 0;
-                    int maxR = 0;
-                    int minB = 0;
-                    int maxB = 0;
-//                    int maxG = 0;
-//                    int minG = 0;
+    public void detectJewelColor(){
+        int avgredValues = 0, avgblueValues = 0, minRGB = 0, maxRGB = 0;
+        double newR = 0.0, newB = 0.0;
+        if (imageReady()) { // only do this if an image has been returned from the camera
+            int redValue = 0;
+            int blueValue = 0;
+            int greenValue = 0;
 
+            int minR = 0;
+            int maxR = 0;
+            int minB = 0;
+            int maxB = 0;
 
+            // get image, rotated so (0,0) is in the bottom left of the preview window
+            Bitmap rgbImage;
+            rgbImage = convertYuvImageToRgb(yuvImage, width, height, ds2);
+            int redValues = 0, blueValues = 0;
 
-
-                    // get image, rotated so (0,0) is in the bottom left of the preview window
-                    Bitmap rgbImage;
-                    rgbImage = convertYuvImageToRgb(yuvImage, width, height, ds2);
-                    int redValues = 0, blueValues = 0;
-
-                    for (int x = rgbImage.getWidth() / 2; x < rgbImage.getWidth(); x++) {
-                        for (int y = rgbImage.getHeight() / 2; y < rgbImage.getHeight(); y++) {
-                            int pixel = rgbImage.getPixel(x, y);
+            for (int x = rgbImage.getWidth() / 2; x < rgbImage.getWidth(); x++) {
+                for (int y = rgbImage.getHeight() / 2; y < rgbImage.getHeight(); y++) {
+                    int pixel = rgbImage.getPixel(x, y);
 
 //                            telemetry.addData("ValueR: ", Color.red(pixel));
 //                            telemetry.addData("ValueB: ", Color.blue(pixel));
 
-                            if(Color.red(pixel) < minR) minR = Color.red(pixel);
-                            if(Color.red(pixel) > maxR) maxR = Color.red(pixel);
-                            if(Color.blue(pixel) < minB) minB = Color.blue(pixel);
-                            if(Color.blue(pixel) > maxB) maxB = Color.blue(pixel);
+                    if(Color.red(pixel) < minR) minR = Color.red(pixel);
+                    if(Color.red(pixel) > maxR) maxR = Color.red(pixel);
+                    if(Color.blue(pixel) < minB) minB = Color.blue(pixel);
+                    if(Color.blue(pixel) > maxB) maxB = Color.blue(pixel);
 //                            if(Color.green(pixel) < minG) minG = Color.green(pixel);
 //                            if(Color.green(pixel) > maxG) maxG = Color.green(pixel);
-                            redValues+=Color.red(pixel);
-                            blueValues+=Color.blue(pixel);
-                        }
-                    }
-
-                    int avgredValues = redValues / ((rgbImage.getWidth()/2)*(rgbImage.getHeight()/2));
-                    int avgblueValues = blueValues / ((rgbImage.getWidth()/2)*(rgbImage.getHeight()/2));
-
-                    int minRGB = 0;//TODO: Figure out why avgredValues - minRGB = 0 and avgblueValues - minRGB....
-                    int maxRGB = 1;
-
-                    int newR = ((avgredValues - minRGB)/(maxRGB-minRGB));
-                    int newB = ((avgblueValues - minRGB)/(maxRGB-minRGB));
-
-                    telemetry.addData("RED: ", newR);
-                    telemetry.addData("BLUE: ", newB);
-
-                    //Color.red & blue goes to 255
-//                    telemetry.addData("Test BLUE: ", Color.blue(rgbImage.getPixel(rgbImage.getWidth() / 2, rgbImage.getHeight()/2)));
-                    colorString = newR-newB > 25 ? "RED is left" : "BLUE is left";
-
-                    telemetry.addData("Threshold:", newR-newB);
-                    telemetry.addData("Color:", "Color detected is: " + colorString);
-                    telemetry.update();
-                    sleep(10);
+                    redValues+=Color.red(pixel);
+                    blueValues+=Color.blue(pixel);
                 }
             }
 
-            waitForStart();
+            avgredValues = redValues / ((rgbImage.getWidth()/2)*(rgbImage.getHeight()/2));
+            avgblueValues = blueValues / ((rgbImage.getWidth()/2)*(rgbImage.getHeight()/2));
 
-            while (opModeIsActive()) {
-                stopCamera();
-            }
+            minRGB = Math.min(minR,minB);
+            maxRGB = Math.max(maxB,maxR);
+//
+            newR = 255*(avgredValues - minRGB)/(maxRGB-minRGB);
+            newB = 255*(avgblueValues - minRGB)/(maxRGB-minRGB);
+
+            colorString = newR-newB < THRESHOLD ? "BLUE is left" : "RED is left";//TODO: This value may be different under dimmer conditions
+            sleep(10);
         }
+
+        telemetry.addData("actual difference: ", newR-newB);
     }
 }

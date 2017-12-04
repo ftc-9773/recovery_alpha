@@ -5,6 +5,7 @@ import android.graphics.Color;
 import android.hardware.Camera;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcontroller.for_camera_opmodes.LinearOpModeCamera;
 import org.firstinspires.ftc.robotcore.external.navigation.RelicRecoveryVuMark;
@@ -25,7 +26,7 @@ public class LinearDetectColor extends LinearOpModeCamera {
 
     String colorString;
     RelicRecoveryVuMark mark;
-    static final int THRESHOLD = 10;//red - blue
+//    static final int THRESHOLD = 10;//red - blue
 
     @Override
     public void runOpMode() {
@@ -42,13 +43,17 @@ public class LinearDetectColor extends LinearOpModeCamera {
         startCamera(Camera.CameraInfo.CAMERA_FACING_BACK);
         waitForStart();
 
-        while (opModeIsActive()) {
-            if(colorString==null){
-                detectJewelColor();
-            }
-            telemetry.addData("Jewel Color ", colorString);
-            telemetry.addData("vuMark", mark);
+        ElapsedTime timer = new ElapsedTime();
 
+        while (opModeIsActive()) {
+//            if(colorString==null){
+                detectJewelColor();//TODO: Have the camera detect the ball for a certain amount of time, or store it into counts for each color and get the greatest count
+//            }
+//            timer.startTime();
+//            while(timer.seconds()<1.5){
+//                detectJewelColor();
+//            }
+            telemetry.addData("vuMark", mark);
             telemetry.update();
         }
         stopCamera();
@@ -100,10 +105,16 @@ public class LinearDetectColor extends LinearOpModeCamera {
             newR = 255*(avgredValues - minRGB)/(maxRGB-minRGB);
             newB = 255*(avgblueValues - minRGB)/(maxRGB-minRGB);
 
-            colorString = newR-newB < THRESHOLD ? "BLUE is left" : "RED is left";//TODO: This value may be different under dimmer conditions
+            double threshold = newR - newB;
+            if(threshold<6) colorString = "BLUE is left";
+            else if(threshold>=25) colorString = "RED is left";
+            else colorString = "NONE";
+
+//            colorString = newR-newB < threshold ? "BLUE is left" : "RED is left";//TODO: This value may be different under dimmer conditions
             sleep(10);
         }
 
         telemetry.addData("actual difference: ", newR-newB);
+        telemetry.addData("Jewel Color ", colorString);
     }
 }

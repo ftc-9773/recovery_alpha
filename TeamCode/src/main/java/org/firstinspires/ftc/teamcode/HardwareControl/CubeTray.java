@@ -17,7 +17,7 @@ import org.firstinspires.ftc.teamcode.infrastructure.SafeJsonReader;
 
 /**
  ---------------------------------------------------------------------------------------------------
- *                              :How to use this class properly:
+ *                             ::: How to use this class properly :::
  ---------------------------------------------------------------------------------------------------
  *
  * this class uses state logic, and is made to work iteratively, to accomplish tasks without needing
@@ -70,7 +70,7 @@ public class CubeTray {
     public OverallStates overallState = OverallStates.CARRY;
     public LiftFinalStates liftFinalState  = LiftFinalStates.HIGH;
     public long transitionTimer ;
-    private static int trayUpTime = 30; // time in miliseconds given to angle up
+    private static int trayUpTime = 60; // time in miliseconds given to angle up
 
     // define limit switch
     private AnalogInput limitSwitch;
@@ -438,7 +438,7 @@ public class CubeTray {
     }
 
     // non-joystick update functions
-    public void DefineStartPosition(LiftFinalStates state){
+    public void setStartPosition(LiftFinalStates state){
         liftFinalState  = state;
         switch (state){
             case STOWED:

@@ -1,1 +1,6 @@
-{"Kp":-0.9,"Ke":1.2,"Kd":-0.05,"A1":0.03,"A2":0.09,"A3":0.17,"P0":0,"P1":-0.1,"P2":-0.2,"P3":-0.5,"flwStraightPosition":2.967059728390361,"frwStraightPosition":1.4563802980530465,"blwStraightPosition":3.5488361457218036,"brwStraightPosition":5.375614096142535}
+{
+  "Kp": -0.9,
+  "Ke": 1.2,
+  "Kd": -0.1,
+  "maxPower": 0.85
+}

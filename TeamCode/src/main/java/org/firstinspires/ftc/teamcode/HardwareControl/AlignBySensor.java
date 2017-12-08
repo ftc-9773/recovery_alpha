@@ -24,7 +24,7 @@ public class AlignBySensor extends LinearOpMode {
 
     ButtonStatus aButton = new ButtonStatus();
 
-    SafeJsonReader coefficientsFile = new SafeJsonReader("swervePIDCoefficients");
+    SafeJsonReader coefficientsFile = new SafeJsonReader("SwerveModuleZeroPositions");
 
     @Override
     public void runOpMode() throws InterruptedException {

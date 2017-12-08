@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.HardwareControl;
 import android.util.Log;
 
 import com.qualcomm.robotcore.hardware.AnalogInput;
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -32,7 +33,7 @@ public class SwerveModule {
 
     private HardwareMap hwMap;
     public DcMotor swerveMotor;
-    private Servo swerveServo;
+    private CRServo swerveServo;
     private double zeroPosition;
     private AnalogInput swerveAbsEncoder;
 
@@ -43,11 +44,12 @@ public class SwerveModule {
 
 
     private SafeJsonReader myJsonCoefficients;
+    private SafeJsonReader myJsonZeroPosition;
 
 
     private static final String TAG = "ftc9773 SwerveModule";
     private boolean debugHere = true;
-    private final boolean DEBUG = false;
+    private final boolean DEBUG = true;
 
 
     //    PID / Error scaling STUFF   //
@@ -63,6 +65,8 @@ public class SwerveModule {
     private double Ke;
     private double Kd;
 
+    private double maxPower;
+
     /*
     // Step Function constants
     private double A1; // 0.03
@@ -76,8 +80,8 @@ public class SwerveModule {
 
 
     // For outside access
-    public boolean isTurning = false;
-    public double currentPosition = 0;
+    private boolean isTurning = false;
+    private double currentPosition = 0;
 
 
 
@@ -91,7 +95,7 @@ public class SwerveModule {
         this.hwMap = hwMap;
 
         // Set the electronics
-        swerveServo = hwMap.servo.get(hardwareMapTag + "Servo");
+        swerveServo = hwMap.crservo.get(hardwareMapTag + "Servo");
         swerveMotor = hwMap.dcMotor.get(hardwareMapTag + "Motor");
 
         //Set up motor parameters
@@ -108,6 +112,7 @@ public class SwerveModule {
         Ke = myJsonCoefficients.getDouble("Ke");
         Kd = myJsonCoefficients.getDouble("Kd");
 
+        maxPower = myJsonCoefficients.getDouble("maxPower");
         /* Gets coefficients for step function
         A1 = myJsonCoefficients.getDouble("A1");
         A2 = myJsonCoefficients.getDouble("A2");
@@ -119,7 +124,8 @@ public class SwerveModule {
         */
 
         // Sets zero position
-        zeroPosition = myJsonCoefficients.getDouble(hardwareMapTag + "StraightPosition");
+        myJsonZeroPosition = new SafeJsonReader("SwerveModuleZeroPositions");
+        zeroPosition = myJsonZeroPosition.getDouble(hardwareMapTag + "StraightPosition");
     }
 
 
@@ -169,7 +175,7 @@ public class SwerveModule {
 
         if (DEBUG) { Log.d(TAG, "Prop: " + proportionalCorrection + "   Dif:" + differentialCorrection); }
 
-        return 0.5 - proportionalCorrection - differentialCorrection;
+        return proportionalCorrection + differentialCorrection;
 
         //Step Function
         /*
@@ -236,18 +242,18 @@ public class SwerveModule {
             tellServo = calculatePDCorrection(errorAmt);
 
             //Correct onto servo's range
-            if (tellServo > 1) {
-                tellServo = 1;
-            } else if (tellServo < 0) {
-                tellServo = 0;
+            if (tellServo > maxPower) {
+                tellServo = maxPower;
+            } else if (tellServo < -maxPower) {
+                tellServo = -maxPower;
             }
 
         } else {
-            tellServo = 0.5;
+            tellServo = 0;
         }
-        swerveServo.setPosition(tellServo);
+        swerveServo.setPower(tellServo);
 
-        if (Math.abs(tellServo - 0.5) < 0.04) {
+        if (Math.abs(tellServo) < 0.04) {
             isTurning = false;
         }  else {
             isTurning = true;

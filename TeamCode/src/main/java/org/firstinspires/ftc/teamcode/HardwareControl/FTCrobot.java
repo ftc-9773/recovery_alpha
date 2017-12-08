@@ -83,7 +83,7 @@ public class FTCrobot {
 
         // Actual driving
         mySwerveController.steerSwerve(true, myGamepad1.left_stick_x, myGamepad1.left_stick_y * -1, rotation, directionLock);
-        mySwerveController.moveRobot();
+        //mySwerveController.moveRobot();
 
 
         /////// Intake - Gamepad 1 right trigger and bumper /////

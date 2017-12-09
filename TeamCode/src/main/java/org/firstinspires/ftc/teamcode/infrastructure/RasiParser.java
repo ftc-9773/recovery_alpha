@@ -22,8 +22,9 @@ public class RasiParser {
     private BufferedReader buffReader = null;
     private int index = 0;
     FileReader fileReader = null;
+    private int commandReadingIndex = 0;
 
-    private static String TAG= "9773_ControlParser";
+    private static String TAG= "9773_RasiParser";
     private static boolean DEBUG = true;
 
     public RasiParser(String fileName){
@@ -44,25 +45,56 @@ public class RasiParser {
             }
             e.printStackTrace();
         }
+        if(DEBUG){
+            Log.i(TAG,"String is:" + input);
+        }
         boolean condition = true;
+
         index = 0;
         StringBuilder inputBuilder = new StringBuilder(input);
-            while(inputBuilder.length() > index) {
-                if (inputBuilder.charAt(index) == ' ') {
+        if (DEBUG) { Log.i(TAG, "StringBuilder is: ." + inputBuilder); }
+
+        while(inputBuilder.length() > index) {
+            if (inputBuilder.charAt(index) == ' ') {
                     inputBuilder.deleteCharAt(index);
-                }
-                index++;
             }
+            else {
+                index ++;
+            }
+        }
+
+        if (DEBUG) { Log.i(TAG, "New StringBuilder: ." + inputBuilder); }
+
         input = inputBuilder.toString();
         this.commands = input.split(";");
+
+        if (DEBUG) {
+            Log.i(TAG, "Printing commands:");
+            for (String i: this.commands) {
+                Log.i(TAG, "next-" + i);
+            }
         }
+
+    }
+
     public void loadNextCommand(){
-        if(index<commands.length) {
-            commandOut = commands[index].split(",");
-            index++;
+        if(commandReadingIndex<commands.length) {
+            String currentCommand = commands[commandReadingIndex];
+            commandOut = currentCommand.split(",");
+            commandReadingIndex++;
+        } else {
+            Log.e(TAG, "THERE I A REALLY BIG PROBLEM - TRIED TO ACCESS TOO MANY COMMANDS");
+        }
+        if (DEBUG) {
+            String thinggy = "Printing this command:";
+            for (String i: commandOut) {
+                thinggy += ", " + i;
+            }
+            Log.i(TAG, thinggy);
         }
     }
     public String getParameter(int parameterNumber){
+        Log.i(TAG, "Command is: ." + commandOut[parameterNumber]);
         return commandOut[parameterNumber];
     }
 }

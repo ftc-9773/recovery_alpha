@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
+import org.firstinspires.ftc.teamcode.HardwareControl.CubeTray;
 import org.firstinspires.ftc.teamcode.HardwareControl.FTCrobot;
 import org.firstinspires.ftc.teamcode.HardwareControl.IntakeController;
 import org.firstinspires.ftc.teamcode.HardwareControl.SwerveController;
@@ -30,7 +31,10 @@ public class Swerve extends LinearOpMode {
         // Create objects
         myRobot = new FTCrobot(hardwareMap, telemetry, gamepad1, gamepad2);
 
+
+
         waitForStart();
+
         while (opModeIsActive()) {
 
 

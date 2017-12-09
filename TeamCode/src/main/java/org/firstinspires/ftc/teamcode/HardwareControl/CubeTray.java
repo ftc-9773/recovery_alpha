@@ -70,7 +70,7 @@ public class CubeTray {
     public OverallStates overallState = OverallStates.CARRY;
     public LiftFinalStates liftFinalState  = LiftFinalStates.HIGH;
     public long transitionTimer ;
-    private static int trayUpTime = 60; // time in miliseconds given to angle up
+    private static int trayUpTime = 500; // time in miliseconds given to angle up
 
     // define limit switch
     private AnalogInput limitSwitch;
@@ -126,15 +126,15 @@ public class CubeTray {
     private static final double[] rightAnglePostions = {0.07, 0.350, 0.754, 0.754,0.901 } ;   // dump used to be .901
 
 
-    public CubeTray(HardwareMap hwMap, Gamepad gamepad1, Gamepad gamepad2){  // constructor takes hardware map
+    public CubeTray(HardwareMap hwMap, Gamepad PrimaryGamepad, Gamepad TestingGamepad){  // constructor takes hardware map
         // attach all the servos to their hardware map components
         leftFlap = hwMap.servo.get("ctlfServo");
         rightFlap = hwMap.servo.get("ctrfServo");
         leftAngle = hwMap.servo.get("ctlaServo");
         rightAngle = hwMap.servo.get("ctraServo");
         // passes gamepad, instead of gamepad values for ease of use
-        this.gamepad1 = gamepad1;
-        this.gamepad2 = gamepad2;
+        this.gamepad1 = PrimaryGamepad;
+        this.gamepad2 = TestingGamepad;
 
         // attach DC lift motor
         liftMotor = hwMap.dcMotor.get("ctlMotor");
@@ -457,7 +457,7 @@ public class CubeTray {
                 break;
         }
     }
-    public void SetToPos(LiftFinalStates state){
+    public void setToPos(LiftFinalStates state){
         if (!state.equals(LiftFinalStates.STOWED)) {
             liftFinalState = state;
         } else{

@@ -23,6 +23,7 @@ public class FTCrobot {
     private String[] currentCommand;
     private IntakeController myIntakeController;
     private DriveWithPID myDriveWithPID;
+    private CubeTray myCubeTray;
     private HardwareMap hwMap;
     private RelicSystem myRelicSystem;
     private Telemetry myTelemetry;
@@ -45,6 +46,7 @@ public class FTCrobot {
         this.mySwerveController = new SwerveController(hwMap, myGyro, telemetry);
         this.myDriveWithPID = new DriveWithPID(mySwerveController, myGyro);
         this.myRelicSystem = new RelicSystem(myTelemetry, hwMap);
+        this.myCubeTray = new CubeTray(hwmap,gamepad1,null);
         this.myGamepad1 = gamepad1;
         this.myGamepad2 = gamepad2;
     }
@@ -95,6 +97,9 @@ public class FTCrobot {
             myIntakeController.intakeOff();
         }
 
+        // cube tray
+        myCubeTray.updateFromGamepad();
+
         //relic grabber
         if(dpaddownStatus.isJustOn() && state <= 2) {
             myRelicSystem.runSequence((-0.975*myGamepad2.left_stick_y+0.025), state);
@@ -112,6 +117,16 @@ public class FTCrobot {
             }
         } else{
             myRelicSystem.runSequence((-0.975*myGamepad2.left_stick_y+0.025), (char)4);
+        }
+    }
+
+    // homes cube tray lift to top. takes cube tray position object
+    public void homeLift(CubeTray.LiftFinalStates pos ){
+        myCubeTray.setStartPosition(pos);
+        try {
+            myCubeTray.homeLiftVersA();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
     }
 

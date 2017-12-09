@@ -71,9 +71,10 @@ public class SwerveController {
         double Kp = myPIDCoefficients.getDouble("Kp");
         double Ki = myPIDCoefficients.getDouble("Ki");
         double Kd = myPIDCoefficients.getDouble("Kd");
+        double Ke = myPIDCoefficients.getDouble("Ke");
 
         Log.e(TAG, "Coefficients: " + Kp + " " + Ki + " " + Kd);
-        turningPID = new PIDController(Kp, Ki, Kd);
+        turningPID = new PIDController(Kp, Ke, Ki, Kd);
 
         if (RUN_CORD_SYSTEM) { myCoordinateSystem = new CoordinateSystem(0,0,myGyro, telemetry); }
     }
@@ -144,34 +145,11 @@ public class SwerveController {
         }
 
         //Write the direction and speed of each module
-        flwModule.setVector(flwVector, motorsAreForward);
-        frwModule.setVector(frwVector, motorsAreForward);
-        blwModule.setVector(blwVector, motorsAreForward);
-        brwModule.setVector(brwVector, motorsAreForward);
+        flwModule.setVector(flwVector);
+        frwModule.setVector(frwVector);
+        blwModule.setVector(blwVector);
+        brwModule.setVector(brwVector);
 
-
-        /////// Choose whether to flip motor direction ///////////
-
-        final double distAsIs = flwModule.distForwardDirection() + frwModule.distForwardDirection() +
-                blwModule.distForwardDirection() + brwModule.distForwardDirection();
-        final double distSwitched = flwModule.distReversedDirection() + frwModule.distReversedDirection() +
-                blwModule.distReversedDirection() + brwModule.distReversedDirection();
-
-        if (DEBUG) { Log.e(TAG, "Forward Dist: " + distAsIs + "   Backwards Dist: " + distSwitched); }
-
-        if (distSwitched < distAsIs) {
-
-            if (DEBUG) { Log.e(TAG, "Switched Motor Direction"); }
-            //Toggle motorsAreForward
-            motorsAreForward = ! motorsAreForward;
-
-            //Recalcuate ModuleDirection
-            flwModule.setVector(flwVector, motorsAreForward);
-            frwModule.setVector(frwVector, motorsAreForward);
-            blwModule.setVector(blwVector, motorsAreForward);
-            brwModule.setVector(brwVector, motorsAreForward);
-
-        }
 
         // Point modules
         flwModule.pointModule();

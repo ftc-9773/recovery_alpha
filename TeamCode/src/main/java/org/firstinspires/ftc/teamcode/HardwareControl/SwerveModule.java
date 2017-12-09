@@ -6,7 +6,6 @@ import com.qualcomm.robotcore.hardware.AnalogInput;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
-import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.infrastructure.SafeJsonReader;
 import org.firstinspires.ftc.teamcode.resources.Vector;
@@ -38,7 +37,7 @@ public class SwerveModule {
     private AnalogInput swerveAbsEncoder;
 
     private Vector velocityVector = new Vector(true, 0, 0);
-    private boolean motorsAreForward;
+    private boolean motorIsForward;
     public double errorAmt;
     public double tellServo;
 
@@ -47,9 +46,9 @@ public class SwerveModule {
     private SafeJsonReader myJsonZeroPosition;
 
 
-    private static final String TAG = "ftc9773 SwerveModule";
+    private String TAG = "ftc9773 SwerveModule ";
     private boolean debugHere = true;
-    private final boolean DEBUG = true;
+    private final boolean DEBUG = false;
 
 
     //    PID / Error scaling STUFF   //
@@ -87,10 +86,9 @@ public class SwerveModule {
 
     //INIT
     public SwerveModule(HardwareMap hwMap, String hardwareMapTag) {
-        Log.d(TAG, "Building servo " + hardwareMapTag);
-
         if (hardwareMapTag == "flw") { debugHere = true; }
 
+        TAG += hardwareMapTag;
         // Pass the hardware map
         this.hwMap = hwMap;
 
@@ -203,34 +201,25 @@ public class SwerveModule {
     /////// For Outside Control ////////
 
     // Writes the module direction
-    public void setVector(Vector newVector, boolean motorsAreForward) {
-
-        this.motorsAreForward = motorsAreForward;
-
-        if (motorsAreForward) {
-            velocityVector.set(true, newVector.getX(), newVector.getY());
-        } else {
-            velocityVector.set(true, -newVector.getX(), -newVector.getY());
-        }
+    public void setVector(Vector newVector) {
 
         // Finds the current position
         currentPosition = setOnTwoPI(2*Math.PI * (1 - swerveAbsEncoder.getVoltage()/3.24) - zeroPosition);
 
         //Calculates distance to move on -pi to pi
-        errorAmt = setOnNegPosPI(velocityVector.getAngle() - currentPosition);
+        final double forwardError = setOnNegPosPI(newVector.getAngle() - currentPosition);
+        final double backwardsError = setOnNegPosPI(newVector.getAngle() - currentPosition - Math.PI);
+
+        if (Math.abs(forwardError) < Math.abs(backwardsError)) {
+            velocityVector.set(true, newVector.getX(), newVector.getY());
+            motorIsForward = true;
+            errorAmt = forwardError;
+        } else {
+            velocityVector.set(true, -newVector.getX(), -newVector.getY());
+            motorIsForward = false;
+            errorAmt = backwardsError;
+        }
     }
-
-    // returns distance for servo to turn with motor as is
-    public double distForwardDirection () {
-        return Math.abs(errorAmt);
-    }
-
-    // returns distance for servos to turn with motor direction switched
-    public double distReversedDirection () {
-
-        return Math.abs(setOnTwoPI(errorAmt) - Math.PI);
-    }
-
 
     // Rotates the Module
     public void pointModule() {
@@ -252,6 +241,7 @@ public class SwerveModule {
             tellServo = 0;
         }
         swerveServo.setPower(tellServo);
+        if (DEBUG && debugHere) { Log.e(TAG, "Servo written: " + tellServo); }
 
         if (Math.abs(tellServo) < 0.04) {
             isTurning = false;
@@ -263,7 +253,7 @@ public class SwerveModule {
 
     // Drives the wheel
     public void driveModule() {
-        if (motorsAreForward) {
+        if (motorIsForward) {
             swerveMotor.setPower(velocityVector.getMagnitude());
         } else {
             swerveMotor.setPower(velocityVector.getMagnitude() * -1);

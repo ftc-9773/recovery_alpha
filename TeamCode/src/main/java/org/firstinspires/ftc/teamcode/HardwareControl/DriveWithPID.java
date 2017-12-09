@@ -45,7 +45,6 @@ public class DriveWithPID {
 
     // Actual driving funftions
     public void driveStraight(boolean isCartesian, double xMag, double yAngleDegrees, double robotOrientationDegrees, double distInches) throws InterruptedException {
-
         double yAngleRadians = Math.toRadians(yAngleDegrees);
 
         // Point in the right direction

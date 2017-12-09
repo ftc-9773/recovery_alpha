@@ -28,7 +28,7 @@ public class RasiParser {
 
     public RasiParser(String fileName){
         try {
-            fileReader = new FileReader("/sdcard/FIRST/team9773/rasi18/" + fileName + ".rasi");
+            fileReader = new FileReader("/storage/emulated/0/FIRST/team9773/rasi18/" + fileName + ".rasi");
             buffReader = new BufferedReader(fileReader);
         }
         catch(IOException e){

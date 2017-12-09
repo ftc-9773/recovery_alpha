@@ -143,6 +143,8 @@ public class FTCrobot {
     }
 
     public void runRASI(String filename){
+        myTelemetry.addData("rasi status: ", "running");
+        myTelemetry.update();
         opModeControl = new RasiParser(filename);
         int index = 0;
         while(index<opModeControl.commands.length) {
@@ -150,6 +152,8 @@ public class FTCrobot {
             switch (opModeControl.getParameter(0)) {
                 case "drv":
                     try {
+                        myTelemetry.addData("driving straight ", opModeControl.getParameter(4) + "in.");
+                        myTelemetry.update();
                         myDriveWithPID.driveStraight(false, Double.valueOf(opModeControl.getParameter(1)), Double.valueOf(opModeControl.getParameter(2)), Double.valueOf(opModeControl.getParameter(3)), Double.valueOf(opModeControl.getParameter(4)));
                     } catch (InterruptedException e) {
                         e.printStackTrace();
@@ -170,6 +174,7 @@ public class FTCrobot {
                 case "end":
                     index = opModeControl.commands.length;
             }
+            myTelemetry.update();
         }
     }
 }

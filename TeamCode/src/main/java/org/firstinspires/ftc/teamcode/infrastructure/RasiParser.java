@@ -51,6 +51,7 @@ public class RasiParser {
                 if (inputBuilder.charAt(index) == ' ') {
                     inputBuilder.deleteCharAt(index);
                 }
+                index++;
             }
         input = inputBuilder.toString();
         this.commands = input.split(";");

@@ -8,7 +8,8 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.HardwareControl.IntakeController;
 import org.firstinspires.ftc.teamcode.HardwareControl.SwerveController;
-import org.firstinspires.ftc.teamcode.HardwareControl.CubeTrayController;
+import org.firstinspires.ftc.teamcode.HardwareControl.CubeTray;
+import org.firstinspires.ftc.teamcode.PositionTracking.Gyro;
 /*
  * Created by zacharye on 11/19/17.
  */
@@ -22,10 +23,17 @@ public class TestOpmode extends LinearOpMode {
     private static final String TAG = "ftc9773 TestOpmode";
     private static final boolean DEBUG_SWERVE = false;
     private static final boolean DEBUG_CUBE_TRAY = false;
+    private static final double  intakePowerTol = .2 ;
 
     // private SwerveController mySwerveController;
     private IntakeController myIntakeController;
-    private CubeTrayController myCubeTrayController;
+    private CubeTray myCubeTrayController;
+    private SwerveController mySwerveController ;
+
+    // util stuff
+    private Gyro myGyro;
+
+
 
     //TEST cubeTray
 
@@ -34,19 +42,33 @@ public class TestOpmode extends LinearOpMode {
         Log.e(TAG, "Started initializing");
 
         // Create objects
-        // mySwerveController = new SwerveController(hardwareMap,);
+        myGyro = new Gyro(hardwareMap);
         myIntakeController = new IntakeController(hardwareMap);
-        myCubeTrayController = new CubeTrayController(hardwareMap, gamepad2);
+        myCubeTrayController = new CubeTray(hardwareMap, gamepad2, null);
+        mySwerveController = new SwerveController(hardwareMap, myGyro, telemetry);
+
+        //initialise processes
+        myGyro.setZeroPosition();
+        myCubeTrayController.setStartPosition(CubeTray.LiftFinalStates.LOADING);
+
+
 
         waitForStart();
         while (opModeIsActive()) {
 
-            // update the intake object
-            myIntakeController.runIntakeIn();
+            // move swerve drive
+            mySwerveController.pointModules(true, gamepad1.left_stick_x,gamepad1.left_stick_y,gamepad1.right_stick_x);
+            mySwerveController.moveRobot();
 
-            // update and move swerve drive
-            // mySwerveController.pointDirection(gamepad1.left_stick_y * -1, gamepad1.left_stick_x * -1, gamepad1.right_stick_x);
-            // mySwerveController.moveRobot();
+            // update the intake object
+            if (gamepad2.right_stick_y < 0 - intakePowerTol){
+                myIntakeController.runIntakeIn();
+            } else if (gamepad2.right_stick_y > 0 + intakePowerTol){
+                myIntakeController.runIntakeOut();
+            } else {
+                myIntakeController.intakeOff();
+            }
+
             // update cube tray
             myCubeTrayController.updateFromGamepad();
 

@@ -47,13 +47,11 @@ public class RasiParser {
         boolean condition = true;
         index = 0;
         StringBuilder inputBuilder = new StringBuilder(input);
-        while(condition){
-            if(inputBuilder.length() > index) {
+            while(inputBuilder.length() > index) {
                 if (inputBuilder.charAt(index) == ' ') {
                     inputBuilder.deleteCharAt(index);
                 }
             }
-        }
         input = inputBuilder.toString();
         this.commands = input.split(";");
         }

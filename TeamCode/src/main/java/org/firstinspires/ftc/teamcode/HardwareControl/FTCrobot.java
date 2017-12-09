@@ -6,7 +6,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.PositionTracking.Gyro;
 import org.firstinspires.ftc.teamcode.infrastructure.ButtonStatus;
-import org.firstinspires.ftc.teamcode.infrastructure.controlParser;
+import org.firstinspires.ftc.teamcode.infrastructure.RasiParser;
 import org.firstinspires.ftc.teamcode.opmodes.Swerve;
 import android.util.Log;
 
@@ -19,7 +19,7 @@ public class FTCrobot {
     private double directionLock = -1;
 
     private Gyro myGyro;
-    private controlParser opModeControl;
+    private RasiParser opModeControl;
     private String[] currentCommand;
     private IntakeController myIntakeController;
     private DriveWithPID myDriveWithPID;
@@ -31,6 +31,9 @@ public class FTCrobot {
     private Gamepad myGamepad2;
     private boolean dpadlast = false;
     private char state = 0;
+    private boolean armState = false;
+    private boolean grabState = false;
+    private long time;
     private ButtonStatus dpadupStatus = new ButtonStatus();
     private ButtonStatus dpaddownStatus = new ButtonStatus();
 
@@ -101,22 +104,24 @@ public class FTCrobot {
         myCubeTray.updateFromGamepad();
 
         //relic grabber
-        if(dpaddownStatus.isJustOn() && state <= 2) {
-            myRelicSystem.runSequence((-0.975*myGamepad2.left_stick_y+0.025), state);
-            if(state == 3){
-                state = 0;
-            } else{
-                state++;
-            }
-        }else if(dpadupStatus.isJustOn() && state >= 0) {
-            myRelicSystem.runSequence((-0.975*myGamepad2.left_stick_y+0.025), state);
-            if(state == 0){
-                state = 3;
-            } else{
-                state-=1;
-            }
-        } else{
-            myRelicSystem.runSequence((-0.975*myGamepad2.left_stick_y+0.025), (char)4);
+
+        if(dpadupStatus.isJustOn()){
+            armState = !armState;
+        }
+        if(dpaddownStatus.isJustOn()){
+            grabState = !grabState;
+        }
+        myRelicSystem.runSequence(myGamepad2.left_stick_y*-0.95 + 0.05, armState, grabState);
+
+        ButtonStatus leftBumperStatus = new ButtonStatus();
+        leftBumperStatus.recordNewValue(myGamepad2.left_bumper);
+
+        if(leftBumperStatus.isJustOn()){
+            time = System.currentTimeMillis();
+            myIntakeController.lowerIntake(true);
+        }
+        if (System.currentTimeMillis()-500>time){
+            myIntakeController.lowerIntake(false);
         }
     }
 
@@ -138,23 +143,29 @@ public class FTCrobot {
     }
 
     public void runRASI(String filename){
-        opModeControl = new controlParser(filename);
+        opModeControl = new RasiParser(filename);
         int index = 0;
         while(index<opModeControl.commands.length) {
-            currentCommand = opModeControl.getNextCommand();
-            switch (currentCommand[0]) {
+            opModeControl.loadNextCommand();
+            switch (opModeControl.getParameter(0)) {
                 case "drv":
                     try {
-                        myDriveWithPID.driveStraight(false, Double.valueOf(currentCommand[1]), Double.valueOf(currentCommand[2]), Double.valueOf(currentCommand[3]), Double.valueOf(currentCommand[4]));
+                        myDriveWithPID.driveStraight(false, Double.valueOf(opModeControl.getParameter(1)), Double.valueOf(opModeControl.getParameter(2)), Double.valueOf(opModeControl.getParameter(3)), Double.valueOf(opModeControl.getParameter(4)));
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
                     break;
-                case "intk":
+                case "intko":
                     myIntakeController.runIntakeIn();
                     break;
-                case "outk":
+                case "intki":
                     myIntakeController.runIntakeOut();
+                    break;
+                case "intkl":
+                    myIntakeController.lowerIntake(true);
+                    time = System.currentTimeMillis();
+                    while (time+500<System.currentTimeMillis()){}
+                    myIntakeController.lowerIntake(false);
                     break;
                 case "end":
                     index = opModeControl.commands.length;

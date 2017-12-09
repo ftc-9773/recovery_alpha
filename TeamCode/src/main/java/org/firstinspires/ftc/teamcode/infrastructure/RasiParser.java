@@ -14,20 +14,19 @@ import java.io.IOException;
  * Created by Vikesh on 11/19/2017.
  */
 
-public class controlParser {
+public class RasiParser {
 
     public String[] commands;
     private String[] commandOut = new String[4];
     private String input;
     private BufferedReader buffReader = null;
     private int index = 0;
-    private Telemetry telemetry;
     FileReader fileReader = null;
 
     private static String TAG= "9773_ControlParser";
     private static boolean DEBUG = true;
 
-    public controlParser(String fileName){
+    public RasiParser(String fileName){
         try {
             fileReader = new FileReader("/sdcard/FIRST/team9773/rasi18/" + fileName + ".rasi");
             buffReader = new BufferedReader(fileReader);
@@ -58,12 +57,13 @@ public class controlParser {
         input = inputBuilder.toString();
         this.commands = input.split(";");
         }
-    public String[] getNextCommand(){
+    public void loadNextCommand(){
         if(index<commands.length) {
             commandOut = commands[index].split(",");
             index++;
         }
-        telemetry.addData("Current Action: ", commandOut[0]);
-        return commandOut;
+    }
+    public String getParameter(int parameterNumber){
+        return commandOut[parameterNumber];
     }
 }

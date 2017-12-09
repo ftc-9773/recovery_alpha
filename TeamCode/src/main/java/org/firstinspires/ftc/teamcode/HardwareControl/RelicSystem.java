@@ -29,28 +29,19 @@ public class RelicSystem {
         extensionMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         extensionMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
     }
-    public void runSequence(double power, char armState){
+    public void runSequence(double power, boolean armState, boolean grabState){
         extensionMotor.setPower(power);
         telemetry.addData("Current Position", extensionMotor.getCurrentPosition());
-        switch(armState){
-            case 0:
-                armServo.setPosition(1);
-                grabServo.setPosition(.69);
-                break;
-            case 1:
-                armServo.setPosition(1);
-                grabServo.setPosition(.35);
-                break;
-            case 2:
-                armServo.setPosition(1);
-                grabServo.setPosition(.69);
-                break;
-            case 3:
-                armServo.setPosition(0.05);
-                grabServo.setPosition(0.69);
-            default:
-                break;
+        if(!armState) {
+            armServo.setPosition(1);
+        }else {
+            armServo.setPosition(0.05);
+            grabServo.setPosition(.69);
         }
-
+        if (!grabState) {
+            grabServo.setPosition(.35);
+        }else{
+            grabServo.setPosition(.69);
+        }
     }
 }

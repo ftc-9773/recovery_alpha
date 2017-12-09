@@ -5,6 +5,7 @@ import android.util.Log;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.infrastructure.SafeJsonReader;
 
@@ -15,6 +16,7 @@ import org.firstinspires.ftc.teamcode.infrastructure.SafeJsonReader;
 public class IntakeController {
     public DcMotor leftMotor;
     public DcMotor rightMotor;
+    public Servo intakeServo;
 
     private static double LEFT_MOTOR_POWER = 1;
     private static double RIGHT_MOTOR_POWER = 1;
@@ -46,6 +48,7 @@ public class IntakeController {
     public IntakeController(HardwareMap hardwareMap) {
         leftMotor = hardwareMap.dcMotor.get("liMotor");
         rightMotor = hardwareMap.dcMotor.get("riMotor");
+        intakeServo = hardwareMap.servo.get("iServo");
 
         leftMotor.setDirection(DcMotor.Direction.FORWARD);
         rightMotor.setDirection(DcMotor.Direction.REVERSE);
@@ -62,6 +65,15 @@ public class IntakeController {
         REVERSE_DELAY = jsonParameters.getDouble("REVERSE_DELAY");
         REVERSE_DIST =  jsonParameters.getInt("REVERSE_DIST");
         REVERSE_SPEED = jsonParameters.getDouble("REVERSE_SPEED");
+    }
+
+    public void lowerIntake(boolean stopOrStart){
+        if (stopOrStart) {
+            intakeServo.setPosition(1);
+        }
+        else{
+            intakeServo.setPosition(0.5);
+        }
     }
 
     public void runIntakeIn() {

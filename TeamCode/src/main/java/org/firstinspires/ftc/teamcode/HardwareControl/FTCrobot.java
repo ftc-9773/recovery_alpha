@@ -19,6 +19,7 @@ public class FTCrobot {
     private double directionLock = -1;
 
     private Gyro myGyro;
+    private CubeTrayController myCubeTrayController;
     private RasiParser opModeControl;
     private String[] currentCommand;
     private IntakeController myIntakeController;
@@ -46,6 +47,7 @@ public class FTCrobot {
         this.myTelemetry = telemetry;
         myIntakeController = new IntakeController(hwMap);
         this.myGyro = new Gyro(hwMap);
+        this.myCubeTrayController = new CubeTrayController(hwmap, gamepad1, gamepad2);
         this.mySwerveController = new SwerveController(hwMap, myGyro, telemetry);
         this.myDriveWithPID = new DriveWithPID(mySwerveController, myGyro);
         this.myRelicSystem = new RelicSystem(myTelemetry, hwMap);
@@ -168,6 +170,21 @@ public class FTCrobot {
                     time = System.currentTimeMillis();
                     while (time+500<System.currentTimeMillis()){}
                     myIntakeController.lowerIntake(false);
+                    break;
+                case "ctstow":
+                    myCubeTrayController.goToStowPos();
+                    break;
+                case "ctload":
+                    myCubeTrayController.goToLoadPos();
+                    break;
+                case "ctcl":
+                    myCubeTrayController.goToCarryPosLow();
+                    break;
+                case "ctch":
+                    myCubeTrayController.goToCarryPosHigh();
+                    break;
+                case "ctdump":
+                    myCubeTrayController.goToDumpPosFlaps();
                     break;
                 case "end":
                     index = opModeControl.commands.length;

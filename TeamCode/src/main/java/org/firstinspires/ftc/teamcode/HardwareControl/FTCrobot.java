@@ -23,7 +23,7 @@ public class FTCrobot {
     private String[] currentCommand;
     private IntakeController myIntakeController;
     private DriveWithPID myDriveWithPID;
-    private CubeTray myCubeTray;
+    public CubeTray myCubeTray;
     private HardwareMap hwMap;
     private RelicSystem myRelicSystem;
     private Telemetry myTelemetry;
@@ -101,6 +101,8 @@ public class FTCrobot {
         }
 
         // cube tray
+        myCubeTray.updateFromGamepad();
+        /*
         if(myGamepad2.x){
             myCubeTray.setToPos(CubeTray.LiftFinalStates.LOADING);
         } else if (myGamepad2.a){
@@ -114,7 +116,7 @@ public class FTCrobot {
             myCubeTray.setServoPos(CubeTray.TrayPositions.DUMP_A);
         }
         myCubeTray.updatePosition();
-
+        */
         //relic grabber
 
         if(dpadupStatus.isJustOn()){

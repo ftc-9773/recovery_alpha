@@ -33,9 +33,13 @@ public class Swerve extends LinearOpMode {
 
         // init the lift
         myRobot.homeLift(CubeTray.LiftFinalStates.HIGH);
+        myRobot.myCubeTray.setToPos(CubeTray.LiftFinalStates.HIGH);
 
 
         waitForStart();
+        myRobot.myCubeTray.setServoPos(CubeTray.TrayPositions.CARRYING);
+
+
 
         while (opModeIsActive()) {
 

@@ -120,10 +120,10 @@ public class CubeTray {
     //define servo positions - each array of postitons go in the following order:
     // stowed, loading, carrying, dumpingFlap, dumpingAngleAndFlap
 
-    private static final double[] leftFlapPositions = {0.532, 0.5328, 0.35, 0.73, 0.73 } ;
-    private static final double[] rightFlapPostions = {.581, .581, 0.78, 0.4,1,1 } ;
-    private static final double[] leftAnglePostions = {0.885, 0.554, 0.169, 0.169, 0.039} ;  // dump used to be .039
-    private static final double[] rightAnglePostions = {0.07, 0.350, 0.754, 0.754,0.901 } ;   // dump used to be .901
+    private static double[] leftFlapPositions = {0.532, 0.5328, 0.35, 0.73, 0.73 } ;
+    private static double[] rightFlapPostions = {.581, .6, 0.78,0.41,0.411 } ;
+    private static double[] leftAnglePostions = {0.885, 0.554, 0.169, 0.169, 0.039} ;  // dump used to be .039
+    private static double[] rightAnglePostions = {0.07, 0.350, 0.754, 0.754,0.901 } ;   // dump used to be .901
 
 
     public CubeTray(HardwareMap hwMap, Gamepad gamepad1, Gamepad gamepad2){  // constructor takes hardware map
@@ -151,13 +151,22 @@ public class CubeTray {
         loadPosTicks = myCubeTrayPositions.getInt("loadPosTicks");
         toLoadingThreshold = myCubeTrayPositions.getInt("toLoadingThreshold");
 
-        if (DEBUG) {
-            Log.i(TAG, "sensor position set to: " + sensorPosTicks);
-            Log.i(TAG, "TopPosTicks set to: " + topPosTicks);
-            Log.i(TAG, "middle position ticks set to: " + middlePosTicks);
-            Log.i(TAG, "bottom position set to: " + bottomPosTicks);
-            Log.i(TAG, "load position set to: " + loadPosTicks);
-        }
+        Log.i(TAG, "sensor position set to: " + sensorPosTicks);
+        Log.i(TAG, "TopPosTicks set to: " + topPosTicks);
+        Log.i(TAG, "middle position ticks set to: " + middlePosTicks);
+        Log.i(TAG, "bottom position set to: " + bottomPosTicks);
+        Log.i(TAG, "load position set to: " + loadPosTicks);
+
+        // set up servos
+        leftFlapPositions = buildServoPosArrayFromJson("leftFlap" , leftFlapPositions);
+        rightFlapPostions = buildServoPosArrayFromJson("rightFlap" , rightFlapPostions);
+        leftAnglePostions = buildServoPosArrayFromJson("leftAngle" , leftAnglePostions);
+        rightAnglePostions = buildServoPosArrayFromJson("rightAngle" , leftFlapPositions);
+
+
+
+
+
         //todo: finish tuning PID
 
         // setup PID for lift
@@ -477,5 +486,64 @@ public class CubeTray {
         } else{
             Log.w(TAG, "SetToPos is unnable to set to STOWED position as of now. Sorry.");
         }
+    }
+
+
+    private double[] buildServoPosArrayFromJson(String servoName, double[] positions){
+            boolean success = true;
+            Log.i(TAG, "building servo: " + servoName);
+
+        // build stowed pos setting
+        double stowedTempVal = myCubeTrayPositions.getDouble(servoName + "Stowed");
+        if(stowedTempVal != 0.0) {
+            positions[0] = stowedTempVal;
+            Log.i(TAG, "built servo " +servoName + " stowed pos to" +stowedTempVal);
+        }   else {
+            success = false;
+            Log.w(TAG, "unnable to build servo " +servoName + " stowed pos; set to hardcoded default");
+        }
+
+        // build loading pos setting
+        double loadingTempVal = myCubeTrayPositions.getDouble(servoName + "Loading");
+        if(loadingTempVal != 0.0) {
+            positions[1] = loadingTempVal;
+            Log.i(TAG, "built servo " +servoName + " loading pos to" +loadingTempVal);
+
+        }   else {
+            success = false;
+            Log.w(TAG, "unnable to build servo " +servoName + " laoding pos; set to hardcoded default");
+        }
+
+        // build carrying pos setting
+        double carryingTempVal = myCubeTrayPositions.getDouble(servoName + "Carrying");
+        if(carryingTempVal != 0.0) {
+            positions[2] = carryingTempVal;
+            Log.i(TAG, "built servo " +servoName + " carrying pos to" +carryingTempVal);
+        }   else {
+            Log.w(TAG, "unnable to build servo " +servoName + " carrying pos; set to hardcoded default");
+            success = false;
+        }
+
+        // build dumpingA pos setting
+        double dumpingFlapTempVal = myCubeTrayPositions.getDouble(servoName + "DumpingFlap");
+        if(dumpingFlapTempVal != 0.0) {
+            positions[3] = dumpingFlapTempVal;
+            Log.i(TAG, "built servo " +servoName + " dumpA pos to" +dumpingFlapTempVal);
+        }   else {
+            Log.w(TAG, "unnable to build servo " +servoName + " DumpA pos; set to hardcoded default");
+            success = false;
+        }
+
+        // build dumpingB pos setting
+        double dumpingAngleTempVal = myCubeTrayPositions.getDouble(servoName + "DumpingAngle");
+        if(dumpingAngleTempVal != 0.0) {
+            positions[4] = dumpingAngleTempVal;
+            Log.i(TAG, "built servo " +servoName + " dumpB pos to" +dumpingAngleTempVal);
+        }   else{
+            success = false;
+            Log.w(TAG, "unnable to build servo " +servoName + " dumpingB pos; set to hardcoded default");
+
+        }
+        return positions;
     }
 }

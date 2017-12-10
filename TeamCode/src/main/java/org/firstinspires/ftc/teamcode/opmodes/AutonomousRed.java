@@ -25,6 +25,6 @@ public class AutonomousRed extends LinearOpMode {
         //mydriveWithPID = new DriveWithPID(mySwerveController, myGyro);
         waitForStart();
         //mydriveWithPID.driveStraight(true, 1, 1, 0, 12);
-        ftcRobot.runRASI("autored");
+        ftcRobot.runRASI("AutonTesting");
         }
 }

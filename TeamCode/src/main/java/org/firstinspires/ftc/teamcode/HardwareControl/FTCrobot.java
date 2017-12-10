@@ -14,6 +14,14 @@ import android.util.Log;
  * Created by Vikesh on 11/22/2017.
  */
 
+/*
+* To get to the right directory:
+* cd TeamCode/src/main/java/org/firstinspires/ftc/teamcode/RASI/
+*
+* To push:
+* ~/Library/Android/sdk/platform-tools/adb push AutonTesting.rasi /sdcard/FIRST/team9773/rasi18/
+ */
+
 public class FTCrobot {
     private SwerveController mySwerveController;
     private double directionLock = -1;
@@ -146,13 +154,14 @@ public class FTCrobot {
         myTelemetry.update();
         int index = 0;
         while(index<opModeControl.commands.length) {
+            Log.i(TAG, "Index is: " + index);
             opModeControl.loadNextCommand();
             switch (opModeControl.getParameter(0)) {
                 case "drv":
                     try {
                         myDriveWithPID.driveStraight(false, Double.valueOf(opModeControl.getParameter(1)), Double.valueOf(opModeControl.getParameter(2)), Double.valueOf(opModeControl.getParameter(3)), Double.valueOf(opModeControl.getParameter(4)));
                    } catch (InterruptedException e) {
-                        //e.printStackTrace();
+                        e.printStackTrace();
                    }
                     break;
                 case "intko":
@@ -183,6 +192,7 @@ public class FTCrobot {
                     index = opModeControl.commands.length;
             }
             myTelemetry.update();
+            index ++;
         }
     }
 }

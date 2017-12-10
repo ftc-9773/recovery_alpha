@@ -18,20 +18,24 @@ public class PIDController {
     private long deltaTime;
     private boolean firstRun = true;
 
+    private boolean useExponential;
+
     private static int maxDeltaTime = 800;
+    private static boolean DEBUG = true;
 
     public PIDController (double KP, double KE, double KI, double KD) {
         this.KP = KP;
         this.KI = KI;
         this.KD = KD;
         this.KE = KE;
+        useExponential = true;
     }
 
     public PIDController( double KP, double KI, double KD) {
         this.KP = KP;
         this.KI = KI;
         this.KD = KD;
-        this.KE = 0;
+        useExponential = false;
     }
 
     public double getPIDCorrection(double error) {
@@ -39,7 +43,8 @@ public class PIDController {
         deltaTime = System.currentTimeMillis() - lastTime;
 
         //Calculate exponential error
-        double expError = Math.pow(Math.abs(error), KE - 1);
+        double expError = 1;
+        if (useExponential) {expError = Math.pow(Math.abs(error), KE - 1); }
 
         // If it is the first run, just return proportional error as i and d cannot be cauculated yet
         if (firstRun || deltaTime > maxDeltaTime) {

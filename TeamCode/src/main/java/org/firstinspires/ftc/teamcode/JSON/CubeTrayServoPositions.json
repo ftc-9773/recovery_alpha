@@ -9,8 +9,8 @@
   "loadPosTicks"    : 250,
   "toLoadingThreshold" : 500,
 
-  "liftHeightP" : 0.0016,
-  "liftHeightI" : 0.0,
-  "LiftHeightD" : 0.0
+  "liftHeightP" : 0.0025,
+  "liftHeightI" : 0.0009,
+  "LiftHeightD" : 0.002
 
   }

@@ -48,9 +48,9 @@ import org.firstinspires.ftc.teamcode.infrastructure.SafeJsonReader;
  * cd TeamCode/src/main/java/org/firstinspires/ftc/teamcode/JSON/
  *
  * To push the file:
- * ~/Library/Android/sdk/platform-tools/adb push CubeTayServoPositions.json /sdcard/FIRST/team9773/json18/
+ * ~/Library/Android/sdk/platform-tools/adb push CubeTrayServoPositions.json /sdcard/FIRST/team9773/json18
  *
- * To pull the file:
+ *cd
  *
  */
 
@@ -88,7 +88,7 @@ public class CubeTray {
 
     //DEBUGING
     private static final boolean DEBUG = true;
-    private static final String TAG = "ftc9773 CubeTray" ;
+    private static final String TAG = "ftc9773_CubeTray" ;
 
     // servo position variables for testing
     public double leftFlapPos ;
@@ -103,7 +103,7 @@ public class CubeTray {
     //HOMING variables
     private int zeroPos = 0;
 
-    // setup variables for positioning
+    // setup variables for positioning    // default values are hardcoded in case of issue
     private static int sensorPosTicks = 3615;
     private static int topPosTicks = 3260;
     private static int middlePosTicks = 1850;
@@ -126,15 +126,15 @@ public class CubeTray {
     private static final double[] rightAnglePostions = {0.07, 0.350, 0.754, 0.754,0.901 } ;   // dump used to be .901
 
 
-    public CubeTray(HardwareMap hwMap, Gamepad PrimaryGamepad, Gamepad TestingGamepad){  // constructor takes hardware map
+    public CubeTray(HardwareMap hwMap, Gamepad gamepad1, Gamepad gamepad2){  // constructor takes hardware map
         // attach all the servos to their hardware map components
         leftFlap = hwMap.servo.get("ctlfServo");
         rightFlap = hwMap.servo.get("ctrfServo");
         leftAngle = hwMap.servo.get("ctlaServo");
         rightAngle = hwMap.servo.get("ctraServo");
         // passes gamepad, instead of gamepad values for ease of use
-        this.gamepad1 = PrimaryGamepad;
-        this.gamepad2 = TestingGamepad;
+        this.gamepad1 = gamepad1;
+        this.gamepad2 = gamepad2;
 
         // attach DC lift motor
         liftMotor = hwMap.dcMotor.get("ctlMotor");
@@ -152,11 +152,11 @@ public class CubeTray {
         toLoadingThreshold = myCubeTrayPositions.getInt("toLoadingThreshold");
 
         if (DEBUG) {
-            Log.d(TAG, "sensor position set to: " + sensorPosTicks);
-            Log.d(TAG, "TopPosTicks set to: " + topPosTicks);
-            Log.d(TAG, "middle position ticks set to: " + middlePosTicks);
-            Log.d(TAG, "bottom position set to: " + bottomPosTicks);
-            Log.d(TAG, "load position set to: " + loadPosTicks);
+            Log.i(TAG, "sensor position set to: " + sensorPosTicks);
+            Log.i(TAG, "TopPosTicks set to: " + topPosTicks);
+            Log.i(TAG, "middle position ticks set to: " + middlePosTicks);
+            Log.i(TAG, "bottom position set to: " + bottomPosTicks);
+            Log.i(TAG, "load position set to: " + loadPosTicks);
         }
         //todo: finish tuning PID
 
@@ -165,6 +165,12 @@ public class CubeTray {
         Double ki = myCubeTrayPositions.getDouble("liftHeightI");
         Double kd = myCubeTrayPositions.getDouble("liftHeightD");
         liftHeightPidController = new PIDController(kp, ki, kd);
+
+        Log.i(TAG,"liftHeightP = " + kp);
+        Log.i(TAG,"liftHeight I = " + ki);
+        Log.i(TAG,"liftHeight D = " + kd);
+
+
 
 
         //TESTING
@@ -303,6 +309,7 @@ public class CubeTray {
             default:
                 break;
         }
+        printInfo();
 
     }
 
@@ -333,11 +340,15 @@ public class CubeTray {
     private boolean limitSwitchIsPressed() {
         return (limitSwitch.getVoltage() > 1.5);
     }
+    // sets to position
+
     public void setToPoitionPID(int targetPos){
         if (!liftMotor.getMode().equals(DcMotor.RunMode.RUN_WITHOUT_ENCODER)){
             liftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         }
         double correction = liftHeightPidController.getPIDCorrection(targetPos, getliftPos());
+
+        Log.d(TAG,"lift position correction =" + correction);
 
         liftMotor.setPower(correction);
     }
@@ -432,6 +443,7 @@ public class CubeTray {
             Log.d(TAG, "lift cur target pos: " + liftTargetPosition);
             Log.d(TAG, "lift current dPosition :  " + liftMotor.getCurrentPosition());
             Log.d(TAG, "lift motor current mode " + liftMotor.getMode());
+            Log.d(TAG,"power written to lift" + liftMotor.getPower());
 
 
         }
@@ -454,6 +466,8 @@ public class CubeTray {
             case LOADING:
                 trayState = TrayPositions.LOADING;
                 overallState = OverallStates.LOADING;
+                break;
+            default:
                 break;
         }
     }

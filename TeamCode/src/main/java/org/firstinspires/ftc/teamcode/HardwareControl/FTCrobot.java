@@ -101,7 +101,19 @@ public class FTCrobot {
         }
 
         // cube tray
-        myCubeTray.updateFromGamepad();
+        if(myGamepad2.x){
+            myCubeTray.setToPos(CubeTray.LiftFinalStates.LOADING);
+        } else if (myGamepad2.a){
+            myCubeTray.setToPos(CubeTray.LiftFinalStates.LOW);
+        } else if (myGamepad2.b){
+            myCubeTray.setToPos(CubeTray.LiftFinalStates.MID);
+        } else if(myGamepad2.y){
+            myCubeTray.setToPos(CubeTray.LiftFinalStates.HIGH);
+        }
+        if(myGamepad2.right_bumper){
+            myCubeTray.setServoPos(CubeTray.TrayPositions.DUMP_A);
+        }
+        myCubeTray.updatePosition();
 
         //relic grabber
 

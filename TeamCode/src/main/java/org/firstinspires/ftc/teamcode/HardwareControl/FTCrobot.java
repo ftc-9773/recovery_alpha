@@ -31,7 +31,7 @@ public class FTCrobot {
     private String[] currentCommand;
     private IntakeController myIntakeController;
     private DriveWithPID myDriveWithPID;
-    private CubeTray myCubeTray;
+    public CubeTray myCubeTray;
     private HardwareMap hwMap;
     private RelicSystem myRelicSystem;
     private Telemetry myTelemetry;
@@ -57,7 +57,7 @@ public class FTCrobot {
         this.mySwerveController = new SwerveController(hwMap, myGyro, telemetry);
         this.myDriveWithPID = new DriveWithPID(mySwerveController, myGyro);
         this.myRelicSystem = new RelicSystem(myTelemetry, hwMap);
-        this.myCubeTray = new CubeTray(hwmap,gamepad1,null);
+        this.myCubeTray = new CubeTray(hwmap,gamepad2,null);
         this.myGamepad1 = gamepad1;
         this.myGamepad2 = gamepad2;
     }
@@ -110,8 +110,6 @@ public class FTCrobot {
 
         // cube tray
         myCubeTray.updateFromGamepad();
-
-        //relic grabber
 
         if(dpadupStatus.isJustOn()){
             armState = !armState;
@@ -177,6 +175,18 @@ public class FTCrobot {
                     time = System.currentTimeMillis();
                     while (time+500<System.currentTimeMillis()){}
                     myIntakeController.lowerIntake(false);
+                    break;
+                case "ctload":
+                    myCubeTray.setToPos(CubeTray.LiftFinalStates.LOADING);
+                    break;
+                case "ctcl":
+                    myCubeTray.setToPos(CubeTray.LiftFinalStates.LOW);
+                    break;
+                case "ctch":
+                    myCubeTray.setToPos(CubeTray.LiftFinalStates.HIGH);
+                    break;
+                case "ctdump":
+                    myCubeTray.dump();
                     break;
                 case "end":
                     index = opModeControl.commands.length;

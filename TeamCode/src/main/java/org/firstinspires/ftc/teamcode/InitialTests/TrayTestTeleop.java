@@ -52,6 +52,7 @@ public class TrayTestTeleop extends LinearOpMode {
 
         telemetry.addData("LeftFlap Position: ", myCubeTrayController.leftFlapPos);
         telemetry.addData("RightFlap Position: ", myCubeTrayController.rightFlapPos);
+
         telemetry.addData("LeftAngle position: ", myCubeTrayController.leftAnglePos);
         telemetry.addData("RightAngle position: ", myCubeTrayController.rightAnglePos);
 
@@ -59,6 +60,7 @@ public class TrayTestTeleop extends LinearOpMode {
         telemetry.addData("scaledLiftPosition:  ", myCubeTrayController.getliftPos());
 
         telemetry.addData("targetPosition set: ", myCubeTrayController.liftMotor.getTargetPosition());
+
 
     }
 }

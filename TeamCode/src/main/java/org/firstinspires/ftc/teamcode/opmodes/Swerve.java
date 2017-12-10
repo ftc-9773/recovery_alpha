@@ -31,9 +31,15 @@ public class Swerve extends LinearOpMode {
         // Create objects
         myRobot = new FTCrobot(hardwareMap, telemetry, gamepad1, gamepad2);
 
+        // init the lift
+        myRobot.homeLift(CubeTray.LiftFinalStates.HIGH);
+        myRobot.myCubeTray.setToPos(CubeTray.LiftFinalStates.HIGH);
 
 
         waitForStart();
+        myRobot.myCubeTray.setServoPos(CubeTray.TrayPositions.CARRYING);
+
+
 
         while (opModeIsActive()) {
 

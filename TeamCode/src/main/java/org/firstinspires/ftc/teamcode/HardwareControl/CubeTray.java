@@ -103,6 +103,13 @@ public class CubeTray {
     //HOMING variables
     private int zeroPos = 0;
 
+    // Safety ABORT variables
+    private static int safteyAbortTime = 50;
+    private static double safteyAbortMinSpeed = 0.5;
+    private int lastTickPos = -1;
+    private long timeAtLastPoll = -1;
+
+
     // setup variables for positioning    // default values are hardcoded in case of issue
     private static int sensorPosTicks = 3615;
     private static int topPosTicks = 3260;
@@ -119,9 +126,8 @@ public class CubeTray {
 
     //define servo positions - each array of postitons go in the following order:
     // stowed, loading, carrying, dumpingFlap, dumpingAngleAndFlap
-
     private static double[] leftFlapPositions = {0.532, 0.5328, 0.35, 0.73, 0.73 } ;
-    private static double[] rightFlapPostions = {.581, .6, 0.78,0.41,0.411 } ;
+    private static double[] rightFlapPostions = {.581, 0.6, 0.78, 0.4,1,1 } ;
     private static double[] leftAnglePostions = {0.885, 0.554, 0.169, 0.169, 0.039} ;  // dump used to be .039
     private static double[] rightAnglePostions = {0.07, 0.350, 0.754, 0.754,0.901 } ;   // dump used to be .901
 
@@ -158,13 +164,28 @@ public class CubeTray {
         Log.i(TAG, "load position set to: " + loadPosTicks);
 
         // set up servos
-        leftFlapPositions = buildServoPosArrayFromJson("leftFlap" , leftFlapPositions);
-        rightFlapPostions = buildServoPosArrayFromJson("rightFlap" , rightFlapPostions);
-        leftAnglePostions = buildServoPosArrayFromJson("leftAngle" , leftAnglePostions);
-        rightAnglePostions = buildServoPosArrayFromJson("rightAngle" , leftFlapPositions);
+        boolean usingJsonServoPositons = myCubeTrayPositions.getBoolean("usingJsonServoPositions");
+
+        String logging = "Positions are: ";
+        for (double i: leftFlapPositions) {
+            logging += ", " + i;
+        }
+        Log.i(TAG, logging);
 
 
+        if (usingJsonServoPositons) {
+            leftAnglePostions = buildServoPosArrayFromJson("leftAngle", leftAnglePostions);
+            rightAnglePostions = buildServoPosArrayFromJson("rightAngle", rightAnglePostions);
+            leftFlapPositions = buildServoPosArrayFromJson("leftFlap", leftFlapPositions);
+            rightFlapPostions = buildServoPosArrayFromJson("rightFlap", rightFlapPostions);
 
+        }
+//*/
+        logging = "Positions are: ";
+        for (double i: leftFlapPositions) {
+            logging += ", " + i;
+        }
+        Log.i(TAG, logging);
 
 
         //todo: finish tuning PID
@@ -179,6 +200,9 @@ public class CubeTray {
         Log.i(TAG,"liftHeight I = " + ki);
         Log.i(TAG,"liftHeight D = " + kd);
 
+        // abort stuff
+        safteyAbortTime = myCubeTrayPositions.getInt("safteyAbortTime");
+        safteyAbortMinSpeed = myCubeTrayPositions.getDouble("safetyAbortMinSpeed");
 
 
 
@@ -200,9 +224,12 @@ public class CubeTray {
             liftFinalState = liftFinalState.HIGH;
         }
         if(gamepad1.right_bumper){
-            setServoPos(TrayPositions.DUMP_A);
+            dump();
         }
         updatePosition();
+    }
+    public void dump(){
+        setServoPos(TrayPositions.DUMP_A);
     }
 
     // to update without taking joystick input
@@ -253,9 +280,27 @@ public class CubeTray {
             case TO_CARRY:
                 liftTargetPosition = bottomPosTicks;
                 setServoPos(TrayPositions.CARRYING);
-                if (System.currentTimeMillis()-transitionTimer >= trayUpTime){
-                    overallState = OverallStates.CARRY ;
+                long time = System.currentTimeMillis();
+                int liftPos = getliftPos();
+                if(timeAtLastPoll!= -1 && lastTickPos!=-1) {
+                    double speed = (liftPos-lastTickPos)/(time-timeAtLastPoll);
+                    if (time - transitionTimer >= safteyAbortTime && speed < safteyAbortMinSpeed){
+                        // abort
+                        liftFinalState = LiftFinalStates.LOADING;
+                        setServoPos(TrayPositions.LOADING);
+                        Log.w(TAG, "Lift in abort mode. unnable to go to carry pos.");
+                    }
                 }
+
+                if (time-transitionTimer >= trayUpTime){
+                    overallState = OverallStates.CARRY ;
+
+                    // reset abort values
+                    lastTickPos = -1;
+                    timeAtLastPoll = -1;
+                }
+                lastTickPos = liftPos;
+                timeAtLastPoll = time;
                 break;
             case FROM_STOWED:
                 setServoPos(TrayPositions.LOADING);
@@ -390,7 +435,7 @@ public class CubeTray {
                 break;
         }
         if (posNum == -1) return;
-            setToPosNum(posNum);
+        setToPosNum(posNum);
     }
     private void setToPosNum(int posNum){
         // set the servos to their positions using the positions array
@@ -398,6 +443,12 @@ public class CubeTray {
         rightFlapPos = rightFlapPostions[posNum];
         leftAnglePos = leftAnglePostions[posNum];
         rightAnglePos = rightAnglePostions[posNum];
+
+        String logging = " setting servo positions:Positions are: ";
+        for (double i: leftFlapPositions) {
+            logging += ", " + i;
+        }
+        Log.i(TAG, logging);
     }
 
 
@@ -406,7 +457,7 @@ public class CubeTray {
             setServoPos(TrayPositions.DUMP_A);                      // moves tray out of load to carry position
         }
         liftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);  // move the lift slowly upwards
-        liftMotor.setPower (.35);
+        liftMotor.setPower (.55);
         while (!limitSwitchIsPressed() ){ }
         liftMotor.setPower(0);
         setLiftZeroPos();
@@ -546,4 +597,7 @@ public class CubeTray {
         }
         return positions;
     }
+
+
+
 }

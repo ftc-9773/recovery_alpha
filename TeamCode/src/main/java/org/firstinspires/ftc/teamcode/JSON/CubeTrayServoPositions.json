@@ -5,7 +5,7 @@
    "sensorPosTicks" : 3355,
    "topPosTicks"    : 3260,
    "middlePosTicks" : 1850,
-   "bottomPosTicks" : 450,
+   "bottomPosTicks" : 700,
   "loadPosTicks"    : 250,
   "toLoadingThreshold" : 250,
 
@@ -13,6 +13,10 @@
   "liftHeightI" : 0.0009,
   "LiftHeightD" : 0.002,
 
+  "usingJsonServoPositions": true,
+
+  "safteyAbortTime"     : 50,
+  "safteyAbortMinSpeed" : 0.5,
 
   "leftFlapStowed"        : 0.532,
   "leftFlapLoading"       : 0.5328,
@@ -23,8 +27,8 @@
   "rightFlapStowed"        : 0.581,
   "rightFlapLoading"       : 0.6,
   "rightFlapCarrying"      : 0.78,
-  "rightFlapDumpingFlap"   : 0.41,
-  "rightFlapDumpingAngle"  : 0.41,
+  "rightFlapDumpingFlap"   : 0.4,
+  "rightFlapDumpingAngle"  : 1.0,
 
   "leftAngleStowed"        : 0.885,
   "leftAngleLoading"       : 0.554,

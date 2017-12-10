@@ -85,7 +85,7 @@ public class SwerveController {
     //                          -   yComp_Angle - y component (in cartesian form) or angle (in polar form)
     // If you just want the direction, set isCartesian to false, magnitude to 1, and angle to whatever angle you want (in radians from 0 to 2pi)
 
-    public void steerSwerve(boolean isCartesian, double xMag, double yAng, double rotation, double directionLock) {
+    public double steerSwerve(boolean isCartesian, double xMag, double yAng, double rotation, double directionLock) {
         // direction lock  - in Degrees
 
         // handle cardinal directions
@@ -98,6 +98,7 @@ public class SwerveController {
 
         //Have pointModules do the brunt work
         pointModules(isCartesian, xMag, yAng, rotation);
+        return rotation;
     }
 
     public void pointModules(boolean isCartesian, double xComp_Magnitude, double yComp_Angle, double rotationSpeed) {

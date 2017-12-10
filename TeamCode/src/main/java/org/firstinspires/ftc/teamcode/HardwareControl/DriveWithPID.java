@@ -45,14 +45,34 @@ public class DriveWithPID {
 
     // Actual driving funftions
     public void driveStraight(boolean isCartesian, double xMag, double yAngleDegrees, double robotOrientationDegrees, double distInches) throws InterruptedException {
-        double yAngleRadians = Math.toRadians(yAngleDegrees);
+
+        double yAngleRadians;
+        if (isCartesian) {
+            yAngleRadians = Math.toRadians(yAngleDegrees);
+        }else{
+            yAngleRadians = yAngleDegrees;
+        }
+
+        // Orient the robot correctly
+        do {
+            mySwerveController.pointModules(false, 0, 0, 1);
+        } while (mySwerveController.getIsTurning());
+
+        double rotation;
+        do {
+            rotation = mySwerveController.steerSwerve(true, 0, 0, 0, Math.toRadians(robotOrientationDegrees));
+            if (DEBUG){ Log.i(TAG, "Rotation is: " + rotation); }
+        } while (rotation > 0.05);
+
+        if (DEBUG) { Log.i(TAG, "Reached pointing modules for driving"); }
+
 
         // Point in the right direction
         do {
             mySwerveController.pointModules(isCartesian, xMag, yAngleRadians, 0);
         } while (mySwerveController.getIsTurning());
 
-        if (DEBUG) { Log.e(TAG, "Finished setting heading"); }
+        if (DEBUG) { Log.i(TAG, "Finished setting heading"); }
 
         //////// Drive until it has gone the right distance ////////
 
@@ -63,7 +83,7 @@ public class DriveWithPID {
         brwEncoderZero = mySwerveController.getBrwEncoderCount();
 
         targetTicks = encoderTicksPerInch * distInches;
-        if (DEBUG) { Log.e(TAG, "Target Ticks: " + targetTicks); }
+        if (DEBUG) { Log.i(TAG, "Target Ticks: " + targetTicks); }
 
         while (Math.abs(averageEncoderDist()) < targetTicks) {
 
@@ -71,23 +91,23 @@ public class DriveWithPID {
             mySwerveController.steerSwerve(isCartesian, xMag, yAngleRadians, 0, robotOrientationDegrees);
             mySwerveController.moveRobot();
 
-            if (DEBUG) { Log.e(TAG, "Distance so far: " + averageEncoderDist()); }
+            if (DEBUG) { Log.i(TAG, "Distance so far: " + averageEncoderDist()); }
         }
 
         //Stop the robot
         mySwerveController.pointModules(true, 0, 0, 0);
         mySwerveController.moveRobot();
-        if (DEBUG) { Log.e(TAG, "Extra Distance: " + (Math.abs(averageEncoderDist()) - targetTicks)); }
+        if (DEBUG) { Log.i(TAG, "Extra Distance: " + (Math.abs(averageEncoderDist()) - targetTicks)); }
     }
 
     // Helper functions
-    private int averageEncoderDist() {
+    private double averageEncoderDist() {
         long flwDist = Math.abs(mySwerveController.getFlwEncoderCount() - flwEncoderZero);
         long frwDist = Math.abs(mySwerveController.getFlwEncoderCount() - frwEncoderZero);
         long blwDist = Math.abs(mySwerveController.getFlwEncoderCount() - blwEncoderZero);
         long brwDist = Math.abs(mySwerveController.getFlwEncoderCount() - brwEncoderZero);
 
-        return (int) (flwDist + frwDist + blwDist + brwDist) / 4;
+        return ((double)(flwDist + frwDist + blwDist + brwDist) / 4);
     }
 
     private double setOnNegToPosPi (double num) {

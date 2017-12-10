@@ -240,10 +240,11 @@ public class SwerveModule {
         } else {
             tellServo = 0;
         }
+        Log.i(TAG, "Tell servo is: " + tellServo);
         swerveServo.setPower(tellServo);
         if (DEBUG && debugHere) { Log.e(TAG, "Servo written: " + tellServo); }
 
-        if (Math.abs(tellServo) < 0.04) {
+        if (Math.abs(tellServo) < 0.3) {
             isTurning = false;
         }  else {
             isTurning = true;

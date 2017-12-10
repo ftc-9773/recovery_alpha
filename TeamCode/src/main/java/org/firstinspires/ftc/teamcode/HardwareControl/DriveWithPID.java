@@ -46,6 +46,7 @@ public class DriveWithPID {
     // Actual driving funftions
     public void driveStraight(boolean isCartesian, double xMag, double yAngleDegrees, double robotOrientationDegrees, double distInches) throws InterruptedException {
 
+        if (DEBUG) { Log.i(TAG, "Started driveStraight"); }
         double yAngleRadians;
         if (isCartesian) {
             yAngleRadians = Math.toRadians(yAngleDegrees);
@@ -55,6 +56,7 @@ public class DriveWithPID {
 
         // Orient the robot correctly
         do {
+            if (DEBUG) { Log.i(TAG, "is pointing modules"); }
             mySwerveController.pointModules(false, 0, 0, 1);
         } while (mySwerveController.getIsTurning());
 

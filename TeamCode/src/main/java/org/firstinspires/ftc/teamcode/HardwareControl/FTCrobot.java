@@ -138,7 +138,7 @@ public class FTCrobot {
 
 
         // cube tray
-        myCubeTray.updateFromGamepad();
+        //myCubeTray.updateFromGamepad();
 
         if(dpadupStatus.isJustOn()){
             armState = !armState;
@@ -199,16 +199,16 @@ public class FTCrobot {
                    }
                     break;
                 case "intko":
-                    myIntakeController.runIntakeIn();
+                    myManualIntakeController.RunIntake(0,-1);
                     break;
                 case "intki":
-                    myIntakeController.runIntakeOut();
+                    myManualIntakeController.RunIntake(0,1);
                     break;
                 case "intkl":
-                    myIntakeController.lowerIntake(true);
+                    myManualIntakeController.lowerIntake(true);
                     time = System.currentTimeMillis();
                     while (time+500<System.currentTimeMillis()){}
-                    myIntakeController.lowerIntake(false);
+                    myManualIntakeController.lowerIntake(false);
                     break;
                 case "ctload":
                     myCubeTray.setToPos(CubeTray.LiftFinalStates.LOADING);

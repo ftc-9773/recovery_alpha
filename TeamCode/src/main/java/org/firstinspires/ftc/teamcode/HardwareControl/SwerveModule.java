@@ -228,7 +228,7 @@ public class SwerveModule {
         if (velocityVector.getMagnitude() > 0) {
 
             //Calculate PID
-            tellServo = calculatePDCorrection(errorAmt);
+            tellServo = 0.5 + calculatePDCorrection(errorAmt);
 
             //Correct onto servo's range
             if (tellServo > maxPower) {

@@ -29,7 +29,8 @@ public class FTCrobot {
     private Gyro myGyro;
     private RasiParser opModeControl;
     private String[] currentCommand;
-    private IntakeController myIntakeController;
+//    private IntakeController myIntakeController;
+    private IntakeControllerManual myManualIntakeController;
     private DriveWithPID myDriveWithPID;
     public CubeTray myCubeTray;
     private HardwareMap hwMap;
@@ -44,6 +45,9 @@ public class FTCrobot {
     private long time;
     private ButtonStatus dpadupStatus = new ButtonStatus();
     private ButtonStatus dpaddownStatus = new ButtonStatus();
+    private ButtonStatus gamepad1LeftTrigger = new ButtonStatus();
+    private ButtonStatus leftBumperStatus = new ButtonStatus();
+
 
     private static final String TAG = "9773_FTCrobot";
     private static final boolean DEBUG = true;
@@ -52,7 +56,8 @@ public class FTCrobot {
     public FTCrobot(HardwareMap hwmap, Telemetry telemetry, Gamepad gamepad1, Gamepad gamepad2){
         this.hwMap = hwmap;
         this.myTelemetry = telemetry;
-        myIntakeController = new IntakeController(hwMap);
+//        myIntakeController = new IntakeController(hwMap);
+        this.myManualIntakeController = new IntakeControllerManual(hwMap);
         this.myGyro = new Gyro(hwMap);
         this.mySwerveController = new SwerveController(hwMap, myGyro, telemetry);
         this.myDriveWithPID = new DriveWithPID(mySwerveController, myGyro);
@@ -69,7 +74,6 @@ public class FTCrobot {
 
 
         /////// Driving - gamepad 1 left and right joysticks & Dpad /////
-
         // Direction Lock
         double rotation = myGamepad1.right_stick_x;
 
@@ -93,13 +97,13 @@ public class FTCrobot {
                 directionLock = 270;
             }
         }
-
         // Actual driving
         mySwerveController.steerSwerve(true, myGamepad1.left_stick_x, myGamepad1.left_stick_y * -1, rotation, directionLock);
         mySwerveController.moveRobot();
 
 
-        /////// Intake - Gamepad 1 right trigger and bumper /////
+        /////// Intake - Gamepad 1 right trigger and bumper ////////
+/*
         if (myGamepad1.right_trigger > 0) {
             myIntakeController.runIntakeOut();
         } else if (myGamepad1.right_bumper) {
@@ -107,6 +111,31 @@ public class FTCrobot {
         } else {
             myIntakeController.intakeOff();
         }
+
+        // Lowering Intake - Gamepad 2 Left Bumper
+        leftBumperStatus.recordNewValue(myGamepad2.left_bumper);
+        if(leftBumperStatus.isJustOn()){
+            time = System.currentTimeMillis();
+            myIntakeController.lowerIntake(true);
+        }
+        if (System.currentTimeMillis()-500>time){
+            myIntakeController.lowerIntake(false);
+        }
+// */
+
+        // Manual Intake Controller - Gamepad 2 Right Joystick
+        myManualIntakeController.RunIntake(myGamepad2.right_stick_x, myGamepad2.right_stick_y);
+
+        // Lowering Intake - Gamepad 2 Left Bumper
+        leftBumperStatus.recordNewValue(myGamepad2.left_bumper);
+        if(leftBumperStatus.isJustOn()){
+            time = System.currentTimeMillis();
+            myManualIntakeController.lowerIntake(true);
+        }
+        if (System.currentTimeMillis()-500>time){
+            myManualIntakeController.lowerIntake(false);
+        }
+
 
         // cube tray
         myCubeTray.updateFromGamepad();
@@ -117,17 +146,15 @@ public class FTCrobot {
         if(dpaddownStatus.isJustOn()){
             grabState = !grabState;
         }
+
+        // Relic arm - Gamepad 2 Left Joystick
         myRelicSystem.runSequence(myGamepad2.left_stick_y*-0.95 + 0.05, armState, grabState);
 
-        ButtonStatus leftBumperStatus = new ButtonStatus();
-        leftBumperStatus.recordNewValue(myGamepad2.left_bumper);
 
-        if(leftBumperStatus.isJustOn()){
-            time = System.currentTimeMillis();
-            myIntakeController.lowerIntake(true);
-        }
-        if (System.currentTimeMillis()-500>time){
-            myIntakeController.lowerIntake(false);
+        // Toggle Field Centric Mode - gamepad 1 left trigger
+        if (myGamepad1.left_trigger < 0.5) { gamepad1LeftTrigger.recordNewValue(false);} else { gamepad1LeftTrigger.recordNewValue(true); }
+        if (gamepad1LeftTrigger.isJustOn()) {
+            mySwerveController.toggleFieldCentric();
         }
     }
 
@@ -145,6 +172,13 @@ public class FTCrobot {
 
         myTelemetry.addData("Gamepad x", myGamepad1.left_stick_x);
         myTelemetry.addData("Gamepad y", myGamepad1.left_stick_y);
+
+        if (mySwerveController.getFieldCentric()) {
+            myTelemetry.addData("Field Centric", "On");
+        } else {
+            myTelemetry.addData("Field Centric", "Off");
+        }
+
         myTelemetry.update();
     }
 

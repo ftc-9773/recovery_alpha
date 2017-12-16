@@ -88,6 +88,11 @@ public class SwerveController {
     public double steerSwerve(boolean isCartesian, double xMag, double yAng, double rotation, double directionLock) {
         // direction lock  - in Degrees
 
+        // Check to make sure rotation is off before doing directionLock
+        if (rotation != 0) {
+            directionLock = -1;
+        }
+
         // handle cardinal directions
         if (directionLock != -1 && useFieldCentricOrientation) {
             // Calculate Error

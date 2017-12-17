@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.opmodes;
 
 import android.util.Log;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
@@ -16,8 +17,9 @@ import org.firstinspires.ftc.teamcode.PositionTracking.Gyro;
 
 // an opmode to test teleop, based on the progress ew have made so far
 // should include all of the sub- assembleys made so far
-
 @TeleOp(name = "TestOpMode")
+@Disabled
+
 public class TestOpmode extends LinearOpMode {
 
     private static final String TAG = "ftc9773 TestOpmode";

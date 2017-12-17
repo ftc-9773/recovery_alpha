@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.opmodes;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
@@ -9,6 +10,8 @@ import org.firstinspires.ftc.teamcode.HardwareControl.FTCrobot;
  * Created by Vikesh on 11/25/2017.
  */
 @TeleOp(name = "BasicTeleOp")
+@Disabled
+
 public class BasicTeleOp extends LinearOpMode{
     private FTCrobot ftcRobot;
     @Override

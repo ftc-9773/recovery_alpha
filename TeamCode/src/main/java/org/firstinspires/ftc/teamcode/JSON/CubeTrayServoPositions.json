@@ -8,13 +8,14 @@
    "bottomPosTicks" : 250,
   "loadPosTicks"    : 250,
   "toLoadingThreshold" : 250,
+  "CompStartPos" : 1800,
 
   "liftHeightP" : 0.0025,
   "liftHeightI" : 0.0009,
   "LiftHeightD" : 0.002,
 
   "liftLastPosition"  : 0,
-  "useLiftLastPosition" : true,
+  "lastOverallState" : "CARRYING",
 
   "usingJsonServoPositions": true,
 

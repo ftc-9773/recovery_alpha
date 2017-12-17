@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.opmodes;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.CRServo;
 
@@ -14,6 +15,8 @@ import org.firstinspires.ftc.teamcode.resources.ButtonStatus;
  * Created by Vikesh on 11/19/2017.
  */
 @Autonomous(name = "testbed")
+@Disabled
+
 public class testbed extends LinearOpMode{
 
     Gyro myGyro;

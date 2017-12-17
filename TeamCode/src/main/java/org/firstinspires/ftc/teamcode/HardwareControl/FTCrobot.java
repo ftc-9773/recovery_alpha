@@ -40,8 +40,8 @@ public class FTCrobot {
     private Gamepad myGamepad2;
     private boolean dpadlast = false;
     private char state = 0;
-    private boolean armState = false;
-    private boolean grabState = false;
+    private boolean armState = true;
+    private boolean grabState = true;
     private long time;
     private ButtonStatus dpadupStatus = new ButtonStatus();
     private ButtonStatus dpaddownStatus = new ButtonStatus();
@@ -70,6 +70,7 @@ public class FTCrobot {
     public void runGamepadCommands(){
 
         dpaddownStatus.recordNewValue(myGamepad2.dpad_down);
+
         dpadupStatus.recordNewValue(myGamepad2.dpad_up);
 
 
@@ -138,8 +139,10 @@ public class FTCrobot {
 
 
         // cube tray
-        //myCubeTray.updateFromGamepad();
+        myCubeTray.updateFromGamepad();
 
+
+        // relic arm
         if(dpadupStatus.isJustOn()){
             armState = !armState;
         }

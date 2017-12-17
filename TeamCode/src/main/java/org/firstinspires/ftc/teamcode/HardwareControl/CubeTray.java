@@ -180,7 +180,6 @@ public class CubeTray {
             rightFlapPostions = buildServoPosArrayFromJson("rightFlap", rightFlapPostions);
 
         }
-//*/
         logging = "Positions are: ";
         for (double i: leftFlapPositions) {
             logging += ", " + i;
@@ -454,17 +453,15 @@ public class CubeTray {
 
     public void homeLiftVersA () throws InterruptedException { // might help use
         if (trayState == TrayPositions.LOADING){ // lift cannot be in loading pos to start
-            setServoPos(TrayPositions.DUMP_A);                      // moves tray out of load to carry position
+            setServoPos(TrayPositions.CARRYING);                      // moves tray out of load to carry position
         }
         liftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);  // move the lift slowly upwards
         liftMotor.setPower (.55);
-        while (!limitSwitchIsPressed() ){ }
+        while (!limitSwitchIsPressed() ){}
         liftMotor.setPower(0);
+        liftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        liftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION) ;
         setLiftZeroPos();
-        liftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        overallState = OverallStates.CARRY;
-        trayState = TrayPositions.CARRYING;
-        liftFinalState = LiftFinalStates.HIGH;
     }
 
 
@@ -475,7 +472,11 @@ public class CubeTray {
             setLiftZeroPos();
             return true;
         } else return false;
-    }    //////////////////////////////////////////// _____ Testing ____
+    }
+
+    public void setZeroFromLastPositon() {
+
+    }
 
 
     private void RunServoAdjustmentPotocol(){

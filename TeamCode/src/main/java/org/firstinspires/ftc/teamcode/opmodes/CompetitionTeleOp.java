@@ -34,6 +34,7 @@ import org.firstinspires.ftc.teamcode.PositionTracking.Gyro;
 
             // init the lift
             myRobot.myCubeTray.setZeroFromCompStart();
+            myRobot.myCubeTray.setStartPosition(CubeTray.LiftFinalStates.STOWED);
 
 
             waitForStart();

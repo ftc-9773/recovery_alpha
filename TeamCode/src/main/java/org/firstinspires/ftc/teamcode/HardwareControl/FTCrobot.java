@@ -46,6 +46,7 @@ public class FTCrobot {
     private ButtonStatus dpadupStatus = new ButtonStatus();
     private ButtonStatus dpaddownStatus = new ButtonStatus();
     private ButtonStatus gamepad1LeftTrigger = new ButtonStatus();
+    private ButtonStatus gamepad1RightTrigger = new ButtonStatus();
     private ButtonStatus leftBumperStatus = new ButtonStatus();
 
 
@@ -99,7 +100,7 @@ public class FTCrobot {
             }
         }
         // Actual driving
-        mySwerveController.steerSwerve(true, myGamepad1.left_stick_x, myGamepad1.left_stick_y * -1, rotation, directionLock);
+        mySwerveController.steerSwerve(true, Math.pow(myGamepad1.left_stick_x,3), Math.pow(myGamepad1.left_stick_y * -1, 3), Math.pow(rotation,3), directionLock);
         mySwerveController.moveRobot();
 
 
@@ -158,6 +159,12 @@ public class FTCrobot {
         if (myGamepad1.left_trigger < 0.5) { gamepad1LeftTrigger.recordNewValue(false);} else { gamepad1LeftTrigger.recordNewValue(true); }
         if (gamepad1LeftTrigger.isJustOn()) {
             mySwerveController.toggleFieldCentric();
+        }
+
+        // Reset Gyro Position
+        gamepad1RightTrigger.recordNewValue(myGamepad1.right_trigger > 0.5);
+        if (gamepad1RightTrigger.isJustOn()) {
+            myGyro.setZeroPosition();
         }
     }
 

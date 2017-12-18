@@ -8,7 +8,7 @@
    "bottomPosTicks" : 250,
   "loadPosTicks"    : 250,
   "toLoadingThreshold" : 250,
-  "CompStartPos" : 1800,
+  "CompStartPos" : 2288,
 
   "liftHeightP" : 0.0025,
   "liftHeightI" : 0.0009,
@@ -35,13 +35,13 @@
   "rightFlapDumpingAngle"  : 1.0,
 
   "leftAngleStowed"        : 0.96,
-  "leftAngleLoading"       : 0.66,
+  "leftAngleLoading"       : 0.725,
   "leftAngleCarrying"      : 0.28,
   "leftAngleDumpingFlap"   : 0.28,
   "leftAngleDumpingAngle"  : 0.25,
 
   "rightAngleStowed"        : 0.07,
-  "rightAngleLoading"       : 0.350,
+  "rightAngleLoading"       : 0.285,
   "rightAngleCarrying"      : 0.754,
   "rightAngleDumpingFlap"   : 0.754,
   "rightAngleDumpingAngle"  : 0.901

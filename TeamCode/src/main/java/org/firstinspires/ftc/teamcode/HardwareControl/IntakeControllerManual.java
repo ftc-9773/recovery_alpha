@@ -45,7 +45,7 @@ public class IntakeControllerManual {
 
     public void lowerIntake(boolean stopOrStart){
         if (stopOrStart) {
-            intakeServo.setPosition(1);
+            intakeServo.setPosition(0);
         }
         else{
             intakeServo.setPosition(0.5);

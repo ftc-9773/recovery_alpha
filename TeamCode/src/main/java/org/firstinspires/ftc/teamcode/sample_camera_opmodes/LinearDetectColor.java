@@ -118,3 +118,9 @@ public class LinearDetectColor extends LinearOpModeCamera {
         telemetry.addData("Jewel Color ", colorString);
     }
 }
+
+// todo: migrate to a modular system with methods like :
+// startJewelCV
+// getJewelColor
+// close JewelCV
+

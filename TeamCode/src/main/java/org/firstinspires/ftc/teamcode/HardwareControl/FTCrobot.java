@@ -41,7 +41,7 @@ public class FTCrobot {
     private boolean dpadlast = false;
     private char state = 0;
     private boolean armState = false;
-    private boolean grabState = false;
+    private boolean grabState = true;
     private long time;
     private ButtonStatus dpadupStatus = new ButtonStatus();
     private ButtonStatus dpaddownStatus = new ButtonStatus();
@@ -64,8 +64,7 @@ public class FTCrobot {
         this.myRelicSystem = new RelicSystem(myTelemetry, hwMap);
         this.myCubeTray = new CubeTray(hwmap,gamepad2,null);
         this.myGamepad1 = gamepad1;
-        this.myGamepad2 = gamepad2;
-    }
+        this.myGamepad2 = gamepad2;    }
 
     public void runGamepadCommands(){
 

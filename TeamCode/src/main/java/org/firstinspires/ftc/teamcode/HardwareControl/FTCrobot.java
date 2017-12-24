@@ -40,12 +40,13 @@ public class FTCrobot {
     private Gamepad myGamepad2;
     private boolean dpadlast = false;
     private char state = 0;
-    private boolean armState = false;
+    private boolean armState = true;
     private boolean grabState = true;
     private long time;
     private ButtonStatus dpadupStatus = new ButtonStatus();
     private ButtonStatus dpaddownStatus = new ButtonStatus();
     private ButtonStatus gamepad1LeftTrigger = new ButtonStatus();
+    private ButtonStatus gamepad1RightTrigger = new ButtonStatus();
     private ButtonStatus leftBumperStatus = new ButtonStatus();
 
 
@@ -64,11 +65,13 @@ public class FTCrobot {
         this.myRelicSystem = new RelicSystem(myTelemetry, hwMap);
         this.myCubeTray = new CubeTray(hwmap,gamepad2,null);
         this.myGamepad1 = gamepad1;
-        this.myGamepad2 = gamepad2;    }
+        this.myGamepad2 = gamepad2;
+    }
 
     public void runGamepadCommands(){
 
         dpaddownStatus.recordNewValue(myGamepad2.dpad_down);
+
         dpadupStatus.recordNewValue(myGamepad2.dpad_up);
 
 
@@ -97,7 +100,7 @@ public class FTCrobot {
             }
         }
         // Actual driving
-        mySwerveController.steerSwerve(true, myGamepad1.left_stick_x, myGamepad1.left_stick_y * -1, rotation, directionLock);
+        mySwerveController.steerSwerve(true, Math.pow(myGamepad1.left_stick_x,3), Math.pow(myGamepad1.left_stick_y * -1, 3), Math.pow(rotation,3), directionLock);
         mySwerveController.moveRobot();
 
 
@@ -137,8 +140,10 @@ public class FTCrobot {
 
 
         // cube tray
-        //myCubeTray.updateFromGamepad();
+        myCubeTray.updateFromGamepad();
 
+
+        // relic arm
         if(dpadupStatus.isJustOn()){
             armState = !armState;
         }
@@ -154,6 +159,12 @@ public class FTCrobot {
         if (myGamepad1.left_trigger < 0.5) { gamepad1LeftTrigger.recordNewValue(false);} else { gamepad1LeftTrigger.recordNewValue(true); }
         if (gamepad1LeftTrigger.isJustOn()) {
             mySwerveController.toggleFieldCentric();
+        }
+
+        // Reset Gyro Position
+        gamepad1RightTrigger.recordNewValue(myGamepad1.right_trigger > 0.5);
+        if (gamepad1RightTrigger.isJustOn()) {
+            myGyro.setZeroPosition();
         }
     }
 

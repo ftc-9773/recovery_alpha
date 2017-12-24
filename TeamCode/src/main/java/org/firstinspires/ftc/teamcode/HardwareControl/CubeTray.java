@@ -180,7 +180,6 @@ public class CubeTray {
             rightFlapPostions = buildServoPosArrayFromJson("rightFlap", rightFlapPostions);
 
         }
-//*/
         logging = "Positions are: ";
         for (double i: leftFlapPositions) {
             logging += ", " + i;
@@ -263,6 +262,8 @@ public class CubeTray {
                 }
                 break;
             case STOWED:  // as of now no instructions to go to stowed position
+                    liftTargetPosition = loadPosTicks ;
+                    setServoPos(TrayPositions.LOADING);
                 break;
                         //
             case TO_LOADING:
@@ -318,6 +319,9 @@ public class CubeTray {
         if (limitSwitchIsPressed()){
             liftMotor.setPower(0);
         }
+
+        myCubeTrayPositions.modifyInt("liftLastPosition",getliftPos());
+        myCubeTrayPositions.modifyString("CubeTrayPos", overallState.toString());
     }
 
     // util function to translate final positions into overall positions based on position - the brains of the state machine
@@ -454,17 +458,15 @@ public class CubeTray {
 
     public void homeLiftVersA () throws InterruptedException { // might help use
         if (trayState == TrayPositions.LOADING){ // lift cannot be in loading pos to start
-            setServoPos(TrayPositions.DUMP_A);                      // moves tray out of load to carry position
+            setServoPos(TrayPositions.CARRYING);                      // moves tray out of load to carry position
         }
         liftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);  // move the lift slowly upwards
         liftMotor.setPower (.55);
-        while (!limitSwitchIsPressed() ){ }
+        while (!limitSwitchIsPressed() ){}
         liftMotor.setPower(0);
+        liftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        liftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION) ;
         setLiftZeroPos();
-        liftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        overallState = OverallStates.CARRY;
-        trayState = TrayPositions.CARRYING;
-        liftFinalState = LiftFinalStates.HIGH;
     }
 
 
@@ -475,7 +477,7 @@ public class CubeTray {
             setLiftZeroPos();
             return true;
         } else return false;
-    }    //////////////////////////////////////////// _____ Testing ____
+    }
 
 
     private void RunServoAdjustmentPotocol(){
@@ -596,6 +598,45 @@ public class CubeTray {
 
         }
         return positions;
+    }
+
+    private void setZeroFromLastPositon(){
+        int lastPos =   myCubeTrayPositions.getInt("liftLastPosition");
+        zeroPos = liftMotor.getCurrentPosition() - lastPos;
+        //overallState = readTrayPositions();
+
+    }
+    public void setZeroFromCompStart() {
+        int lastPos =   myCubeTrayPositions.getInt("CompStartPos");
+        zeroPos = liftMotor.getCurrentPosition() - lastPos;
+        overallState = OverallStates.STOWED;
+    }
+    private OverallStates readTrayPositions(){
+        String value = myCubeTrayPositions.getString("CubeTrayPos");
+        OverallStates result = null;
+        switch (value) {
+            case "LOADING":
+                result = OverallStates.LOADING;
+                break;
+            case "CARRY":
+                result = OverallStates.CARRY;
+                break;
+            case "STOWED":
+                result = OverallStates.STOWED;
+                break;
+            case "TO_LOADING":
+                result = OverallStates.TO_LOADING;
+                break;
+            case "FROM_STOWED, TO_CARRY":
+                result = OverallStates.FROM_STOWED;
+                break;
+            case "TO_CARRY":
+                result = OverallStates.TO_CARRY;
+                break;
+            default:
+                break;
+        }
+        return result;
     }
 
 

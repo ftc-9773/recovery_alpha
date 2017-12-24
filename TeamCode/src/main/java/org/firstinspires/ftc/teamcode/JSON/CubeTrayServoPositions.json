@@ -5,13 +5,17 @@
    "sensorPosTicks" : 3355,
    "topPosTicks"    : 3260,
    "middlePosTicks" : 1850,
-   "bottomPosTicks" : 700,
+   "bottomPosTicks" : 250,
   "loadPosTicks"    : 250,
   "toLoadingThreshold" : 250,
+  "CompStartPos" : 2288,
 
   "liftHeightP" : 0.0025,
   "liftHeightI" : 0.0009,
   "LiftHeightD" : 0.002,
+
+  "liftLastPosition"  : 0,
+  "lastOverallState" : "CARRYING",
 
   "usingJsonServoPositions": true,
 
@@ -30,14 +34,14 @@
   "rightFlapDumpingFlap"   : 0.4,
   "rightFlapDumpingAngle"  : 1.0,
 
-  "leftAngleStowed"        : 0.885,
-  "leftAngleLoading"       : 0.554,
-  "leftAngleCarrying"      : 0.169,
-  "leftAngleDumpingFlap"   : 0.169,
-  "leftAngleDumpingAngle"  : 0.039,
+  "leftAngleStowed"        : 0.96,
+  "leftAngleLoading"       : 0.725,
+  "leftAngleCarrying"      : 0.28,
+  "leftAngleDumpingFlap"   : 0.28,
+  "leftAngleDumpingAngle"  : 0.25,
 
   "rightAngleStowed"        : 0.07,
-  "rightAngleLoading"       : 0.350,
+  "rightAngleLoading"       : 0.285,
   "rightAngleCarrying"      : 0.754,
   "rightAngleDumpingFlap"   : 0.754,
   "rightAngleDumpingAngle"  : 0.901

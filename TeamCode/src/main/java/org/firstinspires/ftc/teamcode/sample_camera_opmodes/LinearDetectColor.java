@@ -109,7 +109,7 @@ public class LinearDetectColor extends LinearOpModeCamera {
             double threshold = avgredValues - avgblueValues;
             if(threshold<28) colorString = "BLUE is left";
             else if(threshold>=40) colorString = "RED is left";
-            else colorString = "NONE";
+//            else colorString = "NONE";
 
 //            colorString = newR-newB < threshold ? "BLUE is left" : "RED is left";//TODO: This value may be different under dimmer conditions
             sleep(10);

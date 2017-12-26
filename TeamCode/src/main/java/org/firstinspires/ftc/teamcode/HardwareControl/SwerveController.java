@@ -56,39 +56,31 @@ public class SwerveController {
     public void pointDirection(boolean isCartesian, double xComp_Magnitude, double yComp_Angle, double rotationSpeed) {  // if field centric is added, add heading and toggle
 
         // Calculate movement of each module
-        flwVector.set(isCartesian, xComp_Magnitude, yComp_Angle);
-        frwVector.set(isCartesian, xComp_Magnitude, yComp_Angle);
-        blwVector.set(isCartesian, xComp_Magnitude, yComp_Angle);
-        brwVector.set(isCartesian, xComp_Magnitude, yComp_Angle);
+        Vector tempVector = new Vector(isCartesian, xComp_Magnitude, yComp_Angle);
+        flwVector.set(true, tempVector.getX(), tempVector.getY());
+        frwVector.set(true, tempVector.getX(), tempVector.getY());
+        blwVector.set(true, tempVector.getX(), tempVector.getY());
+        brwVector.set(true, tempVector.getX(), tempVector.getY());
 
-        // TODO: add feild centric controlls
         if (useFieldCentricOrientation) {
             double gyroHeading = myGyro.getHeading();
-            flwVector.shiftAngle(gyroHeading);
-            frwVector.shiftAngle(gyroHeading);
-            blwVector.shiftAngle(gyroHeading);
-            brwVector.shiftAngle(gyroHeading);
+            flwVector.shiftAngle(-gyroHeading);
+            frwVector.shiftAngle(-gyroHeading);
+            blwVector.shiftAngle(-gyroHeading);
+            brwVector.shiftAngle(-gyroHeading);
         }
-
-        /*
-        if (feildCentric){
-            flwVector.set(false, flwVector.getMagnitude(), flwVector.getAngle() - heading);
-            frwVector.set(false, frwVector.getMagnitude(), frwVector.getAngle() - heading);
-            blwVector.set(false, blwVector.getMagnitude(), blwVector.getAngle() - heading);
-            brwVector.set(false, brwVector.getMagnitude(), brwVector.getAngle() - heading);
-        }
-
-         */
-
 
         // Scale rotation speed
-        //rotationSpeed =
+        if (useFieldCentricOrientation) {
+        } else {
+            rotationSpeed = Math.pow(rotationSpeed,3) * 1.5;
+        }
 
         // Add rotation vectors
-        flwVector.addVector(false, rotationSpeed, 1.75 * Math.PI);
-        frwVector.addVector(false, rotationSpeed, 1.25 * Math.PI);
-        blwVector.addVector(false, rotationSpeed, 0.25 * Math.PI);
-        brwVector.addVector(false, rotationSpeed, 0.75 * Math.PI);
+        flwVector.addVector(false, rotationSpeed, 0.25 * Math.PI);
+        frwVector.addVector(false, rotationSpeed, 0.75 * Math.PI);
+        blwVector.addVector(false, rotationSpeed, 1.75 * Math.PI);
+        brwVector.addVector(false, rotationSpeed, 1.25 * Math.PI);
 
         /// Keep velocity vectors under 1  ///
 
@@ -105,13 +97,13 @@ public class SwerveController {
             brwVector.set(false, brwVector.getMagnitude()/max, brwVector.getAngle());
         }
 
-
         //Write the direction and speed of each module
         flwModule.setVector(flwVector, motorsAreForward);
         frwModule.setVector(frwVector, motorsAreForward);
         blwModule.setVector(blwVector, motorsAreForward);
         brwModule.setVector(brwVector, motorsAreForward);
 
+        Log.e(TAG, "flw x: " + flwVector.getX() + "  y: " + flwVector.getY());
 
         /////// Choose whether to flip motor direction ///////////
 

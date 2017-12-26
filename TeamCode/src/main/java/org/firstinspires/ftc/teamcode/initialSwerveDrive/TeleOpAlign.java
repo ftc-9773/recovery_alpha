@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.initialSwerveDrive;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -13,6 +14,7 @@ import java.lang.*;
 /**
  * Created by Vikesh on 10/8/2017.
  */
+@Disabled
 @TeleOp(name="TeleOpAlign")
 public class TeleOpAlign extends LinearOpMode{
 

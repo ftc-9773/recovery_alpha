@@ -15,6 +15,25 @@ import java.io.IOException;
 import java.util.Iterator;
 import java.io.FileWriter;
 
+/*
+  where are the file on the phone?
+        storage / emulated / FIRST / team9773 / json18
+
+        1) open terminal tab on android studio
+
+        2) get to the right dir on the computer, for example
+        cd TeamCode/src/main/java/org/firstinspires/ftc/teamcode/json/
+
+        3) push a file to the phone:
+        adb push myfile.json /sdcard/FIRST/team9773/json18/
+
+        location of adb on mac: $HOME/Library/Android/sdk/platform-tools
+          where you can get the $HOME value by typing "echo $HOME" in a terminal
+          export PATH=$PATH:$HOME/Library/Android/sdk/platform-tools
+
+        4) get a file from the phone
+        adb pull  /sdcard/FIRST/team9773/json18/myfile.json
+*/
 
 public class SafeJsonReader {
     private static final String baseDir = "/sdcard/FIRST/team9773/json18"; // must end with a name

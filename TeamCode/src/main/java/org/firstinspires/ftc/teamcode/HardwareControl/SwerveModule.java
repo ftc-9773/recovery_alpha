@@ -22,6 +22,9 @@ import org.firstinspires.ftc.teamcode.resources.Vector;
  *
  * To push the file:
  * ~/Library/Android/sdk/platform-tools/adb push swervePIDCoefficients.json /sdcard/FIRST/team9773/json18/
+ *
+ * To pull the file:
+ *
  */
 
 
@@ -201,11 +204,11 @@ public class SwerveModule {
         if (motorsAreForward) {
             velocityVector.set(true, newVector.getX(), newVector.getY());
         } else {
-            velocityVector.set(false, newVector.getMagnitude(), setOnTwoPI(newVector.getAngle() + Math.PI));
+            velocityVector.set(true, -newVector.getX(), -newVector.getY());
         }
 
         // Finds the current position
-        currentPosition = setOnTwoPI(swerveAbsEncoder.getVoltage() / 3.24 * 2 * Math.PI - zeroPosition);
+        currentPosition = setOnTwoPI(2*Math.PI * (1 - swerveAbsEncoder.getVoltage()/3.24) - zeroPosition);
 
         //Calculates distance to move on -pi to pi
         errorAmt = setOnNegPosPI(velocityVector.getAngle() - currentPosition);

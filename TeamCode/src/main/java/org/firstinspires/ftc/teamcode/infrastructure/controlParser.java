@@ -16,7 +16,7 @@ import java.io.IOException;
 
 public class controlParser {
 
-    private String[] commands;
+    public String[] commands;
     private String[] commandOut = new String[4];
     private String input;
     private BufferedReader buffReader = null;
@@ -27,9 +27,9 @@ public class controlParser {
     private static String TAG= "9773_ControlParser";
     private static boolean DEBUG = true;
 
-    public controlParser(String fileName, Telemetry telemetry){
+    public controlParser(String fileName){
         try {
-            fileReader = new FileReader("/sdcard/FIRST/team9773/ibwt18/" + fileName + ".ibwt");
+            fileReader = new FileReader("/sdcard/FIRST/team9773/rasi18/" + fileName + ".rasi");
             buffReader = new BufferedReader(fileReader);
         }
         catch(IOException e){
@@ -39,16 +39,28 @@ public class controlParser {
         try {
             input = buffReader.readLine();
         }
-        catch(IOException e){
-            if(DEBUG) { Log.e(TAG, "Failed to get input"); }
+        catch(IOException e) {
+            if (DEBUG) {
+                Log.e(TAG, "Failed to get input");
+            }
             e.printStackTrace();
         }
+        boolean condition = true;
+        index = 0;
+        StringBuilder inputBuilder = new StringBuilder(input);
+        while(condition){
+            if(inputBuilder.length() > index) {
+                if (inputBuilder.charAt(index) == ' ') {
+                    inputBuilder.deleteCharAt(index);
+                }
+            }
+        }
+        input = inputBuilder.toString();
         this.commands = input.split(";");
         }
-
     public String[] getNextCommand(){
         if(index<commands.length) {
-            commandOut = commands[index].split(", ");
+            commandOut = commands[index].split(",");
             index++;
         }
         telemetry.addData("Current Action: ", commandOut[0]);

@@ -40,18 +40,18 @@ public class AlignBySensor extends LinearOpMode {
 
             aButton.recordNewValue(gamepad1.a);
             if (aButton.isJustOn()) {
-                coefficientsFile.modifyDouble("flwStraightPosition", flwAbsEncoder.getVoltage() / 3.24 * 2 * Math.PI);
-                coefficientsFile.modifyDouble("frwStraightPosition", frwAbsEncoder.getVoltage() / 3.24 * 2 * Math.PI);
-                coefficientsFile.modifyDouble("blwStraightPosition", blwAbsEncoder.getVoltage() / 3.24 * 2 * Math.PI);
-                coefficientsFile.modifyDouble("brwStraightPosition", brwAbsEncoder.getVoltage() / 3.24 * 2 * Math.PI);
+                coefficientsFile.modifyDouble("flwStraightPosition", 2*Math.PI * (1 - flwAbsEncoder.getVoltage() / 3.24));
+                coefficientsFile.modifyDouble("frwStraightPosition", 2*Math.PI * (1 - frwAbsEncoder.getVoltage() / 3.24));
+                coefficientsFile.modifyDouble("blwStraightPosition", 2*Math.PI * (1 - blwAbsEncoder.getVoltage() / 3.24));
+                coefficientsFile.modifyDouble("brwStraightPosition", 2*Math.PI * (1 - brwAbsEncoder.getVoltage() / 3.24));
 
                 coefficientsFile.updateFile();
             }
 
-            telemetry.addData("Front Left Position: ", flwAbsEncoder.getVoltage() / 3.24 * 2 * Math.PI);
-            telemetry.addData("Front Right Position: ", frwAbsEncoder.getVoltage() / 3.24 * 2 * Math.PI);
-            telemetry.addData("Back Left Position: ", blwAbsEncoder.getVoltage() / 3.24 * 2 * Math.PI);
-            telemetry.addData("Back Right Position: ", brwAbsEncoder.getVoltage() / 3.24 * 2 * Math.PI);
+            telemetry.addData("Front Left Position: ", 2*Math.PI * (1 - flwAbsEncoder.getVoltage() / 3.24));
+            telemetry.addData("Front Right Position: ", 2*Math.PI * (1 - frwAbsEncoder.getVoltage() / 3.24));
+            telemetry.addData("Back Left Position: ", 2*Math.PI * (1 - blwAbsEncoder.getVoltage() / 3.24));
+            telemetry.addData("Back Right Position: ", 2*Math.PI * (1 - brwAbsEncoder.getVoltage() / 3.24));
             telemetry.update();
 
         }

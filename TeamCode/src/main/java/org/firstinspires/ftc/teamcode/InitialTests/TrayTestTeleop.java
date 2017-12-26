@@ -8,6 +8,7 @@ import android.util.Log;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.teamcode.HardwareControl.CubeTray;
 import org.firstinspires.ftc.teamcode.HardwareControl.CubeTrayController;
@@ -23,10 +24,14 @@ public class TrayTestTeleop extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
         Log.e(TAG, "Started initializing");
 
-        myCubeTrayController = new CubeTray(hardwareMap, gamepad1,gamepad2);
+
+        myCubeTrayController = new CubeTray(hardwareMap, gamepad1, null);
 
         myCubeTrayController.setServoPos(CubeTray.TrayPositions.STOWED);
 
+        myCubeTrayController.homeLiftVersA();
+
+        myCubeTrayController.liftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
         waitForStart();
 
@@ -34,11 +39,8 @@ public class TrayTestTeleop extends LinearOpMode {
             // integrated lift controlls - what would normally be used
             myCubeTrayController.updateFromGamepad();
 
-            //allow user/tester to manually reset lift position
-
-            if (gamepad2.right_bumper){
-                myCubeTrayController.setServoPos(CubeTray.TrayPositions.DUMP_A);
-            }
+            //
+            myCubeTrayController.liftMotor.setTargetPosition(myCubeTrayController.liftTargetPosition);
             // send telemetry back to driver station
             composeTelemetry();
             telemetry.update();
@@ -55,8 +57,9 @@ public class TrayTestTeleop extends LinearOpMode {
         telemetry.addData("rawLiftPosition: ", myCubeTrayController.getRawLiftPos());
         telemetry.addData("scaledLiftPosition:  ", myCubeTrayController.getliftPos());
 
+        telemetry.addData("targetPosition set: ", myCubeTrayController.liftMotor.getTargetPosition());
+
     }
 }
-
 
 

@@ -1,4 +1,5 @@
 package org.firstinspires.ftc.teamcode.HardwareControl;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -12,7 +13,7 @@ import org.firstinspires.ftc.teamcode.resources.ButtonStatus;
 /**
  * Created by arjun on 11/4/2017.
  */
-
+@Disabled
 @TeleOp(name="CubeIntakeMovement")
 public class CubeIntakeMovement extends LinearOpMode
 {

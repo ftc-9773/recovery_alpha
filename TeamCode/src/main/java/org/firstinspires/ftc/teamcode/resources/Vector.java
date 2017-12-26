@@ -27,13 +27,8 @@ public class Vector {
             xComponent = xMag;
             yComponent = yAng;
         } else {
-            if (xMag < 0) {
-                xMag *= -1;
-                yAng += Math.PI;
-            }
-
-            xComponent = Math.cos(modPi(yAng)) * xMag;
-            yComponent = Math.sin(modPi(yAng)) * xMag;
+            xComponent = Math.sin(yAng) * xMag;
+            yComponent = Math.cos(yAng) * xMag;
         }
     }
 
@@ -43,8 +38,8 @@ public class Vector {
             xComponent = xMag;
             yComponent = yAng;
         } else {
-            xComponent = Math.cos(yAng) * xMag;
-            yComponent = Math.sin(yAng) * xMag;
+            xComponent = Math.sin(yAng) * xMag;
+            yComponent = Math.cos(yAng) * xMag;
         }
     }
 
@@ -54,14 +49,14 @@ public class Vector {
             xComponent += xMag;
             yComponent += yAng;
         } else {
-            xComponent += xMag * Math.cos(yAng);
-            yComponent += xMag * Math.sin(yAng);
+            xComponent += xMag * Math.sin(yAng);
+            yComponent += xMag * Math.cos(yAng);
         }
     }
 
     // Shift the angle
     public void shiftAngle (double angle) {
-        set(false, getMagnitude(), getAngle() - angle);
+        set(false, getMagnitude(), getAngle() + angle);
     }
 
     //Fetching values
@@ -71,11 +66,12 @@ public class Vector {
     public double getMagnitude () { return Math.sqrt( Math.pow(xComponent, 2) + Math.pow(yComponent, 2)); }
 
     public double getAngle () {
-        final double angle = Math.atan2(yComponent, xComponent);
+        final double angle = Math.PI/2 - Math.atan2(yComponent, xComponent);
+
         if (angle < 0) {
             return angle + 2 * Math.PI;
         }  else {
-            return Math.atan2(yComponent, xComponent);
+            return angle;
         }
     }
 

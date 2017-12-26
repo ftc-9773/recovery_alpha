@@ -186,5 +186,28 @@ public class SwerveController {
     public long getFrwEncoderCount() { return frwModule.getEncoderCount(); }
     public long getBlwEncoderCount() { return blwModule.getEncoderCount(); }
     public long getBrwEncoderCount() { return brwModule.getEncoderCount(); }
-
+    public double getMaxErrorAmt(){
+        double biggest;
+        double biggest1;
+        double biggest2;
+        if (Math.abs(flwModule.getErrorAmt())>Math.abs(frwModule.getErrorAmt())){
+            biggest1 = Math.abs(flwModule.getErrorAmt());
+        }
+        else {
+            biggest1 = Math.abs(frwModule.getErrorAmt());
+        }
+        if (Math.abs(blwModule.getErrorAmt())>Math.abs(brwModule.getErrorAmt())){
+            biggest2 = Math.abs(blwModule.getErrorAmt());
+        }
+        else {
+            biggest2 = Math.abs(brwModule.getErrorAmt());
+        }
+        if (biggest1>biggest2){
+            biggest = biggest1;
+        }
+        else{
+            biggest = biggest2;
+        }
+        return biggest;
+    }
 }

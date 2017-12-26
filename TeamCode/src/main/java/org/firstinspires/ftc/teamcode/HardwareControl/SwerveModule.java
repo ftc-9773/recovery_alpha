@@ -268,4 +268,5 @@ public class SwerveModule {
     public long getEncoderCount() {
         return swerveMotor.getCurrentPosition();
     }
+    public double getErrorAmt (){return errorAmt;}
 }

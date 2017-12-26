@@ -14,7 +14,7 @@ import java.io.IOException;
  * Created by Vikesh on 11/19/2017.
  */
 
-public class RasiParser {
+public class    RasiParser {
 
     public String[] commands;
     private String[] commandOut = new String[4];

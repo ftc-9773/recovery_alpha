@@ -257,7 +257,7 @@ public class FTCrobot {
                     index = opModeControl.commands.length;
             }
             myTelemetry.update();
-            index ++;
+            index++;
         }
     }
 }

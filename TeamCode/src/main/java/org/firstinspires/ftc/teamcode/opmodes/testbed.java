@@ -15,7 +15,7 @@ import org.firstinspires.ftc.teamcode.resources.ButtonStatus;
  * Created by Vikesh on 11/19/2017.
  */
 @Autonomous(name = "testbed")
-@Disabled
+
 
 public class testbed extends LinearOpMode{
 
@@ -36,7 +36,7 @@ public class testbed extends LinearOpMode{
         command = control.getNextCommand();
         */
 
-        flwServo = hardwareMap.crservo.get("flwServo");
+        flwServo = hardwareMap.crservo.get("brwServo");
         myGyro = new Gyro(hardwareMap);
 
         waitForStart();

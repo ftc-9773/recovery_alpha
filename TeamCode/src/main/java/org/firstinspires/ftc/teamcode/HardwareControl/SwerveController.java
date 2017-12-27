@@ -40,7 +40,7 @@ public class SwerveController {
     private CoordinateSystem myCoordinateSystem;
 
     //Orientation tracking variables
-    private boolean useFieldCentricOrientation = true;
+    private boolean useFieldCentricOrientation = false;
     private SafeJsonReader myPIDCoefficients;
     private PIDController turningPID;
 
@@ -156,7 +156,7 @@ public class SwerveController {
         blwModule.setVector(blwVector);
         brwModule.setVector(brwVector);
 
-
+        Log.i(TAG, "FLW: " + flwVector.getAngle()/Math.PI + "   FRW: " + frwVector.getAngle()/Math.PI + "   BLW: " + blwVector.getAngle()/Math.PI + "   BRW: " + brwVector.getAngle()/Math.PI);
         // Point modules
         flwModule.pointModule();
         frwModule.pointModule();

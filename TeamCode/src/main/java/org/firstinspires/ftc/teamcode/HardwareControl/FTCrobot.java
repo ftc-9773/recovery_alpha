@@ -116,14 +116,17 @@ public class FTCrobot {
                 directionLock = 270;
             }
         }
+
         // Actual driving
         mySwerveController.steerSwerve(true, Math.pow(stickl1x,3), Math.pow(stickl1y * -1, 3), Math.pow(rotation,3), directionLock);
+        Log.i(TAG, "Joystick input  X: " + Math.pow(stickl1x,3) + "   Y: " + Math.pow(stickl1y * -1, 3));
+
         if(mySwerveController.getMaxErrorAmt()<.15 && highPrecisionEnabled) {
             mySwerveController.moveRobot();
         }else if(!highPrecisionEnabled){
             mySwerveController.moveRobot();
         }
-
+// */
 
         /////// Intake - Gamepad 1 right trigger and bumper ////////
 /*
@@ -161,7 +164,7 @@ public class FTCrobot {
 
 
         // cube tray
-        myCubeTray.updateFromGamepad();
+        //myCubeTray.updateFromGamepad();
 
 
         // relic arm

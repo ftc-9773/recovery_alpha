@@ -232,7 +232,7 @@ public class SwerveModule {
         if (velocityVector.getMagnitude() > 0) {
 
             //Calculate PID
-            tellServo = 0.5 + calculatePDCorrection(errorAmt);
+            tellServo = calculatePDCorrection(errorAmt);
 
             //Correct onto servo's range
             if (tellServo > maxPower) {
@@ -266,7 +266,9 @@ public class SwerveModule {
     public boolean getIsTurning() {
         return isTurning;
     }
-
+    public double getModulePosition(){
+        return currentPosition;
+    }
     public long getEncoderCount() {
         return swerveMotor.getCurrentPosition();
     }

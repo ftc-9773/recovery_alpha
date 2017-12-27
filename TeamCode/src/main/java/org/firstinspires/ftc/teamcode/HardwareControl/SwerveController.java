@@ -25,6 +25,8 @@ public class SwerveController {
     public SwerveModule blwModule;
     public SwerveModule brwModule;
 
+    private boolean DRIVING_ENABLED = true;
+
     //Gyro
     private Gyro myGyro;
 
@@ -40,7 +42,7 @@ public class SwerveController {
     private CoordinateSystem myCoordinateSystem;
 
     //Orientation tracking variables
-    private boolean useFieldCentricOrientation = false;
+    private boolean useFieldCentricOrientation = true;
     private SafeJsonReader myPIDCoefficients;
     private PIDController turningPID;
 
@@ -135,6 +137,21 @@ public class SwerveController {
         blwVector.addVector(false, rotationSpeed, 1.75 * Math.PI);
         brwVector.addVector(false, rotationSpeed, 1.25 * Math.PI);
 
+        Log.i("flwErrorAmt", Double.toString(flwModule.getErrorAmt()));
+        Log.i("frwErrorAmt", Double.toString(frwModule.getErrorAmt()));
+        Log.i("blwErrorAmt", Double.toString(blwModule.getErrorAmt()));
+        Log.i("brwErrorAmt", Double.toString(brwModule.getErrorAmt()));
+        /*
+        Log.i("BRW Direction", Double.toString(brwVector.getAngle()));
+        Log.i("FLW Direction", Double.toString(flwVector.getAngle()));
+        Log.i("FRW Direction", Double.toString(frwVector.getAngle()));
+        Log.i("BLW Direction", Double.toString(blwVector.getAngle()));
+
+        Log.i("BRW module position", Double.toString(brwModule.getModulePosition()));
+        Log.i("FLW module position", Double.toString(flwModule.getModulePosition()));
+        Log.i("FRW module position", Double.toString(frwModule.getModulePosition()));
+        Log.i("BLW module position", Double.toString(blwModule.getModulePosition()));
+        */
         /// Keep velocity vectors under 1  ///
 
         // Find the largest motor speed
@@ -168,10 +185,12 @@ public class SwerveController {
     public void moveRobot() {
 
         if (RUN_CORD_SYSTEM) { myCoordinateSystem.endPositionUpdate((flwModule.getEncoderCount()+frwModule.getEncoderCount())/2); }
-        flwModule.driveModule();
-        frwModule.driveModule();
-        blwModule.driveModule();
-        brwModule.driveModule();
+        if(DRIVING_ENABLED) {
+            flwModule.driveModule();
+            frwModule.driveModule();
+            blwModule.driveModule();
+            brwModule.driveModule();
+        }
         if (RUN_CORD_SYSTEM) { myCoordinateSystem.beginPositionUpdate((flwModule.getEncoderCount()+frwModule.getEncoderCount())/2, strafeOnlyHeading); }
     }
 

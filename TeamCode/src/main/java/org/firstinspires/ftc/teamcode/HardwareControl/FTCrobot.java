@@ -118,14 +118,15 @@ public class FTCrobot {
         }
 
         // Actual driving
-        mySwerveController.steerSwerve(true, stickl1x, (stickl1y * -1), rotation, directionLock);
-        Log.i(TAG, "Joystick input  X: " + stickl1x + "   Y: " + stickl1y * -1);
-
-        if(mySwerveController.getMaxErrorAmt()<.15 && highPrecisionEnabled) {
-            mySwerveController.moveRobot();
-        }else if(!highPrecisionEnabled){
-            mySwerveController.moveRobot();
+        if(highPrecisionEnabled && Math.abs(mySwerveController.getMaxErrorAmt()) > .15) {
+            mySwerveController.steerSwerve(true, stickl1x, (stickl1y * -1), rotation, directionLock);
+        }else if(highPrecisionEnabled){
+            mySwerveController.steerSwerve(true, 0,0,0, directionLock);
+        }else{
+            mySwerveController.steerSwerve(true, stickl1x, (stickl1y * -1), rotation, directionLock);
         }
+        Log.i(TAG, "Joystick input  X: " + stickl1x + "   Y: " + stickl1y * -1);
+            mySwerveController.moveRobot();
 // */
 
         /////// Intake - Gamepad 1 right trigger and bumper ////////

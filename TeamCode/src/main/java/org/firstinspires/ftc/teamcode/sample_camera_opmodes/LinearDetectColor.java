@@ -60,7 +60,7 @@ public class LinearDetectColor extends LinearOpModeCamera {
 
     }
 
-    public void detectJewelColor(){
+    public String detectJewelColor(){
         int avgredValues = 0, avgblueValues = 0, minRGB = 0, maxRGB = 0;
         double newR = 0.0, newB = 0.0;
         if (imageReady()) { // only do this if an image has been returned from the camera
@@ -116,6 +116,7 @@ public class LinearDetectColor extends LinearOpModeCamera {
 
         telemetry.addData("actual difference: ", newR-newB);
         telemetry.addData("Jewel Color ", colorString);
+        return colorString;
     }
 }
 

@@ -118,8 +118,8 @@ public class FTCrobot {
         }
 
         // Actual driving
-        mySwerveController.steerSwerve(true, Math.pow(stickl1x,3), Math.pow(stickl1y * -1, 3), Math.pow(rotation,3), directionLock);
-        Log.i(TAG, "Joystick input  X: " + Math.pow(stickl1x,3) + "   Y: " + Math.pow(stickl1y * -1, 3));
+        mySwerveController.steerSwerve(true, stickl1x, (stickl1y * -1), rotation, directionLock);
+        Log.i(TAG, "Joystick input  X: " + stickl1x + "   Y: " + stickl1y * -1);
 
         if(mySwerveController.getMaxErrorAmt()<.15 && highPrecisionEnabled) {
             mySwerveController.moveRobot();

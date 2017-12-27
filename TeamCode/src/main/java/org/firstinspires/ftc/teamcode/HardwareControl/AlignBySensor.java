@@ -52,6 +52,8 @@ public class AlignBySensor extends LinearOpMode {
 
                 coefficientsFile.updateFile();
 
+                telemetry.addData("Updated? ", "True");
+
                 flwZeroPosition = coefficientsFile.getDouble("flwStraightPosition");
                 frwZeroPosition = coefficientsFile.getDouble("frwStraightPosition");
                 blwZeroPosition = coefficientsFile.getDouble("blwStraightPosition");

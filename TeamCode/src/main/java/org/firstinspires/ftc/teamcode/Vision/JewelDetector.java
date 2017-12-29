@@ -5,27 +5,51 @@ import android.graphics.Color;
 import android.hardware.Camera;
 
 import org.firstinspires.ftc.robotcontroller.for_camera_opmodes.LinearOpModeCamera;
+import org.firstinspires.ftc.teamcode.infrastructure.SafeJsonReader;
 
 /**
  * Created by michaelzhou on 12/28/17.
  */
 
+// commands for adb
+    /*
+    cd TeamCode/src/main/java/org/firstinspires/ftc/teamcode/JSON/
+    ~/Library/Android/sdk/platform-tools/adb push VisionThresholds.json /sdcard/FIRST/team9773/json18
+     */
+
 public class JewelDetector {
+
+    public enum JewelColors {
+        RED,
+        BLUE,
+        UNKNOWN,
+        NOT_INITIALIZED
+    }
+
     LinearOpModeCamera camOp;
     boolean isRed, isBlue;
+    int total = 0;
     int colOn = 160;
     int colOff = 80;
     int ds2 = 2;
+    SafeJsonReader thresholds ;
+    double redThreshold = 0.1;
+    double blueThreshold = 0.1;
+    public JewelColors color ;
 
     public JewelDetector(LinearOpModeCamera camOp){
         this.camOp = camOp;
         isRed = false;
         isBlue = false;
+        thresholds = new SafeJsonReader("VisionThresholds");
+        redThreshold = thresholds.getDouble("RedThreshold");
+        blueThreshold = thresholds.getDouble("BlueThreshold");
     }
 
     public void startCamera(){
         camOp.setCameraDownsampling(8);
         camOp.startCamera(Camera.CameraInfo.CAMERA_FACING_BACK);
+
     }
 
     public String getJewelColor(){
@@ -47,92 +71,74 @@ public class JewelDetector {
         rgbImage = camOp.convertYuvImageToRgb(camOp.yuvImage, camOp.width, camOp.height, ds2);
 
         // do we want to scale?
-        if (scaling) {}
-        // additional downsampling of the image
-        // set to 1 to disable further downsampling
-
-        int redValue = 0;
-        int blueValue = 0;
-        int greenValue = 0;
-
         int minR = 255;
         int maxR = 0;
         int minB = 255;
         int maxB = 0;
+        int minG = 255;
+        int maxG = 0;
 
+        if (scaling) {
+            // additional downsampling of the image
+            // set to 1 to disable further downsampling
 
-        int redValues = 0, blueValues = 0;
-
-        for (int x = rgbImage.getWidth() / 2; x < rgbImage.getWidth(); x++) {
-            for (int y = rgbImage.getHeight() / 2; y < rgbImage.getHeight(); y++) {
-                int pixel = rgbImage.getPixel(x, y);
-
-                if(Color.red(pixel) < minR) minR = Color.red(pixel);
-                if(Color.red(pixel) > maxR) maxR = Color.red(pixel);
-                if(Color.blue(pixel) < minB) minB = Color.blue(pixel);
-                if(Color.blue(pixel) > maxB) maxB = Color.blue(pixel);
-
-                if(Color.red(pixel) > colOn && Color.blue(pixel) < colOff && Color.green(pixel) < colOff)
-                    redValue++;
-                if(Color.blue(pixel) > colOn && Color.red(pixel) < colOff && Color.green(pixel) < colOff)
-                    blueValue++;
-
-//                            if(Color.green(pixel) < minG) minG = Color.green(pixel);
-//                            if(Color.green(pixel) > maxG) maxG = Color.green(pixel);
-//                    redValues+=Color.red(pixel);
-//                    blueValues+=Color.blue(pixel);
-            }
-        }
-
-//            avgredValues = redValues / ((rgbImage.getWidth()/2)*(rgbImage.getHeight()/2));
-//            avgblueValues = blueValues / ((rgbImage.getWidth()/2)*(rgbImage.getHeight()/2));
-
-//            minRGB = Math.min(minR,minB);
-//            maxRGB = Math.max(maxB,maxR);
-//
-//            newR = 255*(avgredValues - minRGB)/(maxRGB-minRGB);
-//            newB = 255*(avgblueValues - minRGB)/(maxRGB-minRGB);
-
-//            double threshold = newR - newB;
-
-        //TODO (at competition): Manually test this threshold value by the field in the competition.
-        double threshold = redValue - blueValue;
-        if(scaling){
             for (int x = rgbImage.getWidth() / 2; x < rgbImage.getWidth(); x++) {
                 for (int y = rgbImage.getHeight() / 2; y < rgbImage.getHeight(); y++) {
                     int pixel = rgbImage.getPixel(x, y);
-
-                    if(Color.red(pixel) < minR) minR = Color.red(pixel);
-                    if(Color.red(pixel) > maxR) maxR = Color.red(pixel);
-                    if(Color.blue(pixel) < minB) minB = Color.blue(pixel);
-                    if(Color.blue(pixel) > maxB) maxB = Color.blue(pixel);
-
-                    if(Color.red(pixel) > colOn && Color.blue(pixel) < colOff && Color.green(pixel) < colOff)
-                        redValue+=Color.red(pixel);
-                    if(Color.blue(pixel) > colOn && Color.red(pixel) < colOff && Color.green(pixel) < colOff)
-                        blueValue+=Color.blue(pixel);
-
-//                            if(Color.green(pixel) < minG) minG = Color.green(pixel);
-//                            if(Color.green(pixel) > maxG) maxG = Color.green(pixel);
-//                    redValues+=Color.red(pixel);
-//                    blueValues+=Color.blue(pixel);
+                    if (Color.red(pixel) < minR) minR = Color.red(pixel);
+                    if (Color.red(pixel) > maxR) maxR = Color.red(pixel);
+                    if (Color.blue(pixel) < minB) minB = Color.blue(pixel);
+                    if (Color.blue(pixel) > maxB) maxB = Color.blue(pixel);
+                    if (Color.green(pixel) < minG) minG = Color.green(pixel);
+                    if (Color.green(pixel) > maxG) maxG = Color.green(pixel);
                 }
             }
-
         }
 
+        //TODO (at competition): Manually test this threshold value by the field in the competition.
+        int redValue = 0;
+        int blueValue = 0;
+        int totValue = 0;
+        double coeffR = 255.0 / ((double)(maxR - minR));
+        double coeffB = 255.0 / ((double)(maxB - minB));
+        double coeffG = 255.0 / ((double)(maxG - minG));
 
+        for (int x = rgbImage.getWidth() / 2; x < rgbImage.getWidth(); x+=10) {
+            for (int y = rgbImage.getHeight() / 2; y < rgbImage.getHeight(); y+=10) {
+                int pixel = rgbImage.getPixel(x, y);
 
-        if(threshold<0){
+                double valR = Color.red(pixel);
+                double valB = Color.blue(pixel);
+                double valG = Color.green(pixel);
+
+                if (scaling) {
+                    valR = (valR - minR) * coeffR;
+                    valB = (valB - minB) * coeffB;
+                    valG = (valG - minG) * coeffG;
+                }
+                if(valR > colOn && valB < colOff && valG < colOff)
+                    redValue+=valR;
+                if(valB > colOn && valR < colOff && valG < colOff)
+                    blueValue+=valB;
+                totValue ++;
+            }
+        }
+
+        int diff = redValue - blueValue;
+//        threshold = threshold * totValue;
+
+        if(diff < -blueThreshold*totValue){
             isBlue = true;
             isRed = false;
-        }
-        else {
+        }else if (diff > redThreshold*totValue) {
             isRed = true;
+            isBlue = false;
+        } else {
+            isRed = false;
             isBlue = false;
         }
 //            else colorString = "NONE";
-        camOp.telemetry.addData("actual difference: ", threshold);
+        camOp.telemetry.addData("actual difference: ", diff);
 
 //            colorString = newR-newB < threshold ? "BLUE is left" : "RED is left";//TODO: This value may be different under dimmer conditions
         camOp.sleep(10);

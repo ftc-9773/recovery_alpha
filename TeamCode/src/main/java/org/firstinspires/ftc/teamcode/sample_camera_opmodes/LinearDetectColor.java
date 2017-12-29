@@ -40,7 +40,7 @@ public class LinearDetectColor extends LinearOpModeCamera {
 
         while (opModeIsActive()) {
 //            if(colorString==null){
-                detector.onOffThreshold(false);//TODO: Have the camera detect the ball for a certain amount of time, or store it into counts for each color and get the greatest count
+                detector.onOffThreshold(true);//TODO: Have the camera detect the ball for a certain amount of time, or store it into counts for each color and get the greatest count
 
 //            }
 //            timer.startTime();

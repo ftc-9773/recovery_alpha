@@ -171,7 +171,7 @@ public class SwerveModule {
         lastTime = System.currentTimeMillis();
         lastError = input;
 
-        if (DEBUG) { Log.d(TAG, "Prop: " + proportionalCorrection + "   Dif:" + differentialCorrection); }
+        //if (DEBUG) { Log.d(TAG, "Prop: " + proportionalCorrection + "   Dif:" + differentialCorrection); }
 
         return proportionalCorrection + differentialCorrection;
 
@@ -204,7 +204,7 @@ public class SwerveModule {
     public void setVector(Vector newVector) {
 
         // Finds the current position
-        currentPosition = setOnTwoPI(2*Math.PI * (1 - swerveAbsEncoder.getVoltage()/3.24) - zeroPosition);
+        currentPosition = setOnTwoPI(2*Math.PI * (1 - swerveAbsEncoder.getVoltage()/3.23) - zeroPosition);
 
         //Calculates distance to move on -pi to pi
         final double forwardError = setOnNegPosPI(newVector.getAngle() - currentPosition);
@@ -219,7 +219,11 @@ public class SwerveModule {
             motorIsForward = false;
             errorAmt = backwardsError;
         }
+
+        Log.i(TAG, "NewVector: " + newVector.getAngle() + "velocityVector" + velocityVector.getAngle());
+
     }
+
 
     // Rotates the Module
     public void pointModule() {
@@ -228,7 +232,7 @@ public class SwerveModule {
         if (velocityVector.getMagnitude() > 0) {
 
             //Calculate PID
-            tellServo = 0.5 + calculatePDCorrection(errorAmt);
+            tellServo = calculatePDCorrection(errorAmt);
 
             //Correct onto servo's range
             if (tellServo > maxPower) {
@@ -240,10 +244,8 @@ public class SwerveModule {
         } else {
             tellServo = 0;
         }
-        Log.i(TAG, "Tell servo is: " + tellServo);
+        Log.i(TAG, "Desired Position: " + velocityVector.getAngle()/Math.PI + "pi,   Error Amt: " + errorAmt + ",   Tell servo is: " + tellServo);
         swerveServo.setPower(tellServo);
-        if (DEBUG && debugHere) { Log.e(TAG, "Servo written: " + tellServo); }
-
         if (Math.abs(tellServo) < 0.3) {
             isTurning = false;
         }  else {
@@ -264,7 +266,9 @@ public class SwerveModule {
     public boolean getIsTurning() {
         return isTurning;
     }
-
+    public double getModulePosition(){
+        return currentPosition;
+    }
     public long getEncoderCount() {
         return swerveMotor.getCurrentPosition();
     }

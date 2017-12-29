@@ -36,13 +36,8 @@ public class SwerveController {
     public Vector blwVector = new Vector(true, 0, 0);
     public Vector brwVector = new Vector(true, 0, 0);
 
-    // Cordinate System
-    private static final boolean RUN_CORD_SYSTEM = true;
-    private double strafeOnlyHeading = 0;
-    private CoordinateSystem myCoordinateSystem;
-
     //Orientation tracking variables
-    private boolean useFieldCentricOrientation = true;
+    public boolean useFieldCentricOrientation = true;
     private SafeJsonReader myPIDCoefficients;
     private PIDController turningPID;
 
@@ -78,7 +73,6 @@ public class SwerveController {
         Log.e(TAG, "Coefficients: " + Kp + " " + Ki + " " + Kd);
         turningPID = new PIDController(Kp, Ke, Ki, Kd);
 
-        if (RUN_CORD_SYSTEM) { myCoordinateSystem = new CoordinateSystem(0,0,myGyro, telemetry); }
     }
 
 
@@ -95,12 +89,14 @@ public class SwerveController {
             directionLock = -1;
         }
 
+        Log.d(TAG, "Rotation: " + rotation + "  DirectionLock: " + directionLock);
+
         // handle cardinal directions
         if (directionLock != -1 && useFieldCentricOrientation) {
             // Calculate Error
             double error = negToPosPi(Math.toRadians(directionLock) - myGyro.getHeading());
             rotation = turningPID.getPIDCorrection(error);
-            Log.e(TAG, "true error: " + error + "  rotation: " + rotation);
+            //Log.e(TAG, "true error: " + error + "  rotation: " + rotation);
         }
 
         //Have pointModules do the brunt work
@@ -118,7 +114,6 @@ public class SwerveController {
         brwVector.set(true, tempVector.getX(), tempVector.getY());
 
         // For position tracking
-        if (RUN_CORD_SYSTEM) { strafeOnlyHeading = tempVector.getAngle(); }
 
         if (useFieldCentricOrientation) {
             double gyroHeading = myGyro.getHeading();
@@ -136,12 +131,12 @@ public class SwerveController {
         frwVector.addVector(false, rotationSpeed, 0.75 * Math.PI);
         blwVector.addVector(false, rotationSpeed, 1.75 * Math.PI);
         brwVector.addVector(false, rotationSpeed, 1.25 * Math.PI);
-
+/*
         Log.i("flwErrorAmt", Double.toString(flwModule.getErrorAmt()));
         Log.i("frwErrorAmt", Double.toString(frwModule.getErrorAmt()));
         Log.i("blwErrorAmt", Double.toString(blwModule.getErrorAmt()));
         Log.i("brwErrorAmt", Double.toString(brwModule.getErrorAmt()));
-        /*
+
         Log.i("BRW Direction", Double.toString(brwVector.getAngle()));
         Log.i("FLW Direction", Double.toString(flwVector.getAngle()));
         Log.i("FRW Direction", Double.toString(frwVector.getAngle()));
@@ -173,7 +168,7 @@ public class SwerveController {
         blwModule.setVector(blwVector);
         brwModule.setVector(brwVector);
 
-        Log.i(TAG, "FLW: " + flwVector.getAngle()/Math.PI + "   FRW: " + frwVector.getAngle()/Math.PI + "   BLW: " + blwVector.getAngle()/Math.PI + "   BRW: " + brwVector.getAngle()/Math.PI);
+        //Log.i(TAG, "FLW: " + flwVector.getAngle()/Math.PI + "   FRW: " + frwVector.getAngle()/Math.PI + "   BLW: " + blwVector.getAngle()/Math.PI + "   BRW: " + brwVector.getAngle()/Math.PI);
         // Point modules
         flwModule.pointModule();
         frwModule.pointModule();
@@ -182,16 +177,20 @@ public class SwerveController {
     }
 
     // Part Two of Movement
-    public void moveRobot() {
+    public void moveRobot(boolean highPrecisionMode) {
 
-        if (RUN_CORD_SYSTEM) { myCoordinateSystem.endPositionUpdate((flwModule.getEncoderCount()+frwModule.getEncoderCount())/2); }
+        if (highPrecisionMode) {
+            if (getIsTurning()) {
+                return;
+            }
+        }
+
         if(DRIVING_ENABLED) {
             flwModule.driveModule();
             frwModule.driveModule();
             blwModule.driveModule();
             brwModule.driveModule();
         }
-        if (RUN_CORD_SYSTEM) { myCoordinateSystem.beginPositionUpdate((flwModule.getEncoderCount()+frwModule.getEncoderCount())/2, strafeOnlyHeading); }
     }
 
     public void toggleFieldCentric () {

@@ -80,6 +80,7 @@ public class SwerveModule {
 
     // For outside access
     private boolean isTurning = false;
+    private double lastPosition;
     private double currentPosition = 0;
 
 
@@ -124,6 +125,8 @@ public class SwerveModule {
         // Sets zero position
         myJsonZeroPosition = new SafeJsonReader("SwerveModuleZeroPositions");
         zeroPosition = myJsonZeroPosition.getDouble(hardwareMapTag + "StraightPosition");
+
+        lastPosition = setOnTwoPI(2*Math.PI * (1 - swerveAbsEncoder.getVoltage()/3.23) - zeroPosition);
     }
 
 
@@ -220,7 +223,7 @@ public class SwerveModule {
             errorAmt = backwardsError;
         }
 
-        Log.i(TAG, "NewVector: " + newVector.getAngle() + "velocityVector" + velocityVector.getAngle());
+        //Log.i(TAG, "NewVector: " + newVector.getAngle() + "velocityVector" + velocityVector.getAngle());
 
     }
 
@@ -244,13 +247,15 @@ public class SwerveModule {
         } else {
             tellServo = 0;
         }
-        Log.i(TAG, "Desired Position: " + velocityVector.getAngle()/Math.PI + "pi,   Error Amt: " + errorAmt + ",   Tell servo is: " + tellServo);
+        //Log.i(TAG, "Desired Position: " + velocityVector.getAngle()/Math.PI + "pi,   Error Amt: " + errorAmt + ",   Tell servo is: " + tellServo);
         swerveServo.setPower(tellServo);
-        if (Math.abs(tellServo) < 0.3) {
-            isTurning = false;
-        }  else {
+
+        if (setOnTwoPI(currentPosition - lastPosition) > 0.005) {
             isTurning = true;
+        } else {
+            isTurning = false;
         }
+        //Log.i(TAG, "AbsEncoder positional difference: " + setOnTwoPI(currentPosition - lastPosition));
     }
 
 

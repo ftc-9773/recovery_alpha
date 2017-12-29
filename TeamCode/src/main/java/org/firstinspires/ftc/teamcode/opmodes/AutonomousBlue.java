@@ -12,16 +12,12 @@ import org.firstinspires.ftc.teamcode.sample_camera_opmodes.LinearDetectColor;
 @Autonomous(name = "AutoBlue")
 public class AutonomousBlue extends LinearOpMode {
 
-    String jewelColor;
-    LinearDetectColor jewelDetectColor = new LinearDetectColor();
 
     @Override
     public void runOpMode() throws InterruptedException {
         waitForStart();
         
         while(opModeIsActive()) {
-            jewelColor = jewelDetectColor.detectJewelColor();
-            telemetry.addData("color: ", jewelColor);
         }
     }
 }

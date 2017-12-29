@@ -56,6 +56,12 @@ public class FTCrobot {
     private static final String TAG = "9773_FTCrobot";
     private static final boolean DEBUG = true;
 
+    private boolean disableDriving = false;
+    private boolean disableLift  = false;
+    private boolean disableDriverIntake = false;
+    private boolean disableAutoIntake = true;
+    private boolean disableRelicArm = false ;
+
     // INIT
     public FTCrobot(HardwareMap hwmap, Telemetry telemetry, Gamepad gamepad1, Gamepad gamepad2){
         this.gp1y = new ButtonStatus();
@@ -120,55 +126,62 @@ public class FTCrobot {
         mySwerveController.moveRobot(highPrecisionMode);
 // */
 
-        /////// Intake - Gamepad 1 right trigger and bumper ////////
-/*
-        if (myGamepad1.right_trigger > 0) {
-            myIntakeController.runIntakeOut();
-        } else if (myGamepad1.right_bumper) {
-            myIntakeController.runIntakeIn();
-        } else {
-            myIntakeController.intakeOff();
-        }
+            /////// Intake - Gamepad 1 right trigger and bumper ////////
+    /*   if(!disableAutoIntake) {
+            if (myGamepad1.right_trigger > 0) {
+                myIntakeController.runIntakeOut();
+            } else if (myGamepad1.right_bumper) {
+                myIntakeController.runIntakeIn();
+            } else {
+                myIntakeController.intakeOff();
+            }
 
-        // Lowering Intake - Gamepad 2 Left Bumper
-        leftBumperStatus.recordNewValue(myGamepad2.left_bumper);
-        if(leftBumperStatus.isJustOn()){
-            time = System.currentTimeMillis();
-            myIntakeController.lowerIntake(true);
-        }
-        if (System.currentTimeMillis()-500>time){
-            myIntakeController.lowerIntake(false);
-        }
-// */
+            // Lowering Intake - Gamepad 2 Left Bumper
+            leftBumperStatus.recordNewValue(myGamepad2.left_bumper);
+            if(leftBumperStatus.isJustOn()){
+                time = System.currentTimeMillis();
+                myIntakeController.lowerIntake(true);
+            }
+            if (System.currentTimeMillis()-500>time){
+                myIntakeController.lowerIntake(false);
+            }
+         }
+    // */
 
         // Manual Intake Controller - Gamepad 2 Right Joystick
-        myManualIntakeController.RunIntake(myGamepad2.right_stick_x, myGamepad2.right_stick_y);
+        if(!disableDriverIntake) {
+            myManualIntakeController.RunIntake(myGamepad2.right_stick_x, myGamepad2.right_stick_y);
 
-        // Lowering Intake - Gamepad 2 Left Bumper
-        leftBumperStatus.recordNewValue(myGamepad2.left_bumper);
-        if(leftBumperStatus.isJustOn()){
-            time = System.currentTimeMillis();
-            myManualIntakeController.lowerIntake(true);
-        }
-        if (System.currentTimeMillis()-500>time){
-            myManualIntakeController.lowerIntake(false);
+            // Lowering Intake - Gamepad 2 Left Bumper
+            leftBumperStatus.recordNewValue(myGamepad2.left_bumper);
+            if (leftBumperStatus.isJustOn()) {
+                time = System.currentTimeMillis();
+                myManualIntakeController.lowerIntake(true);
+            }
+            if (System.currentTimeMillis() - 500 > time) {
+                myManualIntakeController.lowerIntake(false);
+            }
         }
 
 
         // cube tray
-        //myCubeTray.updateFromGamepad();
+        if(!disableLift) {
+            myCubeTray.updateFromGamepad();
+        }
 
 
         // relic arm
-        if(dpadupStatus.isJustOn()){
-            armState = !armState;
-        }
-        if(dpaddownStatus.isJustOn()){
-            grabState = !grabState;
-        }
+        if(!disableRelicArm) {
+            if (dpadupStatus.isJustOn()) {
+                armState = !armState;
+            }
+            if (dpaddownStatus.isJustOn()) {
+                grabState = !grabState;
+            }
 
-        // Relic arm - Gamepad 2 Left Joystick
-        myRelicSystem.runSequence(myGamepad2.left_stick_y*-0.95 + 0.05, armState, grabState);
+            // Relic arm - Gamepad 2 Left Joystick
+            myRelicSystem.runSequence(myGamepad2.left_stick_y * -0.95 + 0.05, armState, grabState);
+        }
 
 
         // Toggle Field Centric Mode - gamepad 1 left trigger

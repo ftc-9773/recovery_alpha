@@ -150,7 +150,7 @@ public class FTCrobot {
 
         // Manual Intake Controller - Gamepad 2 Right Joystick
         if(!disableDriverIntake) {
-            myManualIntakeController.RunIntake(myGamepad2.right_stick_x, -myGamepad2.right_stick_y);
+            myManualIntakeController.RunIntake(myGamepad2.right_stick_x, -1*myGamepad2.right_stick_y);
 
             // Lowering Intake - Gamepad 2 Left Bumper
             leftBumperStatus.recordNewValue(myGamepad2.left_bumper);

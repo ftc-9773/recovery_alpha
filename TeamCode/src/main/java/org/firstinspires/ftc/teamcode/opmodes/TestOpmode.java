@@ -60,7 +60,7 @@ public class TestOpmode extends LinearOpMode {
 
             // move swerve drive
             mySwerveController.pointModules(true, gamepad1.left_stick_x,gamepad1.left_stick_y,gamepad1.right_stick_x);
-            mySwerveController.moveRobot();
+            mySwerveController.moveRobot(false);
 
             // update the intake object
             if (gamepad2.right_stick_y < 0 - intakePowerTol){

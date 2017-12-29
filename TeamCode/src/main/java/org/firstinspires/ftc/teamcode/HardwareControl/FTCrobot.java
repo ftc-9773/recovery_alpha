@@ -50,7 +50,6 @@ public class FTCrobot {
     private ButtonStatus gamepad1LeftTrigger = new ButtonStatus();
     private ButtonStatus gamepad1RightTrigger = new ButtonStatus();
     private ButtonStatus leftBumperStatus = new ButtonStatus();
-    private boolean highPrecisionEnabled = false;
     private double rotation;
 
 
@@ -81,52 +80,44 @@ public class FTCrobot {
 
 
         /////// Driving - gamepad 1 left and right joysticks & Dpad /////
+
+        // High precision mode
+        double drivingX = Math.pow(myGamepad1.left_stick_x, 3);
+        double drivingY = Math.pow(myGamepad1.left_stick_y, 3) * -1;
+        double drivingRotation = Math.pow(myGamepad1.right_stick_x, 3);
+
         // Direction Lock
-        gp1y.recordNewValue(myGamepad1.y);
-        if (gp1y.isJustOn()){
-            highPrecisionEnabled = !highPrecisionEnabled;
-        }
-        if(highPrecisionEnabled) {
-            stickl1x = myGamepad1.left_stick_x*.793;
-            stickl1y = myGamepad1.left_stick_y*.793;
-            rotation = myGamepad1.right_stick_x*0.5;
-        }
-        else{
-            stickl1x = myGamepad1.left_stick_x;
-            stickl1y = myGamepad1.left_stick_y;
-            rotation = myGamepad1.right_stick_x;
-        }
-        if (rotation != 0) {
+        if (drivingRotation != 0) {
             Log.e(TAG, "Rotation is 0");
             // Disable rotation lock if driver spins the robot
             directionLock = -1;
         } else {
             Log.e(TAG, "Checking dpad");
             if (myGamepad1.dpad_up) {
-                Log.e(TAG, "Up dpad pressed");
+                Log.d(TAG, "Up dpad pressed");
                 directionLock = 0;
             } else if (myGamepad1.dpad_right) {
-                Log.e(TAG, "Right dpad pressed");
+                Log.d(TAG, "Right dpad pressed");
                 directionLock = 90;
             } else if (myGamepad1.dpad_down) {
-                Log.e(TAG, "down dpad pressed");
+                Log.d(TAG, "down dpad pressed");
                 directionLock = 180;
             } else if (myGamepad1.dpad_left) {
-                Log.e(TAG, "Left dpad pressed");
+                Log.d(TAG, "Left dpad pressed");
                 directionLock = 270;
             }
         }
 
-        // Actual driving
-        if(highPrecisionEnabled && Math.abs(mySwerveController.getMaxErrorAmt()) > .15) {
-            mySwerveController.steerSwerve(true, stickl1x, (stickl1y * -1), rotation, directionLock);
-        }else if(highPrecisionEnabled){
-            mySwerveController.steerSwerve(true, 0,0,0, directionLock);
-        }else{
-            mySwerveController.steerSwerve(true, stickl1x, (stickl1y * -1), rotation, directionLock);
+
+        boolean highPrecisionMode = myGamepad1.left_bumper;
+        if (highPrecisionMode) {
+            drivingX *= 0.5;
+            drivingY *= 0.5;
+            drivingRotation *= 0.5;
         }
-        Log.i(TAG, "Joystick input  X: " + stickl1x + "   Y: " + stickl1y * -1);
-            mySwerveController.moveRobot();
+
+        mySwerveController.steerSwerve(true, drivingX, drivingY, drivingRotation, directionLock);
+        mySwerveController.moveRobot(highPrecisionMode);
 // */
 
         /////// Intake - Gamepad 1 right trigger and bumper ////////
@@ -215,53 +206,5 @@ public class FTCrobot {
         }
 
         myTelemetry.update();
-    }
-
-    public void runRASI(String filename){
-        opModeControl = new RasiParser(filename);
-        myTelemetry.addData("method","rasi");
-        myTelemetry.update();
-        int index = 0;
-        while(index<opModeControl.commands.length) {
-            Log.i(TAG, "Index is: " + index);
-            opModeControl.loadNextCommand();
-            switch (opModeControl.getParameter(0)) {
-                case "drv":
-                    try {
-                        myDriveWithPID.driveStraight(false, Double.valueOf(opModeControl.getParameter(1)), Double.valueOf(opModeControl.getParameter(2)), Double.valueOf(opModeControl.getParameter(3)), Double.valueOf(opModeControl.getParameter(4)));
-                   } catch (InterruptedException e) {
-                        e.printStackTrace();
-                   }
-                    break;
-                case "intko":
-                    myManualIntakeController.RunIntake(0,-1);
-                    break;
-                case "intki":
-                    myManualIntakeController.RunIntake(0,1);
-                    break;
-                case "intkl":
-                    myManualIntakeController.lowerIntake(true);
-                    time = System.currentTimeMillis();
-                    while (time+500<System.currentTimeMillis()){}
-                    myManualIntakeController.lowerIntake(false);
-                    break;
-                case "ctload":
-                    myCubeTray.setToPos(CubeTray.LiftFinalStates.LOADING);
-                    break;
-                case "ctcl":
-                    myCubeTray.setToPos(CubeTray.LiftFinalStates.LOW);
-                    break;
-                case "ctch":
-                    myCubeTray.setToPos(CubeTray.LiftFinalStates.HIGH);
-                    break;
-                case "ctdump":
-                    myCubeTray.dump();
-                    break;
-                case "end":
-                    index = opModeControl.commands.length;
-            }
-            myTelemetry.update();
-            index++;
-        }
     }
 }

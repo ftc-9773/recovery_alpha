@@ -27,7 +27,6 @@ public class JewelDetector {
     }
 
     LinearOpModeCamera camOp;
-    boolean isRed, isBlue;
     int total = 0;
     int colOn = 160;
     int colOff = 80;
@@ -35,12 +34,13 @@ public class JewelDetector {
     SafeJsonReader thresholds ;
     double redThreshold = 0.1;
     double blueThreshold = 0.1;
-    public JewelColors color ;
+    public JewelColors leftJewelColor ;
+//    public JewelColors rightJewelColor ;
+
 
     public JewelDetector(LinearOpModeCamera camOp){
+        leftJewelColor = JewelColors.NOT_INITIALIZED ;
         this.camOp = camOp;
-        isRed = false;
-        isBlue = false;
         thresholds = new SafeJsonReader("VisionThresholds");
         redThreshold = thresholds.getDouble("RedThreshold");
         blueThreshold = thresholds.getDouble("BlueThreshold");
@@ -49,18 +49,19 @@ public class JewelDetector {
     public void startCamera(){
         camOp.setCameraDownsampling(8);
         camOp.startCamera(Camera.CameraInfo.CAMERA_FACING_BACK);
+        leftJewelColor = JewelColors.UNKNOWN;
 
     }
 
-    public String getJewelColor(){
-        if (isRed) return "Red is left";
-        if (isBlue) return "Blue is left";
-        return "we don't know";
+    public JewelColors getJewelColor(){
+        onOffThreshold(true);
+        return leftJewelColor;
     }
 
-    public boolean isLeftJewelRed() { return isRed; }
-    public boolean isLeftJewelBlue() { return isBlue; }
-    public boolean leftJewelIsUndetermined() { return ! isRed && ! isBlue; }
+    public boolean isLeftJewelRed() { return leftJewelColor.equals(JewelColors.RED); }
+    public boolean isLeftJewelBlue() { return leftJewelColor.equals(JewelColors.BLUE);}
+    public boolean leftJewelIsUndetermined() { return leftJewelColor.equals(JewelColors.UNKNOWN) ||
+         leftJewelColor.equals(JewelColors.NOT_INITIALIZED); }
 
     public void onOffThreshold(boolean scaling){
         // get image, rotated so (0,0) is in the bottom left of the preview window
@@ -128,14 +129,11 @@ public class JewelDetector {
 //        threshold = threshold * totValue;
 
         if(diff < -blueThreshold*totValue){
-            isBlue = true;
-            isRed = false;
+            leftJewelColor = JewelColors.BLUE ;
         }else if (diff > redThreshold*totValue) {
-            isRed = true;
-            isBlue = false;
+            leftJewelColor = JewelColors.RED ;
         } else {
-            isRed = false;
-            isBlue = false;
+            leftJewelColor = JewelColors.UNKNOWN;
         }
 //            else colorString = "NONE";
         camOp.telemetry.addData("actual difference: ", diff);

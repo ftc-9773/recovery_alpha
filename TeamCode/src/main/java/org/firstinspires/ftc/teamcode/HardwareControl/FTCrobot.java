@@ -32,7 +32,7 @@ public class FTCrobot {
     private String[] currentCommand;
 //    private IntakeController myIntakeController;
     private IntakeControllerManual myManualIntakeController;
-    private DriveWithPID myDriveWithPID;
+    public DriveWithPID myDriveWithPID;                      // <--
     public CubeTray myCubeTray;
     private HardwareMap hwMap;
     private RelicSystem myRelicSystem;

@@ -21,7 +21,7 @@ public class Gyro {
     private double currentPosition;
 
     private double lastReadTime = -1;
-    private static final int minReadDeltaTime = 80;
+    private static final int minReadDeltaTime = 40;
 
     private double zeroPositionLeft = 0;
 
@@ -53,8 +53,8 @@ public class Gyro {
         // Only read again if it has been at least 80 ms
         long currentTime = System.currentTimeMillis();
         if (currentTime - lastReadTime > minReadDeltaTime) {
-            lastReadTime = currentTime;
             currentPosition = setOnZeroTwoPi(getImuReading() - zeroPositionLeft);
+            lastReadTime = currentTime;
             if (DEBUG) { Log.e(TAG, "Got new gyro position - Read: " + currentPosition + "Actual position - " + getImuReading()); }
         }
 

@@ -47,20 +47,8 @@ public class DriveWithPID {
     // Actual driving funftions
     public void driveStraight( double speed, double angleDegrees, double robotOrientationDegrees, double distInches) throws InterruptedException {
 
-        double lastGyroHeading = -1;
-        boolean exit = false;
         // Orient Robot
-        do {
-            mySwerveController.steerSwerve(false, 0, 0, 0, Math.toRadians(robotOrientationDegrees));
-            mySwerveController.moveRobot(true);
-
-            if (lastGyroHeading != -1 && setOnTwoPi(myGyro.getHeading() - lastGyroHeading) > 0.005) {
-                exit = true;
-            }
-            lastGyroHeading = myGyro.getHeading();
-        } while (exit);
-
-
+        turnRobot(robotOrientationDegrees);
         if (DEBUG) { Log.i(TAG, "Finished setting heading"); }
 
 
@@ -90,6 +78,55 @@ public class DriveWithPID {
         if (DEBUG) { Log.i(TAG, "Extra Distance: " + (Math.abs(averageEncoderDist()) - targetTicks)); }
     }
 
+    public void turnRobot (double targetAngleDegrees) throws InterruptedException {
+
+        Log.i(TAG, "Starting turn");
+
+        final double targetAngleRadians = Math.toRadians(targetAngleDegrees);
+
+        // Target turning speed is 90 degrees per second - 0.0015 radians per millisecond
+        double rotationSpeed = 0.6;
+        double rotationSpeedStep = 0.01;
+        final double MIN_TURN_SPEED = 0.0018;
+
+        double currentAngle;
+        double lastAngle = myGyro.getHeading();
+        double lastTime = System.currentTimeMillis() - 1000;
+        double currentTime;
+
+        while (Math.abs(setOnNegToPosPi((myGyro.getHeading()) - targetAngleRadians)) > 0.04) {
+
+            // Calculate rotation speed
+            currentTime = System.currentTimeMillis();
+            currentAngle = myGyro.getHeading();
+
+            Log.i(TAG, "Heading: " + currentAngle + "  Target Angle: " + targetAngleRadians + "  Difference: " + Math.abs(setOnNegToPosPi((myGyro.getHeading()) - targetAngleRadians)));
+
+            final double speed = Math.abs(setOnNegToPosPi(currentAngle - lastAngle)) / (currentTime - lastTime);
+            Log.i(TAG, " Curent Angle: " + currentAngle + "  Last angle: " + lastAngle + "  Difference: " + setOnNegToPosPi(currentAngle - lastAngle) );
+
+            if (speed < 0.0015 && rotationSpeed < 0.9) {
+//                rotationSpeed += rotationSpeedStep;
+            }
+
+
+            if (setOnNegToPosPi(targetAngleRadians - currentAngle) > 0) {
+                mySwerveController.steerSwerve(true, 0, 0, rotationSpeed, -1);
+            } else {
+                mySwerveController.steerSwerve(true, 0, 0, -rotationSpeed, -1);
+            }
+            mySwerveController.moveRobot(false);
+
+            Log.i(TAG, "speed: " + speed + "  Rotation speed: " + rotationSpeed);
+            lastAngle = currentAngle;
+            lastTime = currentTime;
+        }
+
+        mySwerveController.steerSwerve(true, 0, 0, 0, -1);
+        mySwerveController.moveRobot(false);
+    }
+
+
     // Helper functions
     private double averageEncoderDist() {
         long flwDist = Math.abs(mySwerveController.getFlwEncoderCount() - flwEncoderZero);
@@ -102,10 +139,10 @@ public class DriveWithPID {
 
     private double setOnNegToPosPi (double num) {
         while (num > Math.PI) {
-            num -= Math.PI;
+            num -= 2*Math.PI;
         }
-        while (num < Math.PI) {
-            num += Math.PI;
+        while (num < -Math.PI) {
+            num += 2*Math.PI;
         }
         return num;
     }

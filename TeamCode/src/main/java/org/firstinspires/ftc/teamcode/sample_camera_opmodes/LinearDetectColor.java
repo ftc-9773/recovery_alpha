@@ -35,7 +35,6 @@ public class LinearDetectColor extends LinearOpModeCamera {
 //        setCameraDownsampling(8);
 //        startCamera(Camera.CameraInfo.CAMERA_FACING_BACK);
         waitForStart();
-
         ElapsedTime timer = new ElapsedTime();
 
         while (opModeIsActive()) {

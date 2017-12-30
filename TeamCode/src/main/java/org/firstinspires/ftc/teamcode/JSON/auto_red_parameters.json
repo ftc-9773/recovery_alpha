@@ -1,0 +1,5 @@
+{
+  "intakeLowerTime":2000,
+  "intakeStartDelay":1000,
+  "intakeRunDuration":2000
+}

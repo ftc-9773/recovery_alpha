@@ -26,15 +26,27 @@ public class TestOpmode extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
+        telemetry.addData("Init:", "waiting...");
+        telemetry.update();
         ftcRobot = new FTCrobot(hardwareMap, telemetry, gamepad1, gamepad2);
 
         Log.i("Start", "Is starting");
+
+        while (!opModeIsActive()) {
+            telemetry.addData("Init", "Successful!!");
+            telemetry.update();
+        }
         waitForStart();
-        ftcRobot.myDriveWithPID.turnRobot(270);
+        Log.i("Starting auton", "Is starging");
+        for (int i = 0; i < 10; i++) {
+            telemetry.addData("Cycle", i);
+            telemetry.update();
 
-        sleep(1000);
-
-        ftcRobot.myDriveWithPID.turnRobot(270);
+            ftcRobot.myDriveWithPID.driveDist(0.6, 00, 12);
+            ftcRobot.myDriveWithPID.driveDist(0.6, 90, 12);
+            ftcRobot.myDriveWithPID.driveDist(0.6, 180, 12);
+            ftcRobot.myDriveWithPID.driveDist(0.6, 270, 12);
+        }
     }
 
 }

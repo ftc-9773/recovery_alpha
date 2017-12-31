@@ -104,10 +104,10 @@ public class CubeTray {
     private int zeroPos = 0;
 
     // Safety ABORT variables
-    private static int safteyAbortTime = 50;
-    private static double safteyAbortMinSpeed = 0.5;
-    private int lastTickPos = -1;
-    private long timeAtLastPoll = -1;
+   //  private static int safteyAbortTime = 50;
+  //   private static double safteyAbortMinSpeed = 0.5;
+ //    private int lastTickPos = -1;
+//     private long timeAtLastPoll = -1;
 
 
     // setup variables for positioning    // default values are hardcoded in case of issue
@@ -200,8 +200,8 @@ public class CubeTray {
         Log.i(TAG,"liftHeight D = " + kd);
 
         // abort stuff
-        safteyAbortTime = myCubeTrayPositions.getInt("safteyAbortTime");
-        safteyAbortMinSpeed = myCubeTrayPositions.getDouble("safetyAbortMinSpeed");
+        // afteyAbortTime = myCubeTrayPositions.getInt("safteyAbortTime");
+//        safteyAbortMinSpeed = myCubeTrayPositions.getDouble("safetyAbortMinSpeed");
 
 
 
@@ -283,25 +283,6 @@ public class CubeTray {
                 setServoPos(TrayPositions.CARRYING);
                 long time = System.currentTimeMillis();
                 int liftPos = getliftPos();
-                if(timeAtLastPoll!= -1 && lastTickPos!=-1) {
-                    double speed = (liftPos-lastTickPos)/(time-timeAtLastPoll);
-                    if (time - transitionTimer >= safteyAbortTime && speed < safteyAbortMinSpeed){
-                        // abort
-                        liftFinalState = LiftFinalStates.LOADING;
-                        setServoPos(TrayPositions.LOADING);
-                        Log.w(TAG, "Lift in abort mode. unnable to go to carry pos.");
-                    }
-                }
-
-                if (time-transitionTimer >= trayUpTime){
-                    overallState = OverallStates.CARRY ;
-
-                    // reset abort values
-                    lastTickPos = -1;
-                    timeAtLastPoll = -1;
-                }
-                lastTickPos = liftPos;
-                timeAtLastPoll = time;
                 break;
             case FROM_STOWED:
                 setServoPos(TrayPositions.LOADING);
@@ -326,9 +307,9 @@ public class CubeTray {
 
     // util function to translate final positions into overall positions based on position - the brains of the state machine
     private void updateOverallState(){
-        if(!liftMotor.getMode().equals(DcMotor.RunMode.RUN_TO_POSITION)){
+/*        if(!liftMotor.getMode().equals(DcMotor.RunMode.RUN_TO_POSITION)){
             liftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        }
+*///        }
         switch (liftFinalState) {
             case LOW:
                 if(overallState == OverallStates.STOWED) {

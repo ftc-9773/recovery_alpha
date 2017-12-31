@@ -168,7 +168,7 @@ public class SwerveController {
         blwModule.setVector(blwVector);
         brwModule.setVector(brwVector);
 
-        Log.i(TAG, "Rotation: " + rotationSpeed + "   Vector Magnitude: " + flwVector.getMagnitude());
+//        Log.i(TAG, "Rotation: " + rotationSpeed + "   Vector Magnitude: " + flwVector.getMagnitude());
 
         //Log.i(TAG, "FLW: " + flwVector.getAngle()/Math.PI + "   FRW: " + frwVector.getAngle()/Math.PI + "   BLW: " + blwVector.getAngle()/Math.PI + "   BRW: " + brwVector.getAngle()/Math.PI);
         // Point modules

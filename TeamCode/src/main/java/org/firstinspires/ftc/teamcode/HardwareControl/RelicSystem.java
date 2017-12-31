@@ -27,8 +27,9 @@ public class RelicSystem {
         this.hwMap = hwMap;
         this.telemetry = telemetry;
         extensionMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        extensionMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        extensionMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
     }
+
     public void runSequence(double power, boolean armState, boolean grabState){
         extensionMotor.setPower(power);
         telemetry.addData("Current Position", extensionMotor.getCurrentPosition());

@@ -45,20 +45,30 @@ public class DriveWithPID {
     }
 
     // Actual driving funftions
-    public void driveStraight( double speed, double angleDegrees, double robotOrientationDegrees, double distInches) throws InterruptedException {
+
+    // Driving
+    public void driveDist( double speed, double angleDegrees, double distInches) throws InterruptedException {
 
         // Orient Robot
-        turnRobot(robotOrientationDegrees);
-        if (DEBUG) { Log.i(TAG, "Finished setting heading"); }
+//        turnRobot(robotOrientationDegrees);
+//        if (DEBUG) { Log.i(TAG, "Finished setting heading"); }
 
 
         //////// Drive until it has gone the right distance ////////
 
-        // log the current position
-        flwEncoderZero = mySwerveController.getFlwEncoderCount();
-        frwEncoderZero = mySwerveController.getFrwEncoderCount();
-        blwEncoderZero = mySwerveController.getBlwEncoderCount();
-        brwEncoderZero = mySwerveController.getBrwEncoderCount();
+        // Point modules
+        final double time1 = System.currentTimeMillis();
+        while (System.currentTimeMillis() - time1 < 500) {
+            mySwerveController.steerSwerve(false, speed, Math.toRadians(angleDegrees), 0, -1);
+
+            if (!mySwerveController.getIsTurning() && System.currentTimeMillis() - time1 > 200) {
+                break;
+            }
+        }
+
+
+        // Zero the encoders
+        zeroEncoders();
 
         // Calculate target distance
         targetTicks = encoderTicksPerInch * distInches;
@@ -67,20 +77,33 @@ public class DriveWithPID {
         // Drive
         while (averageEncoderDist() < targetTicks) {
             // While the robot has not driven far enough
-            mySwerveController.steerSwerve(false , speed, Math.toRadians(angleDegrees), 0, Math.toRadians(robotOrientationDegrees));
-            mySwerveController.moveRobot(true);
+            mySwerveController.steerSwerve(false , speed, Math.toRadians(angleDegrees), 0, -1);
+            mySwerveController.moveRobot(false);
             if (DEBUG) { Log.i(TAG, "Distance so far: " + averageEncoderDist()); }
         }
 
         //Stop the robot
         mySwerveController.pointModules(true, 0, 0, 0);
-        mySwerveController.moveRobot(true);
+        mySwerveController.moveRobot(false);
         if (DEBUG) { Log.i(TAG, "Extra Distance: " + (Math.abs(averageEncoderDist()) - targetTicks)); }
     }
 
+
+
+    // Turn the Robot
     public void turnRobot (double targetAngleDegrees) throws InterruptedException {
 
-        Log.i(TAG, "Starting turn");
+//        Log.i(TAG, "Starting turn");
+
+        final double time1 = System.currentTimeMillis();
+        while (System.currentTimeMillis() - time1 < 500) {
+            mySwerveController.steerSwerve(false, 0, 0, 1, -1);
+
+            if (!mySwerveController.getIsTurning() && System.currentTimeMillis() - time1 > 200) {
+                break;
+            }
+        }
+
 
         final double targetAngleRadians = Math.toRadians(targetAngleDegrees);
 
@@ -91,23 +114,22 @@ public class DriveWithPID {
 
         double currentAngle;
         double lastAngle = myGyro.getHeading();
-        double lastTime = System.currentTimeMillis() - 1000;
-        double currentTime;
+        double currentTime = System.currentTimeMillis();
+        double lastTime = currentTime - 1000;
 
         while (Math.abs(setOnNegToPosPi((myGyro.getHeading()) - targetAngleRadians)) > 0.04) {
 
             // Calculate rotation speed
-            currentTime = System.currentTimeMillis();
+//            currentTime = System.currentTimeMillis();
             currentAngle = myGyro.getHeading();
 
-            Log.i(TAG, "Heading: " + currentAngle + "  Target Angle: " + targetAngleRadians + "  Difference: " + Math.abs(setOnNegToPosPi((myGyro.getHeading()) - targetAngleRadians)));
+//            Log.i(TAG, "Heading: " + currentAngle + "  Target Angle: " + targetAngleRadians + "  Difference: " + Math.abs(setOnNegToPosPi((myGyro.getHeading()) - targetAngleRadians)));
 
-            final double speed = Math.abs(setOnNegToPosPi(currentAngle - lastAngle)) / (currentTime - lastTime);
-            Log.i(TAG, " Curent Angle: " + currentAngle + "  Last angle: " + lastAngle + "  Difference: " + setOnNegToPosPi(currentAngle - lastAngle) );
-
-            if (speed < 0.0015 && rotationSpeed < 0.9) {
+//            final double speed = Math.abs(setOnNegToPosPi(currentAngle - lastAngle)) / (currentTime - lastTime);
+//            Log.i(TAG, " Curent Angle: " + currentAngle + "  Last angle: " + lastAngle + "  Difference: " + setOnNegToPosPi(currentAngle - lastAngle) );
+//            if (speed < 0.0015 && rotationSpeed < 0.9) {
 //                rotationSpeed += rotationSpeedStep;
-            }
+//            }
 
 
             if (setOnNegToPosPi(targetAngleRadians - currentAngle) > 0) {
@@ -115,9 +137,9 @@ public class DriveWithPID {
             } else {
                 mySwerveController.steerSwerve(true, 0, 0, -rotationSpeed, -1);
             }
-            mySwerveController.moveRobot(false);
+            mySwerveController.moveRobot(true);
 
-            Log.i(TAG, "speed: " + speed + "  Rotation speed: " + rotationSpeed);
+//            Log.i(TAG, "speed: " + speed + "  Rotation speed: " + rotationSpeed);
             lastAngle = currentAngle;
             lastTime = currentTime;
         }
@@ -130,11 +152,18 @@ public class DriveWithPID {
     // Helper functions
     private double averageEncoderDist() {
         long flwDist = Math.abs(mySwerveController.getFlwEncoderCount() - flwEncoderZero);
-        long frwDist = Math.abs(mySwerveController.getFlwEncoderCount() - frwEncoderZero);
-        long blwDist = Math.abs(mySwerveController.getFlwEncoderCount() - blwEncoderZero);
-        long brwDist = Math.abs(mySwerveController.getFlwEncoderCount() - brwEncoderZero);
+        long frwDist = Math.abs(mySwerveController.getFrwEncoderCount() - frwEncoderZero);
+        long blwDist = Math.abs(mySwerveController.getBlwEncoderCount() - blwEncoderZero);
+        long brwDist = Math.abs(mySwerveController.getBrwEncoderCount() - brwEncoderZero);
 
         return ((double)(flwDist + frwDist + blwDist + brwDist) / 4);
+    }
+
+    private void zeroEncoders() {
+        flwEncoderZero = mySwerveController.getFlwEncoderCount();
+        frwEncoderZero = mySwerveController.getFrwEncoderCount();
+        blwEncoderZero = mySwerveController.getBlwEncoderCount();
+        brwEncoderZero = mySwerveController.getBrwEncoderCount();
     }
 
     private double setOnNegToPosPi (double num) {

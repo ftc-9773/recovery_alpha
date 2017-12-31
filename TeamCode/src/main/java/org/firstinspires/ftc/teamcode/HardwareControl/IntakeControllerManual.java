@@ -30,7 +30,10 @@ public class IntakeControllerManual {
         stickX =  - Math.pow(stickX,3) * .7;
         stickY =  - stickY;
         double forward = stickY;
-        if (forward == 0) { return; }
+        if (forward == 0) {
+            leftMotor.setPower(0);
+            rightMotor.setPower(0);
+            return; }
         double right = stickX;
         double motorLeftPower = forward + right;
         double motorRightPower = forward - right;

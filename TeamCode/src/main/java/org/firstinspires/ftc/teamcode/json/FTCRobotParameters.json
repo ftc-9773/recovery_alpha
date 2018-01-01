@@ -1,0 +1,11 @@
+{
+  "MinPowerXY"            : 0.3,
+  "MinPowerRotation"      : 0.5,
+  "ZeroRange"             : 0.1,
+
+  "DisableDriving"        : false,
+  "DisableLift"           : true,
+  "DisableDriverIntake"   : false,
+  "DisableAutoIntake"     : true,
+  "DisableRelicArm"       : false
+}

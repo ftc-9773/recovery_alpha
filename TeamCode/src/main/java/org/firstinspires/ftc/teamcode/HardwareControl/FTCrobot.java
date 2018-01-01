@@ -7,6 +7,7 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.PositionTracking.Gyro;
 import org.firstinspires.ftc.teamcode.infrastructure.ButtonStatus;
 import org.firstinspires.ftc.teamcode.infrastructure.RasiParser;
+import org.firstinspires.ftc.teamcode.infrastructure.SafeJsonReader;
 import org.firstinspires.ftc.teamcode.opmodes.Swerve;
 import android.util.Log;
 
@@ -52,12 +53,18 @@ public class FTCrobot {
     private ButtonStatus leftBumperStatus = new ButtonStatus();
     private double rotation;
 
+    private SafeJsonReader jsonReader;
+
+    private double minPowerXY;
+    private double minPowerRot;
+    private double zeroRange;
+
 
     private static final String TAG = "9773_FTCrobot";
     private static final boolean DEBUG = true;
 
     private boolean disableDriving = false;
-    private boolean disableLift  = false;
+    private boolean disableLift  = true;
     private boolean disableDriverIntake = false;
     private boolean disableAutoIntake = true;
     private boolean disableRelicArm = false ;
@@ -67,7 +74,7 @@ public class FTCrobot {
         this.gp1y = new ButtonStatus();
         this.hwMap = hwmap;
         this.myTelemetry = telemetry;
-//        myIntakeController = new IntakeController(hwMap);
+        // myIntakeController = new IntakeController(hwMap);
         this.myManualIntakeController = new IntakeControllerManual(hwMap);
         this.myGyro = new Gyro(hwMap);
         this.mySwerveController = new SwerveController(hwMap, myGyro, telemetry);
@@ -76,22 +83,36 @@ public class FTCrobot {
         this.myCubeTray = new CubeTray(hwmap,gamepad2,null);
         this.myGamepad1 = gamepad1;
         this.myGamepad2 = gamepad2;
+
+        jsonReader = new SafeJsonReader("FTCRobotParameters");
+        minPowerXY = jsonReader.getDouble("MinPowerXY");
+        minPowerRot = jsonReader.getDouble("MinPowerRotation");
+        zeroRange = jsonReader.getDouble("ZeroRange");
+    }
+
+    private double valWithThresholdAndPower3Scaling(double val, double minNonZeroVal, boolean highPrecisionMode) {
+        if (val > zeroRange) {
+            if (highPrecisionMode) return Math.pow(0.5*val, 3) + minNonZeroVal;
+            return Math.pow(val, 3) + minNonZeroVal;
+        }
+        if (val < -zeroRange) {
+            if (highPrecisionMode) return Math.pow(0.5*val, 3) - minNonZeroVal;
+            return Math.pow(val, 3) - minNonZeroVal;
+        }
+        return 0.0;
     }
 
     public void runGamepadCommands(){
 
         dpaddownStatus.recordNewValue(myGamepad2.dpad_down);
-
         dpadupStatus.recordNewValue(myGamepad2.dpad_up);
-
 
         /////// Driving - gamepad 1 left and right joysticks & Dpad /////
 
-        // High precision mode
-        double drivingX = Math.pow(myGamepad1.left_stick_x, 3);
-        double drivingY = Math.pow(myGamepad1.left_stick_y, 3) * -1;
-        double drivingRotation = Math.pow(myGamepad1.right_stick_x, 3);
-
+        // Get current direction
+        boolean highPrecisionMode = myGamepad1.left_bumper;
+        double drivingRotation = valWithThresholdAndPower3Scaling(myGamepad1.right_stick_x, minPowerRot, highPrecisionMode);
+        //double drivingRotation = Math.pow(myGamepad1.right_stick_x, 3);
         // Direction Lock
         if (drivingRotation != 0) {
             Log.e(TAG, "Rotation is 0");
@@ -113,14 +134,21 @@ public class FTCrobot {
                 directionLock = 270;
             }
         }
+        // compute speed. Old behaviour: set minPower and zeroZone to 0.0
+        // compute for x & y
+        double drivingX =   valWithThresholdAndPower3Scaling(myGamepad1.left_stick_x, minPowerXY, highPrecisionMode);
+        double drivingY = - valWithThresholdAndPower3Scaling(myGamepad1.left_stick_y, minPowerXY, highPrecisionMode);
+        Log.d(TAG, "driving X is " + drivingX);
+        Log.d(TAG, "driving Y is " + drivingY);
+        Log.d(TAG, "driving rot is " + drivingRotation);
 
-
-        boolean highPrecisionMode = myGamepad1.left_bumper;
-        if (highPrecisionMode) {
-            drivingX *= 0.5;
-            drivingY *= 0.5;
-            drivingRotation *= 0.5;
-        }
+        //double drivingX =   Math.pow(myGamepad1.left_stick_x, 3);
+        //double drivingY = - Math.pow(myGamepad1.left_stick_y, 3);
+        //if (highPrecisionMode) {
+        //    drivingX *= 0.5;
+        //    drivingY *= 0.5;
+        //    drivingRotation *= 0.5;
+        //}
 
         mySwerveController.steerSwerve(true, drivingX, drivingY, drivingRotation, directionLock);
         mySwerveController.moveRobot(highPrecisionMode);
@@ -211,6 +239,8 @@ public class FTCrobot {
 
         myTelemetry.addData("Gamepad x", myGamepad1.left_stick_x);
         myTelemetry.addData("Gamepad y", myGamepad1.left_stick_y);
+        myTelemetry.addData("Rotation", myGamepad1.right_stick_x);
+
 
         if (mySwerveController.getFieldCentric()) {
             myTelemetry.addData("Field Centric", "On");

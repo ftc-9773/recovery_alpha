@@ -19,8 +19,8 @@
 
   "usingJsonServoPositions": true,
 
-  "safteyAbortTime"     : 50,
-  "safteyAbortMinSpeed" : 0.5,
+  "safteyAbortTime"       : 50,
+  "safteyAbortMinSpeed"   : 0.5,
 
   "leftFlapStowed"        : 0.532,
   "leftFlapLoading"       : 0.5328,
@@ -44,6 +44,7 @@
   "rightAngleLoading"       : 0.285,
   "rightAngleCarrying"      : 0.754,
   "rightAngleDumpingFlap"   : 0.754,
-  "rightAngleDumpingAngle"  : 0.901
+  "rightAngleDumpingAngle"  : 0.901,
 
-  }
+  "CubeTrayPos"             : "LOADING"
+}

@@ -182,7 +182,8 @@ public class SwerveController {
     public void moveRobot(boolean highPrecisionMode) {
 
         if (highPrecisionMode) {
-            if (getIsTurning()) {
+            boolean allModulesStopped = (flwVector.getMagnitude() == 0) && (frwVector.getMagnitude() == 0) && (blwVector.getMagnitude() == 0) && (brwVector.getMagnitude() == 0);
+            if (getIsTurning() && !allModulesStopped) {
                 return;
             }
         }

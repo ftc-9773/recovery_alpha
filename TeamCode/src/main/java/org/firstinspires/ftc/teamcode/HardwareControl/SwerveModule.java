@@ -249,20 +249,20 @@ public class SwerveModule {
         }
         //Log.i(TAG, "Desired Position: " + velocityVector.getAngle()/Math.PI + "pi,   Error Amt: " + errorAmt + ",   Tell servo is: " + tellServo);
         swerveServo.setPower(tellServo);
-
+/*
         if (setOnTwoPI(currentPosition - lastPosition) > 0.2) {
             isTurning = true;
         } else {
             isTurning = false;
         }
+*/
 
-/*
-        if (Math.abs(errorAmt) > .05) {
+        if (Math.abs(errorAmt) > .17) {
             isTurning = true;
         } else {
             isTurning = false;
         }
-*/
+
         //Log.i(TAG, "AbsEncoder positional difference: " + setOnTwoPI(currentPosition - lastPosition));
     }
 

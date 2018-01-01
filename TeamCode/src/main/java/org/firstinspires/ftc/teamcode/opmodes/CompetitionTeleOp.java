@@ -29,6 +29,10 @@ import org.firstinspires.ftc.teamcode.PositionTracking.Gyro;
         public void runOpMode() throws InterruptedException {
             Log.e(TAG, "Started initializing");
 
+            telemetry.addData("Init", "Waiting...");
+            telemetry.update();
+
+
             // Create objects
             myRobot = new FTCrobot(hardwareMap, telemetry, gamepad1, gamepad2);
 
@@ -36,6 +40,11 @@ import org.firstinspires.ftc.teamcode.PositionTracking.Gyro;
             myRobot.myCubeTray.setZeroFromCompStart();
             myRobot.myCubeTray.setStartPosition(CubeTray.LiftFinalStates.STOWED);
 
+
+            while (!opModeIsActive() && !isStopRequested()) {
+                telemetry.addData("Init", "Success!!");
+                telemetry.update();
+            }
 
             waitForStart();
             myRobot.myCubeTray.setServoPos(CubeTray.TrayPositions.LOADING);
@@ -48,13 +57,6 @@ import org.firstinspires.ftc.teamcode.PositionTracking.Gyro;
 
                 myRobot.runGamepadCommands();
                 myRobot.doTelemetry();
-
-                // Display gamepad values
-                telemetry.addData("Gamepad x:", gamepad1.left_stick_x);
-                telemetry.addData("Gamepad y:", gamepad1.left_stick_y);
-
-
-                telemetry.update();
 
                 if (DEBUG) { Log.e(TAG, "Time Loop End : " + (System.currentTimeMillis() - timeStart)); }
             }

@@ -1,0 +1,35 @@
+<?xml version='1.0' encoding='UTF-8' standalone='yes' ?>
+<Robot type="FirstInspires-FTC">
+    <LynxUsbDevice name="Expansion Hub Portal 1" serialNumber="DQ161MIQ" parentModuleAddress="1">
+        <LynxModule name="Expansion Hub 1" port="1">
+            <NeveRest40Gearmotor name="brwMotor" port="0" />
+            <NeveRest40Gearmotor name="frwMotor" port="1" />
+            <NeveRest40Gearmotor name="ctlMotor" port="2" />
+            <NeveRest20Gearmotor name="liMotor" port="3" />
+            <ContinuousRotationServo name="brwServo" port="0" />
+            <ContinuousRotationServo name="frwServo" port="1" />
+            <Servo name="ctlfServo" port="2" />
+            <Servo name="ctrfServo" port="3" />
+            <Servo name="ctraServo" port="4" />
+            <Servo name="ctlaServo" port="5" />
+            <AnalogInput name="brwAbsEncoder" port="0" />
+            <AnalogInput name="frwAbsEncoder" port="1" />
+            <AnalogInput name="ctlLimitSwitch" port="3" />
+            <LynxEmbeddedIMU name="imuLeft" port="0" bus="0" />
+        </LynxModule>
+        <LynxModule name="Expansion Hub 4" port="4">
+            <NeveRest40Gearmotor name="flwMotor" port="0" />
+            <NeveRest40Gearmotor name="blwMotor" port="1" />
+            <NeveRest20Gearmotor name="riMotor" port="2" />
+            <NeveRest20Gearmotor name="rlMotor" port="3" />
+            <ContinuousRotationServo name="flwServo" port="0" />
+            <ContinuousRotationServo name="blwServo" port="1" />
+            <Servo name="iServo" port="2" />
+            <Servo name="rlaServo" port="3" />
+            <Servo name="rlcServo" port="4" />
+            <AnalogInput name="flwAbsEncoder" port="0" />
+            <AnalogInput name="blwAbsEncoder" port="1" />
+            <LynxEmbeddedIMU name="imuRight" port="0" bus="0" />
+        </LynxModule>
+    </LynxUsbDevice>
+</Robot>

@@ -70,7 +70,7 @@ public class SwerveController {
         double Kd = myPIDCoefficients.getDouble("Kd");
         double Ke = myPIDCoefficients.getDouble("Ke");
 
-        Log.e(TAG, "Coefficients: " + Kp + " " + Ki + " " + Kd);
+        if (DEBUG)  Log.e(TAG, "Coefficients: " + Kp + " " + Ki + " " + Kd);
         turningPID = new PIDController(Kp, Ke, Ki, Kd);
 
     }
@@ -89,7 +89,7 @@ public class SwerveController {
             directionLock = -1;
         }
 
-        Log.d(TAG, "Rotation: " + rotation + "  DirectionLock: " + directionLock);
+        if (DEBUG) Log.d(TAG, "Rotation: " + rotation + "  DirectionLock: " + directionLock);
 
         // handle cardinal directions
         if (directionLock != -1 && useFieldCentricOrientation) {

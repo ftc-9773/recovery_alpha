@@ -27,7 +27,7 @@ import org.firstinspires.ftc.teamcode.PositionTracking.Gyro;
 
         @Override
         public void runOpMode() throws InterruptedException {
-            Log.e(TAG, "Started initializing");
+            if (DEBUG) Log.e(TAG, "Started initializing");
 
             telemetry.addData("Init", "Waiting...");
             telemetry.update();

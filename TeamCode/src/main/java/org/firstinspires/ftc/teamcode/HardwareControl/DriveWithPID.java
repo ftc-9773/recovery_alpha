@@ -16,7 +16,7 @@ import org.firstinspires.ftc.teamcode.infrastructure.SafeJsonReader;
 public class DriveWithPID {
 
     private static final String TAG = "9773_DriveWithPID";
-    private static final boolean DEBUG = true;
+    private static final boolean DEBUG = false;
 
     // Useful objects
     private static SwerveController mySwerveController;

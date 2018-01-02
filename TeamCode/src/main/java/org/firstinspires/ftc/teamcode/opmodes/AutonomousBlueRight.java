@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.opmodes;
 import android.util.Log;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.robotcontroller.for_camera_opmodes.LinearOpModeCamera;
 import org.firstinspires.ftc.robotcore.external.navigation.RelicRecoveryVuMark;
@@ -15,12 +16,13 @@ import org.firstinspires.ftc.teamcode.PositionTracking.Gyro;
 import org.firstinspires.ftc.teamcode.Vision.JewelDetector;
 import org.firstinspires.ftc.teamcode.Vision.VumarkGlyphPattern;
 import org.firstinspires.ftc.teamcode.infrastructure.SafeJsonReader;
+import org.firstinspires.ftc.teamcode.sample_camera_opmodes.LinearDetectColor;
 
 /**
- * Created by vikesh on 12/28/17.
+ * Created by Vikesh on 12/16/2017.
  */
-@Autonomous(name = "Auto Red")
-public class AutonomousRed extends LinearOpModeCamera{
+@Autonomous(name = "Right Blue Autonomous")
+public class AutonomousBlueRight  extends LinearOpModeCamera {
 
     JewelDetector myJewelDetector = new JewelDetector(this);
     IntakeControllerManual myIntakeControllerManual;
@@ -141,12 +143,12 @@ public class AutonomousRed extends LinearOpModeCamera{
 
         //Push the jewel
         switch (leftJewelcolor) {
-            case BLUE:
+            case RED:
                 // Go 4" to the right and subtract the distance from next move
                 myDriveWithPID.driveDist(drivingPower, 90, distPushRight);
                 distToCryptobox -= distPushRight;
                 break;
-            case RED:
+            case BLUE:
                 // Go 4" left and add an distJewelPush to next move
                 myDriveWithPID.driveDist(drivingPower, 270, distPushLeft);
                 distToCryptobox += distPushLeft;
@@ -215,5 +217,4 @@ public class AutonomousRed extends LinearOpModeCamera{
         }
         return autonomousPath;
     }
-*/
-}
+*/}

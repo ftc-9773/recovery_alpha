@@ -62,7 +62,7 @@ public class DriveWithPID {
             mySwerveController.steerSwerve(false, speed, Math.toRadians(angleDegrees), 0, -1);
 
             if (!mySwerveController.getIsTurning() && System.currentTimeMillis() - time1 > 200) {
-                break;
+                //break;
             }
         }
 
@@ -88,6 +88,23 @@ public class DriveWithPID {
         if (DEBUG) { Log.i(TAG, "Extra Distance: " + (Math.abs(averageEncoderDist()) - targetTicks)); }
     }
 
+    // Drive for time
+    public void driveTime(double speed, double angleDegrees, double timeSeconds) {
+
+        // Point modules
+        double zeroTime = System.currentTimeMillis();
+        while (System.currentTimeMillis() - zeroTime < 600) {
+            mySwerveController.steerSwerve(false, 1, Math.toRadians(angleDegrees), 0, -1);
+        }
+
+        // Drive
+        zeroTime = System.currentTimeMillis();
+        while (System.currentTimeMillis() - zeroTime < timeSeconds * 1000) {
+            mySwerveController.steerSwerve(false, speed, Math.toRadians(angleDegrees), 0, -1);
+            mySwerveController.moveRobot(false);
+        }
+
+    }
 
 
     // Turn the Robot
@@ -100,7 +117,7 @@ public class DriveWithPID {
             mySwerveController.steerSwerve(false, 0, 0, 1, -1);
 
             if (!mySwerveController.getIsTurning() && System.currentTimeMillis() - time1 > 200) {
-                break;
+                //break;
             }
         }
 

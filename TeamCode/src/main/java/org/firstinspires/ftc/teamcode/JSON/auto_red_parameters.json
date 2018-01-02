@@ -1,5 +1,18 @@
 {
-  "intakeLowerTime":2000,
+  "intakeLowerTime":3000,
   "intakeStartDelay":1000,
-  "intakeRunDuration":2000
+  "intakeRunDuration":2000,
+  "drivingPower": 0.27,
+  "distToJewelPush":9,
+  "distBackToJewel": 2,
+  "distPushLeft": 4,
+  "distPushRight": 4,
+  "distToCryptobox": 10,
+  "extraDistToCenter": 7.56,
+  "extraDistToRight": 15.2,
+  "raiseLiftTme": 600,
+  "rotateAngle": 315,
+  "pushCubeBackwards": 3,
+  "distDriveAwayFromCryptobox": 5,
+  "angleDriveAwayFromCryptobox": 315
 }

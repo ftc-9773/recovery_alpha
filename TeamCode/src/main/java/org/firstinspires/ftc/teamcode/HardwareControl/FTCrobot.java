@@ -61,10 +61,10 @@ public class FTCrobot {
 
 
     private static final String TAG = "9773_FTCrobot";
-    private static final boolean DEBUG = true;
+    private static final boolean DEBUG = false;
 
     private boolean disableDriving = false;
-    private boolean disableLift  = true;
+    private boolean disableLift  = false;
     private boolean disableDriverIntake = false;
     private boolean disableAutoIntake = true;
     private boolean disableRelicArm = false ;

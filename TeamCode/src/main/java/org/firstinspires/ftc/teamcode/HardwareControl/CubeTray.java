@@ -282,7 +282,10 @@ public class CubeTray {
                 liftTargetPosition = bottomPosTicks;
                 setServoPos(TrayPositions.CARRYING);
                 long time = System.currentTimeMillis();
-                int liftPos = getliftPos();
+                if(time - transitionTimer>trayUpTime){
+                    overallState = OverallStates.CARRY;
+                    updatePosition();    // idk if I should do this
+                }
                 break;
             case FROM_STOWED:
                 setServoPos(TrayPositions.LOADING);

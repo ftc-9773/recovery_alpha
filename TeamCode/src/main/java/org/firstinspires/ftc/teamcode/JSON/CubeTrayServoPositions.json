@@ -46,5 +46,7 @@
   "rightAngleDumpingFlap"   : 0.754,
   "rightAngleDumpingAngle"  : 0.901,
 
-  "CubeTrayPos"             : "LOADING"
-}
+  "LastLiftHeight"      : -1,
+  "lastLiftTrayPos"     : "LOADING"
+
+  }

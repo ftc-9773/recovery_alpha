@@ -304,8 +304,8 @@ public class CubeTray {
             liftMotor.setPower(0);
         }
 
-        myCubeTrayPositions.modifyInt("liftLastPosition",getliftPos());
-        myCubeTrayPositions.modifyString("CubeTrayPos", overallState.toString());
+        myCubeTrayPositions.modifyInt("LastLiftHeight",getliftPos());
+        myCubeTrayPositions.modifyString("lastLiftTrayPosr", overallState.toString());
     }
 
     // util function to translate final positions into overall positions based on position - the brains of the state machine
@@ -449,7 +449,7 @@ public class CubeTray {
         while (!limitSwitchIsPressed() ){}
         liftMotor.setPower(0);
         liftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        liftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION) ;
+        liftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER) ;
         setLiftZeroPos();
     }
 
@@ -584,19 +584,13 @@ public class CubeTray {
         return positions;
     }
 
-    private void setZeroFromLastPositon(){
-        int lastPos =   myCubeTrayPositions.getInt("liftLastPosition");
-        zeroPos = liftMotor.getCurrentPosition() - lastPos;
-        //overallState = readTrayPositions();
-
-    }
     public void setZeroFromCompStart() {
-        int lastPos =   myCubeTrayPositions.getInt("CompStartPos");
-        zeroPos = liftMotor.getCurrentPosition() - lastPos;
+        int compStartPos =   myCubeTrayPositions.getInt("CompStartPos");
+        zeroPos = liftMotor.getCurrentPosition() - compStartPos;
         overallState = OverallStates.STOWED;
     }
     private OverallStates readTrayPositions(){
-        String value = myCubeTrayPositions.getString("CubeTrayPos");
+        String value = myCubeTrayPositions.getString("lastLiftTrayPos");
         OverallStates result = null;
         switch (value) {
             case "LOADING":
@@ -622,6 +616,22 @@ public class CubeTray {
         }
         return result;
     }
+
+    private void setZeroFromLastOpmode(){
+        int lastPos = myCubeTrayPositions.getInt("LastLiftHeight");
+        OverallStates lastState = readTrayPositions();
+        if (lastPos == 0|| lastPos== -1){
+            Log.e (TAG, "unnable to read Lift Height");
+            return;
+        }
+        if (lastState.equals (null)){
+            Log.e (TAG, "unnabe to read Lift state");
+            return;
+        }
+        zeroPos = liftMotor.getCurrentPosition() - lastPos;
+        overallState = lastState;
+    }
+
 
 
 

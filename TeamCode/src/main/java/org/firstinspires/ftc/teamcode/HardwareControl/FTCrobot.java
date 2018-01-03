@@ -250,4 +250,8 @@ public class FTCrobot {
 
         myTelemetry.update();
     }
+
+    public void recordGyroPosition() {
+        myGyro.recordHeading();
+    }
 }

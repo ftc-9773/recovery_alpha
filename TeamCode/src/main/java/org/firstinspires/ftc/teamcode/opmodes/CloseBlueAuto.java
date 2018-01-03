@@ -223,8 +223,14 @@ public class CloseBlueAuto extends LinearOpModeCamera {
         // Drive backwards
         myDriveWithPID.driveTime(drivingPower * 1.5, 180, pushCubeBackwards);
 
+        // Save the current heading
+        myGyro.recordHeading();
+
         // Drive away from the box
         myDriveWithPID.driveDist(drivingPower, angleDriveAwayFromCryptobox, distDriveAwayFromCryptobox);
+
+        // Save the current heading
+        myGyro.recordHeading();
     }
 
 

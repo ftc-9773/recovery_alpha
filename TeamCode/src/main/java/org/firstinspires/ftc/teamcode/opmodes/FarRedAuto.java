@@ -220,7 +220,11 @@ public class FarRedAuto extends LinearOpModeCamera {
         // Drive backwards for time
         myDriveWithPID.driveTime(drivingPower*1.5, 90, timePushCubeBackwards);
 
+        myGyro.recordHeading();
+
         // Drive away from cryptobox
         myDriveWithPID.driveDist(drivingPower*1.5, drivingAngle, distDriveAwayFromCryptobox);
+
+        myGyro.recordHeading();
     }
 }

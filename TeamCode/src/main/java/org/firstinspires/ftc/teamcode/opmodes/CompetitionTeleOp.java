@@ -60,6 +60,7 @@ import org.firstinspires.ftc.teamcode.PositionTracking.Gyro;
 
                 if (DEBUG) { Log.e(TAG, "Time Loop End : " + (System.currentTimeMillis() - timeStart)); }
             }
+            myRobot.recordGyroPosition();
         }
 }
 

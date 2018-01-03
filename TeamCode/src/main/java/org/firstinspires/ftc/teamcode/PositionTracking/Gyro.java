@@ -8,6 +8,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
+import org.firstinspires.ftc.teamcode.infrastructure.SafeJsonReader;
 
 /**
  * Created by nicky on 11/22/17.
@@ -24,6 +25,7 @@ public class Gyro {
     private static final int minReadDeltaTime = 40;
 
     private double zeroPositionLeft = 0;
+    private SafeJsonReader jsonZero;
 
     //private double zeroPositionRight = 0;
 
@@ -42,6 +44,12 @@ public class Gyro {
         imuLeft                         = hardwareMap.get(BNO055IMU.class, "imuLeft");
 
         imuLeft.initialize(parameters);
+
+        jsonZero = new SafeJsonReader("gyroZeroPosition");
+
+        if (System.currentTimeMillis() - jsonZero.getDouble("writeTime") < 40000) {
+            zeroPositionLeft = jsonZero.getDouble("currentAngle");
+        }
     }
 
     public double getImuReading() {
@@ -78,4 +86,9 @@ public class Gyro {
         return angle;
     }
 
+    public void recordHeading() {
+        jsonZero.modifyDouble("currentAngle", getHeading());
+        jsonZero.modifyInt("writeTime", (int) System.currentTimeMillis());
+        jsonZero.updateFile();
+    }
 }

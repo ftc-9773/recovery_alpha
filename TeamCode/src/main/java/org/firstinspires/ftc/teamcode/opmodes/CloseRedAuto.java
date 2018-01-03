@@ -3,33 +3,33 @@ package org.firstinspires.ftc.teamcode.opmodes;
 import android.util.Log;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.robotcontroller.for_camera_opmodes.LinearOpModeCamera;
 import org.firstinspires.ftc.robotcore.external.navigation.RelicRecoveryVuMark;
 import org.firstinspires.ftc.teamcode.HardwareControl.CubeTray;
 import org.firstinspires.ftc.teamcode.HardwareControl.DriveWithPID;
 import org.firstinspires.ftc.teamcode.HardwareControl.IntakeControllerManual;
+import org.firstinspires.ftc.teamcode.HardwareControl.JewelServoController;
 import org.firstinspires.ftc.teamcode.HardwareControl.RelicSystem;
 import org.firstinspires.ftc.teamcode.HardwareControl.SwerveController;
 import org.firstinspires.ftc.teamcode.PositionTracking.Gyro;
 import org.firstinspires.ftc.teamcode.Vision.JewelDetector;
 import org.firstinspires.ftc.teamcode.Vision.VumarkGlyphPattern;
 import org.firstinspires.ftc.teamcode.infrastructure.SafeJsonReader;
-import org.firstinspires.ftc.teamcode.sample_camera_opmodes.LinearDetectColor;
 
 /**
- * Created by Vikesh on 12/16/2017.
+ * Created by vikesh on 12/28/17.
  */
-@Autonomous(name = "Right Blue Autonomous")
-public class AutonomousBlueRight  extends LinearOpModeCamera {
+@Autonomous(name = "Close Red Auto")
+public class CloseRedAuto extends LinearOpModeCamera{
 
     JewelDetector myJewelDetector = new JewelDetector(this);
+    JewelServoController myJewelServo;
     IntakeControllerManual myIntakeControllerManual;
     SwerveController mySwerveController;
     CubeTray myCubeTray;
     Gyro myGyro;
-    SafeJsonReader mySafeJsonReader = new SafeJsonReader("auto_red_parameters");
+    SafeJsonReader mySafeJsonReader = new SafeJsonReader("CloseRedAutoParameters");
     DriveWithPID myDriveWithPID;
     RelicSystem myRelicSystem;
 
@@ -56,6 +56,7 @@ public class AutonomousBlueRight  extends LinearOpModeCamera {
 
         //init:
         vumarkPattern = new VumarkGlyphPattern(hardwareMap);
+        myJewelServo = new JewelServoController(hardwareMap);
         myGyro = new Gyro(hardwareMap);
         myIntakeControllerManual = new IntakeControllerManual(hardwareMap);
         mySwerveController = new SwerveController(hardwareMap, myGyro, telemetry);
@@ -86,6 +87,7 @@ public class AutonomousBlueRight  extends LinearOpModeCamera {
         double pushCubeBackwards = mySafeJsonReader.getInt("pushCubeBackwards");
         double distDriveAwayFromCryptobox = mySafeJsonReader.getDouble("distDriveAwayFromCryptobox");
         double angleDriveAwayFromCryptobox = mySafeJsonReader.getDouble("angleDriveAwayFromCryptobox");
+        double extraDistToLeft = mySafeJsonReader.getDouble("extraDistToLeft");
 
 
         // Start of Autonomous:
@@ -142,15 +144,36 @@ public class AutonomousBlueRight  extends LinearOpModeCamera {
         myDriveWithPID.driveDist(drivingPower, 180, distBackToJewel);
 
         //Push the jewel
+        long tempTime;
         switch (leftJewelcolor) {
-            case RED:
+            case BLUE:
                 // Go 4" to the right and subtract the distance from next move
+                tempTime = System.currentTimeMillis();
+                while (System.currentTimeMillis() - tempTime < 500) {
+                    myJewelServo.lowerArm();
+
+                }
                 myDriveWithPID.driveDist(drivingPower, 90, distPushRight);
+                tempTime = System.currentTimeMillis();
+                while (System.currentTimeMillis() - tempTime < 500) {
+                    myJewelServo.raiseArm();
+
+                }
                 distToCryptobox -= distPushRight;
                 break;
-            case BLUE:
+            case RED:
                 // Go 4" left and add an distJewelPush to next move
+                tempTime = System.currentTimeMillis();
+                while (System.currentTimeMillis() - tempTime < 500) {
+                    myJewelServo.lowerArm();
+
+                }
                 myDriveWithPID.driveDist(drivingPower, 270, distPushLeft);
+                tempTime = System.currentTimeMillis();
+                while (System.currentTimeMillis() - tempTime < 500) {
+                    myJewelServo.raiseArm();
+
+                }
                 distToCryptobox += distPushLeft;
                 break;
             default:
@@ -162,6 +185,9 @@ public class AutonomousBlueRight  extends LinearOpModeCamera {
         switch (mark) {
             case LEFT:
                 //Add no extra distance
+                distToCryptobox += extraDistToLeft;
+                rotateAngle = 360 - rotateAngle;
+                angleDriveAwayFromCryptobox = 360 - angleDriveAwayFromCryptobox;
                 break;
             case RIGHT:
                 //Add extra distance
@@ -174,6 +200,9 @@ public class AutonomousBlueRight  extends LinearOpModeCamera {
         }
         myDriveWithPID.driveDist(drivingPower, 90, distToCryptobox);
 
+        // Rotate robot
+        myDriveWithPID.turnRobot(rotateAngle);
+
         // Put lift to vertical state
         myCubeTray.setToPos(CubeTray.LiftFinalStates.LOW);
         times[2] = System.currentTimeMillis();
@@ -182,9 +211,6 @@ public class AutonomousBlueRight  extends LinearOpModeCamera {
         }
         myCubeTray.dump();
         myCubeTray.updatePosition();
-
-        // Rotate robot
-        myDriveWithPID.turnRobot(rotateAngle);
 
         // Drive backwards
         myDriveWithPID.driveTime(drivingPower * 1.5, 180, pushCubeBackwards);
@@ -217,4 +243,5 @@ public class AutonomousBlueRight  extends LinearOpModeCamera {
         }
         return autonomousPath;
     }
-*/}
+*/
+}

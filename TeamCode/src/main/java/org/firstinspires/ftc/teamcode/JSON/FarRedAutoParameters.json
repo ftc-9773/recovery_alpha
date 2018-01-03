@@ -1,0 +1,20 @@
+{
+  "intakeLowerTime":3000,
+  "intakeStartDelay":1000,
+  "intakeRunDuration":2000,
+  "drivingPower": 0.27,
+  "distToJewelPush":8,
+  "distBackToJewel": 4.5,
+  "distPushLeft": 4,
+  "distPushRight": 4,
+  "distSidewaysToCryptobox": 15,
+  "angleLeftColumn": 315,
+  "distToLeftColumn": 5,
+  "angleCenterColumn": 225,
+  "distToCenterColumn": 2,
+  "angleRightColumn": 225,
+  "distToRightcolumn": 9,
+  "raiseLiftTime": 600,
+  "timePushCubeBackwards": 3,
+  "distDriveAwayFromCryptobox": 5
+}

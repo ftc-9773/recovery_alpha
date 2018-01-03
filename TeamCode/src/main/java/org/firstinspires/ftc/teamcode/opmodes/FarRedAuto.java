@@ -9,6 +9,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.RelicRecoveryVuMark;
 import org.firstinspires.ftc.teamcode.HardwareControl.CubeTray;
 import org.firstinspires.ftc.teamcode.HardwareControl.DriveWithPID;
 import org.firstinspires.ftc.teamcode.HardwareControl.IntakeControllerManual;
+import org.firstinspires.ftc.teamcode.HardwareControl.JewelServoController;
 import org.firstinspires.ftc.teamcode.HardwareControl.RelicSystem;
 import org.firstinspires.ftc.teamcode.HardwareControl.SwerveController;
 import org.firstinspires.ftc.teamcode.PositionTracking.Gyro;
@@ -17,17 +18,20 @@ import org.firstinspires.ftc.teamcode.Vision.VumarkGlyphPattern;
 import org.firstinspires.ftc.teamcode.infrastructure.SafeJsonReader;
 
 /**
- * Created by vikesh on 12/28/17.
+ * Created by nicky on 1/2/18.
  */
-@Autonomous(name = "Left Red Autonomous")
-public class AutonomousRedLeft extends LinearOpModeCamera{
+
+@Autonomous(name = "Red Pit-side Auto")
+public class FarRedAuto extends LinearOpModeCamera {
+
 
     JewelDetector myJewelDetector = new JewelDetector(this);
+    JewelServoController myJewelServo;
     IntakeControllerManual myIntakeControllerManual;
     SwerveController mySwerveController;
     CubeTray myCubeTray;
     Gyro myGyro;
-    SafeJsonReader mySafeJsonReader = new SafeJsonReader("auto_red_parameters");
+    SafeJsonReader mySafeJsonReader = new SafeJsonReader("FarRedAutoParameters");
     DriveWithPID myDriveWithPID;
     RelicSystem myRelicSystem;
 
@@ -45,7 +49,6 @@ public class AutonomousRedLeft extends LinearOpModeCamera{
     RelicRecoveryVuMark mark;
     VumarkGlyphPattern vumarkPattern;
 
-
     @Override
     public void runOpMode() throws InterruptedException {
 
@@ -54,6 +57,7 @@ public class AutonomousRedLeft extends LinearOpModeCamera{
 
         //init:
         vumarkPattern = new VumarkGlyphPattern(hardwareMap);
+        myJewelServo = new JewelServoController(hardwareMap);
         myGyro = new Gyro(hardwareMap);
         myIntakeControllerManual = new IntakeControllerManual(hardwareMap);
         mySwerveController = new SwerveController(hardwareMap, myGyro, telemetry);
@@ -76,15 +80,16 @@ public class AutonomousRedLeft extends LinearOpModeCamera{
         double distBackToJewel = mySafeJsonReader.getDouble("distBackToJewel");
         double distPushLeft = mySafeJsonReader.getDouble("distPushLeft");
         double distPushRight = mySafeJsonReader.getDouble("distPushRight");
-        double distToCryptobox = mySafeJsonReader.getDouble("distToCryptobox");
-        double extraDistToCenter = mySafeJsonReader.getDouble("extraDistToCenter");
-        double extraDistToRight = mySafeJsonReader.getDouble("extraDistToRight");
-        double raiseLiftTme = mySafeJsonReader.getDouble("raiseLiftTme");
-        double rotateAngle = mySafeJsonReader.getDouble("rotateAngle");
-        double pushCubeBackwards = mySafeJsonReader.getInt("pushCubeBackwards");
+        double distSidewaysToCryptobox = mySafeJsonReader.getDouble("distSidewaysToCryptobox");
+        double angleLeftColumn = mySafeJsonReader.getDouble("angleLeftColumn");
+        double distToLeftColumn = mySafeJsonReader.getDouble("distToLeftColumn");
+        double angleCenterColumn = mySafeJsonReader.getDouble("angleCenterColumn");
+        double distToCenterColumn = mySafeJsonReader.getDouble("distToCenterColumn");
+        double angleRightColumn = mySafeJsonReader.getDouble("angleRightColumn");
+        double distToRightColumn = mySafeJsonReader.getDouble("distToRightcolumn");
+        int raiseLiftTime = mySafeJsonReader.getInt("raiseLiftTime");
+        double timePushCubeBackwards = mySafeJsonReader.getDouble("timePushCubeBackwards");
         double distDriveAwayFromCryptobox = mySafeJsonReader.getDouble("distDriveAwayFromCryptobox");
-        double angleDriveAwayFromCryptobox = mySafeJsonReader.getDouble("angleDriveAwayFromCryptobox");
-
 
         // Start of Autonomous:
 
@@ -140,80 +145,82 @@ public class AutonomousRedLeft extends LinearOpModeCamera{
         myDriveWithPID.driveDist(drivingPower, 180, distBackToJewel);
 
         //Push the jewel
+        leftJewelcolor = JewelDetector.JewelColors.RED;
+        long tempTime;
         switch (leftJewelcolor) {
             case BLUE:
                 // Go 4" to the right and subtract the distance from next move
+                tempTime = System.currentTimeMillis();
+                while (System.currentTimeMillis() - tempTime < 500) {
+                    myJewelServo.lowerArm();
+
+                }
                 myDriveWithPID.driveDist(drivingPower, 90, distPushRight);
-                distToCryptobox -= distPushRight;
+                tempTime = System.currentTimeMillis();
+                while (System.currentTimeMillis() - tempTime < 500) {
+                    myJewelServo.raiseArm();
+
+                }
+                distSidewaysToCryptobox -= distPushRight;
                 break;
             case RED:
                 // Go 4" left and add an distJewelPush to next move
+                tempTime = System.currentTimeMillis();
+                while (System.currentTimeMillis() - tempTime < 500) {
+                    myJewelServo.lowerArm();
+
+                }
                 myDriveWithPID.driveDist(drivingPower, 270, distPushLeft);
-                distToCryptobox += distPushLeft;
+                tempTime = System.currentTimeMillis();
+                while (System.currentTimeMillis() - tempTime < 500) {
+                    myJewelServo.raiseArm();
+
+                }
+                distSidewaysToCryptobox += distPushLeft;
                 break;
             default:
                 // Do nothing
         }
 
-        //Drive to cryptobox
+        // Drive sideways towards the cryptobox
+        myDriveWithPID.driveDist(drivingPower, 90, distSidewaysToCryptobox);
 
+        // Figure out the corect drive dists and angles
+        double drivingAngle;
+        double drivingDist;
         switch (mark) {
             case LEFT:
-                //Add no extra distance
+                drivingAngle = angleLeftColumn;
+                drivingDist = distToLeftColumn;
                 break;
             case RIGHT:
-                //Add extra distance
-                distToCryptobox += extraDistToRight;
+                drivingAngle = angleRightColumn;
+                drivingDist = distToRightColumn;
                 break;
             default:
-                // If it is center, or if nothing is read
-                // add extra distance to center
-                distToCryptobox += extraDistToCenter;
+                drivingAngle = angleCenterColumn;
+                drivingDist = distToCenterColumn;
         }
-        myDriveWithPID.driveDist(drivingPower, 90, distToCryptobox);
 
-        // Put lift to vertical state
+        // Turn to correct angle
+        myDriveWithPID.turnRobot(drivingAngle);
+
+        // Drive to the collumn
+        myDriveWithPID.driveDist(drivingPower, 0, drivingDist);
+
+        // Raise lift and drop cube
         myCubeTray.setToPos(CubeTray.LiftFinalStates.LOW);
-        times[2] = System.currentTimeMillis();
-        while (System.currentTimeMillis() - times[2] < raiseLiftTme) {
+        tempTime = System.currentTimeMillis();
+        while (System.currentTimeMillis() - tempTime < raiseLiftTime) {
             myCubeTray.updatePosition();
         }
         myCubeTray.dump();
         myCubeTray.updatePosition();
 
-        // Rotate robot
-        myDriveWithPID.turnRobot(rotateAngle);
+        // Drive backwards for time
+        myDriveWithPID.driveTime(drivingPower*1.5, 90, timePushCubeBackwards);
 
-        // Drive backwards
-        myDriveWithPID.driveTime(drivingPower * 1.5, 180, pushCubeBackwards);
-
-        // Drive away from the box
-        myDriveWithPID.driveDist(drivingPower, angleDriveAwayFromCryptobox, distDriveAwayFromCryptobox);
+        // Drive away from cryptobox
+        myDriveWithPID.driveDist(drivingPower*1.5, drivingAngle, distDriveAwayFromCryptobox);
     }
-
-
-
-    /*
-    public char chooseAutonomousPath(boolean redJewelIsLeft, char glyphPosition){
-        char autonomousPath;
-        switch (glyphPosition){
-            case 0:
-                if(redJewelIsLeft){autonomousPath = 0;}
-                else{autonomousPath = 1;}
-                break;
-            case 1:
-                if(redJewelIsLeft){autonomousPath = 2;}
-                else{autonomousPath = 3;}
-                break;
-            case 2:
-                if(redJewelIsLeft){autonomousPath = 4;}
-                else{autonomousPath = 5;}
-                break;
-            default:
-                autonomousPath = 6;
-                break;
-        }
-        return autonomousPath;
-    }
-*/
 }

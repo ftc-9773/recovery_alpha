@@ -4,6 +4,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.CRServo;
+import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.HardwareControl.DriveWithPID;
@@ -20,7 +21,7 @@ import org.firstinspires.ftc.teamcode.resources.ButtonStatus;
 public class testbed extends LinearOpMode{
 
     Gyro myGyro;
-    CRServo flwServo;
+    Servo flwServo;
     double power = 0;
     double change = 0.1;
 
@@ -36,7 +37,7 @@ public class testbed extends LinearOpMode{
         command = control.getNextCommand();
         */
 
-        flwServo = hardwareMap.crservo.get("brwServo");
+        flwServo = hardwareMap.servo.get("jServo");
         myGyro = new Gyro(hardwareMap);
 
         waitForStart();
@@ -58,9 +59,9 @@ public class testbed extends LinearOpMode{
                 change *= 10;
             }
 
-            flwServo.setPower(power);
+            flwServo.setPosition(power);
 
-            telemetry.addData("Power", power);
+            telemetry.addData("Position", power);
             telemetry.addData("Change", change);
             telemetry.addData("Gyro Reading", myGyro.getImuReading());
             telemetry.addData("Gyro heading", myGyro.getHeading());

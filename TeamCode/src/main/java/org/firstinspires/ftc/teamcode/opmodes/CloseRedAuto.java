@@ -16,6 +16,7 @@ import org.firstinspires.ftc.teamcode.PositionTracking.Gyro;
 import org.firstinspires.ftc.teamcode.Vision.JewelDetector;
 import org.firstinspires.ftc.teamcode.Vision.VumarkGlyphPattern;
 import org.firstinspires.ftc.teamcode.infrastructure.SafeJsonReader;
+import org.firstinspires.ftc.teamcode.resources.Timer;
 
 /**
  * Created by vikesh on 12/28/17.
@@ -88,6 +89,7 @@ public class CloseRedAuto extends LinearOpModeCamera{
         double distDriveAwayFromCryptobox = mySafeJsonReader.getDouble("distDriveAwayFromCryptobox");
         double angleDriveAwayFromCryptobox = mySafeJsonReader.getDouble("angleDriveAwayFromCryptobox");
         double extraDistToLeft = mySafeJsonReader.getDouble("extraDistToLeft");
+        double readJewelMaxTime = mySafeJsonReader.getDouble("readJewelMaxTime");
 
 
         // Start of Autonomous:
@@ -104,13 +106,7 @@ public class CloseRedAuto extends LinearOpModeCamera{
 
         // Read the jewel color
         myJewelDetector.startCamera();
-        JewelDetector.JewelColors leftJewelcolor =  myJewelDetector.getJewelColor();
-        Log.e(TAG, "Jewel color is: " + leftJewelcolor);
-
-        // Display the readings
-        telemetry.addData("Mark", mark);
-        telemetry.addData("Left Jewel Color", leftJewelcolor);
-        telemetry.update();
+        JewelDetector.JewelColors leftJewelColor =  myJewelDetector.getJewelColor();
 
         /*
 
@@ -127,25 +123,28 @@ public class CloseRedAuto extends LinearOpModeCamera{
             myIntakeControllerManual.lowerIntake(true);
             myCubeTray.updatePosition();
         }
-/*
-        // Run intake
-        times[1] = System.currentTimeMillis();
-        myIntakeControllerManual.lowerIntake(false);
-        while(System.currentTimeMillis()-intakeStartDelay<times[1]){}
-        times[1] = System.currentTimeMillis();
-        while(opModeIsActive()  && System.currentTimeMillis()-(intakeRunDuration)<times[1]){
-            myIntakeControllerManual.RunIntake(0,-0.7);
+
+        Timer timer1 = new Timer(readJewelMaxTime);
+        while (timer1.isDone()) {
+            leftJewelColor = myJewelDetector.getJewelColor();
+            if (leftJewelColor == JewelDetector.JewelColors.BLUE || leftJewelColor == JewelDetector.JewelColors.RED) {
+                break;
+            }
         }
-        myIntakeControllerManual.RunIntake(0,1);
-        myIntakeControllerManual.RunIntake(0,0);
-*/
+        Log.e(TAG, "Jewel color is: " + leftJewelColor);
+
+        // Display the readings
+        telemetry.addData("Mark", mark);
+        telemetry.addData("Left Jewel Color", leftJewelColor);
+        telemetry.update();
+
         // Drive to the right
         myDriveWithPID.driveDist(drivingPower, 90, distToJewelPush);
         myDriveWithPID.driveDist(drivingPower, 180, distBackToJewel);
 
         //Push the jewel
         long tempTime;
-        switch (leftJewelcolor) {
+        switch (leftJewelColor) {
             case BLUE:
                 // Go 4" to the right and subtract the distance from next move
                 tempTime = System.currentTimeMillis();
@@ -222,30 +221,4 @@ public class CloseRedAuto extends LinearOpModeCamera{
 
         myGyro.recordHeading();
     }
-
-
-
-    /*
-    public char chooseAutonomousPath(boolean redJewelIsLeft, char glyphPosition){
-        char autonomousPath;
-        switch (glyphPosition){
-            case 0:
-                if(redJewelIsLeft){autonomousPath = 0;}
-                else{autonomousPath = 1;}
-                break;
-            case 1:
-                if(redJewelIsLeft){autonomousPath = 2;}
-                else{autonomousPath = 3;}
-                break;
-            case 2:
-                if(redJewelIsLeft){autonomousPath = 4;}
-                else{autonomousPath = 5;}
-                break;
-            default:
-                autonomousPath = 6;
-                break;
-        }
-        return autonomousPath;
-    }
-*/
 }

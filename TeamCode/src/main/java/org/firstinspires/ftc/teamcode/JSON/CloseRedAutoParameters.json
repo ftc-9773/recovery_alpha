@@ -1,5 +1,6 @@
 {
   "intakeLowerTime":3000,
+  "readJewelMaxTime": 2,
   "intakeStartDelay":1000,
   "intakeRunDuration":2000,
   "drivingPower": 0.27,

@@ -28,6 +28,8 @@ import org.firstinspires.ftc.teamcode.sample_camera_opmodes.LinearDetectColor;
 @Autonomous(name = "Close Blue Auto")
 public class CloseBlueAuto extends LinearOpModeCamera {
 
+    private final static boolean DEBUG = true;
+    private final static String TAG = "9773CloseBlueAuto";
 
     JewelDetector myJewelDetector = new JewelDetector(this);
     JewelServoController myJewelServo;
@@ -81,6 +83,7 @@ public class CloseBlueAuto extends LinearOpModeCamera {
         intakeRunDuration = mySafeJsonReader.getInt("intakeRunDuration");
         intakeStartDelay = mySafeJsonReader.getInt("intakeStartDelay");
         drivingPower = mySafeJsonReader.getDouble("drivingPower");
+        double drivingMidPower = mySafeJsonReader.getDouble("drivingMidPower");
         double drivingHighPower = mySafeJsonReader.getDouble("drivingHighPower");
         double distToJewelPush = mySafeJsonReader.getDouble("distToJewelPush");
         double distBackToJewel = mySafeJsonReader.getDouble("distBackToJewel");
@@ -91,12 +94,14 @@ public class CloseBlueAuto extends LinearOpModeCamera {
         double extraDistToCenter = mySafeJsonReader.getDouble("extraDistToCenter");
         double extraDistToRight = mySafeJsonReader.getDouble("extraDistToRight");
         double raiseLiftTme = mySafeJsonReader.getDouble("raiseLiftTme");
-        double rotateAngle = mySafeJsonReader.getDouble("rotateAngle");
         double pushCubeBackwards = mySafeJsonReader.getInt("pushCubeBackwards");
         double distDriveAwayFromCryptobox = mySafeJsonReader.getDouble("distDriveAwayFromCryptobox");
-        double angleDriveAwayFromCryptobox = mySafeJsonReader.getDouble("angleDriveAwayFromCryptobox");
         double extraDistToLeft = mySafeJsonReader.getDouble("extraDistToLeft");
         double waitForJewelReading = mySafeJsonReader.getDouble("waitForJewelReading");
+        double angleLeftColumn = mySafeJsonReader.getDouble("angleLeftColumn");
+        double angleCenterColumn = mySafeJsonReader.getDouble("angleCenterColumn");
+        double angleRightColumn = mySafeJsonReader.getDouble("angleRightColumn");
+        double distDriveForward = mySafeJsonReader.getDouble("distDriveForward");
 
 
         // Start of Autonomous:
@@ -115,6 +120,24 @@ public class CloseBlueAuto extends LinearOpModeCamera {
         myJewelDetector.startCamera();
         JewelDetector.JewelColors leftJewelColor = myJewelDetector.computeJewelColor();
 
+        /*
+
+        To read the CRYPTOBOX COLUMN: read 'mark' and compare to RelicRecoveryVuMark.LEFT <- whatever you want it to be
+
+        For JEWEL COLOR: use myJewelDetector.isLeftJewelRed / blue
+
+         */
+
+        // Lower intake
+        times[0] = System.currentTimeMillis();
+        myCubeTray.setToPos(CubeTray.LiftFinalStates.LOADING);
+        while(opModeIsActive() && System.currentTimeMillis()-intakeLowerTime<times[0]){
+            myIntakeControllerManual.lowerIntake(true);
+            myCubeTray.updatePosition();
+            myCubeTray.setServoPos(CubeTray.TrayPositions.LOADING);
+        }
+
+        // Read Jewel
         Timer time1 = new Timer(waitForJewelReading);
         while (!time1.isDone()) {
             leftJewelColor = myJewelDetector.computeJewelColor();
@@ -130,21 +153,6 @@ public class CloseBlueAuto extends LinearOpModeCamera {
         telemetry.addData("Left Jewel Color", leftJewelColor);
         telemetry.update();
 
-        /*
-
-        To read the CRYPTOBOX COLUMN: read 'mark' and compare to RelicRecoveryVuMark.LEFT <- whatever you want it to be
-
-        For JEWEL COLOR: use myJewelDetector.isLeftJewelRed / blue
-
-         */
-
-        // Lower intake
-        times[0] = System.currentTimeMillis();
-        myCubeTray.setToPos(CubeTray.LiftFinalStates.LOADING);
-        while(opModeIsActive() && System.currentTimeMillis()-intakeLowerTime<times[0]){
-            myIntakeControllerManual.lowerIntake(true);
-            myCubeTray.updatePosition();
-        }
 /*
         // Run intake
         times[1] = System.currentTimeMillis();
@@ -159,70 +167,66 @@ public class CloseBlueAuto extends LinearOpModeCamera {
 */
         // Drive to the right
         myDriveWithPID.driveDist(drivingPower, 90, distToJewelPush);
-        myDriveWithPID.driveDist(drivingPower, 180, distBackToJewel);
 
         //Push the jewel
-        leftJewelColor = JewelDetector.JewelColors.RED;
         long tempTime;
         switch (leftJewelColor) {
             case RED:
-                // Go 4" to the right and add the distance to next move
+                // Go 4" to the RIGHT and add the distance to next move
                 tempTime = System.currentTimeMillis();
-                while (System.currentTimeMillis() - tempTime < 300) {
+                while (System.currentTimeMillis() - tempTime < 400) {
                     myJewelServo.lowerArm();
-
                 }
-                Log.i("9773CloseBlueAuto", "moving by time");
+                myDriveWithPID.driveDist(drivingPower, 180, distBackToJewel);
                 myDriveWithPID.driveTime(drivingPower, 90, timePushRight);
-                Log.i("9773CloseBlueAuto", "Done moving by time");
-                tempTime = System.currentTimeMillis();
-                while (System.currentTimeMillis() - tempTime < 300) {
-                    myJewelServo.raiseArm();
+                myJewelServo.raiseArm();
 
-                }
                 distToCryptobox += distPushRight;
                 break;
             case BLUE:
-                // Go 4" left and subtract the distance from next move
+                // Go 4" LEFT and subtract the distance from next move
                 tempTime = System.currentTimeMillis();
-                while (System.currentTimeMillis() - tempTime < 300) {
+                while (System.currentTimeMillis() - tempTime < 400) {
                     myJewelServo.lowerArm();
-
                 }
-                myDriveWithPID.driveDist(drivingHighPower, 270, distPushLeft);
-                tempTime = System.currentTimeMillis();
-                while (System.currentTimeMillis() - tempTime < 300) {
-                    myJewelServo.raiseArm();
-
-                }
+                myDriveWithPID.driveDist(drivingPower, 180, distBackToJewel);
+                myDriveWithPID.driveDist(drivingMidPower, 270, distPushLeft);
+                myJewelServo.raiseArm();
                 distToCryptobox -= distPushLeft;
                 break;
             default:
+                myDriveWithPID.driveDist(drivingPower, 180, distBackToJewel);
                 // Do nothing
         }
 
+        myDriveWithPID.driveDist(drivingPower, 0, distDriveForward);
+
         //Drive to cryptobox
+        double driveAngle;
 
         switch (mark) {
             case LEFT:
                 //Add no extra distance
                 distToCryptobox += extraDistToLeft;
+                driveAngle = angleLeftColumn;
                 break;
             case RIGHT:
                 //Add extra distance
                 distToCryptobox += extraDistToRight;
-                rotateAngle = 360 - rotateAngle;
-                angleDriveAwayFromCryptobox = 360 - angleDriveAwayFromCryptobox;
+                driveAngle = angleRightColumn;
                 break;
             default:
                 // If it is center, or if nothing is read
                 // add extra distance to center
+                driveAngle = angleCenterColumn;
                 distToCryptobox += extraDistToCenter;
         }
         myDriveWithPID.driveDist(drivingHighPower, 270, distToCryptobox);
 
         // Rotate robot
-        myDriveWithPID.turnRobot(rotateAngle);
+        Log.i(TAG, "Drive Angle is: " + driveAngle);
+        myDriveWithPID.turnRobot(driveAngle);
+        Log.i(TAG, "Robot angle is: " + myGyro.getHeading());
 
         // Put lift to vertical state
         myCubeTray.setToPos(CubeTray.LiftFinalStates.LOW);
@@ -230,6 +234,8 @@ public class CloseBlueAuto extends LinearOpModeCamera {
         while (System.currentTimeMillis() - times[2] < raiseLiftTme) {
             myCubeTray.updatePosition();
         }
+
+        //Drop cube
         myCubeTray.dump();
         myCubeTray.updatePosition();
 
@@ -240,35 +246,9 @@ public class CloseBlueAuto extends LinearOpModeCamera {
         myGyro.recordHeading();
 
         // Drive away from the box
-        myDriveWithPID.driveDist(drivingPower, angleDriveAwayFromCryptobox, distDriveAwayFromCryptobox);
+        myDriveWithPID.driveDist(drivingHighPower, driveAngle, distDriveAwayFromCryptobox);
 
         // Save the current heading
         myGyro.recordHeading();
     }
-
-
-
-    /*
-    public char chooseAutonomousPath(boolean redJewelIsLeft, char glyphPosition){
-        char autonomousPath;
-        switch (glyphPosition){
-            case 0:
-                if(redJewelIsLeft){autonomousPath = 0;}
-                else{autonomousPath = 1;}
-                break;
-            case 1:
-                if(redJewelIsLeft){autonomousPath = 2;}
-                else{autonomousPath = 3;}
-                break;
-            case 2:
-                if(redJewelIsLeft){autonomousPath = 4;}
-                else{autonomousPath = 5;}
-                break;
-            default:
-                autonomousPath = 6;
-                break;
-        }
-        return autonomousPath;
-    }
-*/
 }

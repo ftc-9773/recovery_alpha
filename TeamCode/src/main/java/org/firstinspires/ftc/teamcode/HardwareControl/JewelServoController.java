@@ -17,19 +17,14 @@ public class JewelServoController {
 
     Servo jewelServo;
 
-    double downPosition = 0.72;
+    double downPosition = 0.705;
     double upPosition = 0.1;
 
     public JewelServoController(HardwareMap hardwareMap) {
         jewelServo = hardwareMap.servo.get("jServo");
-
-        try {
             SafeJsonReader servoPositions = new SafeJsonReader("JewelArmPositions");
             downPosition = servoPositions.getDouble("downPosition");
             upPosition = servoPositions.getDouble("upPosition");
-        } catch (NullPointerException e) {
-            Log.e("FTC9773_JewelServoCont", "Did not initialize from JSON");
-        }
     }
 
     public void lowerArm() {

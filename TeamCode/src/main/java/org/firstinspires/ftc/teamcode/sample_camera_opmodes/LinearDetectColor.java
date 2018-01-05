@@ -17,7 +17,6 @@ import org.firstinspires.ftc.teamcode.Vision.VumarkGlyphPattern;
 @Autonomous(name = "LinearDetectColor", group = "ZZOpModeCameraPackage")
 //@Disabled
 public class LinearDetectColor extends LinearOpModeCamera {
-    String colorString;
     RelicRecoveryVuMark mark;
 //    static final int THRESHOLD = 10;//red - blue
 

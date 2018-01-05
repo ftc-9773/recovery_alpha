@@ -26,14 +26,22 @@ public class JewelDetector {
         NOT_INITIALIZED
     }
 
-    LinearOpModeCamera camOp;
+    // algorithmic parameters (set in class)
     final double colOn = 160.0;
     final double colOff = 80.0;
-    int ds2 = 2;
+    final boolean scaling = true;
+    final int ds2 = 2;
+
+    // algorithmic parameters set in json
     SafeJsonReader thresholds ;
     double redThreshold = 0.1;
     double blueThreshold = 0.1;
-    public JewelColors leftJewelColor;
+
+    // reference to linear opmode
+    LinearOpModeCamera camOp;
+
+    // result
+    JewelColors leftJewelColor;
 
     public JewelDetector(LinearOpModeCamera camOp){
         this.camOp = camOp;
@@ -52,14 +60,9 @@ public class JewelDetector {
         return leftJewelColor;
     }
 
-    public boolean isLeftJewelRed() { return leftJewelColor.equals(JewelColors.RED); }
-    public boolean isLeftJewelBlue() { return leftJewelColor.equals(JewelColors.BLUE);}
-    public boolean leftJewelIsUndetermined() { return leftJewelColor.equals(JewelColors.UNKNOWN) ||
-         leftJewelColor.equals(JewelColors.NOT_INITIALIZED); }
-
-    public void onOffThreshold(boolean scaling){
+    public JewelColors computeJewelColor(){
         // get image, rotated so (0,0) is in the bottom left of the preview window
-        if (! camOp.imageReady()) return;
+        if (! camOp.imageReady()) return leftJewelColor;
 
         // only do this if an image has been returned from the camera
         Bitmap rgbImage;
@@ -75,15 +78,18 @@ public class JewelDetector {
         double coeffR = 1.0;
         double coeffB = 1.0;
         double coeffG = 1.0;
+
         final int steps = 1;
         final int width = rgbImage.getWidth();
         final int heights = rgbImage.getHeight();
+        final int startHeight = 3*heights/4;
+        final int startWidth = 3*width/4;
 
         if (scaling) {
             // additional downsampling of the image
             // set to 1 to disable further downsampling
-            for (int x = 3*width/4; x < width; x+=steps) {
-                for (int y = 3*heights/4; y < heights; y+=steps) {
+            for (int x = startWidth; x < width; x+=steps) {
+                for (int y = startHeight; y < heights; y+=steps) {
                     int pixel = rgbImage.getPixel(x, y);
                     int valR = Color.red(pixel);
                     if (valR < minR) minR = valR;
@@ -106,8 +112,8 @@ public class JewelDetector {
         int blueValue = 0;
         int totValue = 0;
 
-        for (int x = 3*width/4; x < width; x+=steps) {
-            for (int y = 3*heights/4; y < heights; y+=steps) {
+        for (int x = startWidth; x < width; x+=steps) {
+            for (int y = startHeight; y < heights; y+=steps) {
                 int pixel = rgbImage.getPixel(x, y);
                 double valR = Color.red(pixel);
                 double valB = Color.blue(pixel);
@@ -133,13 +139,14 @@ public class JewelDetector {
         } else {
             leftJewelColor = JewelColors.UNKNOWN;
         }
-//            else colorString = "NONE";
-        camOp.telemetry.addData("actual difference: ", diff);
-        camOp.telemetry.addData("tot values: ", totValue);
-        double fraction = (double)diff/(double)totValue;
-        camOp.telemetry.addData("relative difference: ", fraction);
 
-        //camOp.sleep(10);
-        camOp.telemetry.addData("Jewel Color ", getJewelColor());
+        // telemetry or log
+        //camOp.telemetry.addData("actual difference: ", diff);
+        //camOp.telemetry.addData("tot values: ", totValue);
+        //double fraction = (double)diff/(double)totValue;
+        //camOp.telemetry.addData("relative difference: ", fraction);
+        //camOp.telemetry.addData("Jewel Color ", getJewelColor());
+
+        return leftJewelColor;
     }
 }

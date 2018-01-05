@@ -17,11 +17,14 @@ import org.firstinspires.ftc.teamcode.PositionTracking.Gyro;
 import org.firstinspires.ftc.teamcode.Vision.JewelDetector;
 import org.firstinspires.ftc.teamcode.Vision.VumarkGlyphPattern;
 import org.firstinspires.ftc.teamcode.infrastructure.SafeJsonReader;
+import org.firstinspires.ftc.teamcode.resources.Timer;
 import org.firstinspires.ftc.teamcode.sample_camera_opmodes.LinearDetectColor;
 
 /**
  * Created by Vikesh on 12/16/2017.
  */
+
+// Nicky's adb push command (from the adb directory): .\adb.exe push 'C:\Users\Nicky Eichenberger\Documents\FTC Software\recovery_alpha\TeamCode\src\main\java\org\firstinspires\ftc\teamcode\JSON\CloseBlueAutoParameters.json' /sdcard/FIRST/team9773/json18/
 @Autonomous(name = "Close Blue Auto")
 public class CloseBlueAuto extends LinearOpModeCamera {
 
@@ -93,6 +96,7 @@ public class CloseBlueAuto extends LinearOpModeCamera {
         double distDriveAwayFromCryptobox = mySafeJsonReader.getDouble("distDriveAwayFromCryptobox");
         double angleDriveAwayFromCryptobox = mySafeJsonReader.getDouble("angleDriveAwayFromCryptobox");
         double extraDistToLeft = mySafeJsonReader.getDouble("extraDistToLeft");
+        double waitForJewelReading = mySafeJsonReader.getDouble("waitForJewelReading");
 
 
         // Start of Autonomous:
@@ -109,12 +113,21 @@ public class CloseBlueAuto extends LinearOpModeCamera {
 
         // Read the jewel color
         myJewelDetector.startCamera();
-        JewelDetector.JewelColors rightJewelColor =  myJewelDetector.getJewelColor();
-        Log.e(TAG, "Jewel color is: " + rightJewelColor);
+        JewelDetector.JewelColors leftJewelColor = myJewelDetector.computeJewelColor();
+
+        Timer time1 = new Timer(waitForJewelReading);
+        while (!time1.isDone()) {
+            leftJewelColor = myJewelDetector.computeJewelColor();
+            if (leftJewelColor == JewelDetector.JewelColors.BLUE || leftJewelColor == JewelDetector.JewelColors.RED) {
+                break;
+            }
+        }
+
+        Log.e(TAG, "Jewel color is: " + leftJewelColor);
 
         // Display the readings
         telemetry.addData("Mark", mark);
-        telemetry.addData("Left Jewel Color", rightJewelColor);
+        telemetry.addData("Left Jewel Color", leftJewelColor);
         telemetry.update();
 
         /*
@@ -149,9 +162,9 @@ public class CloseBlueAuto extends LinearOpModeCamera {
         myDriveWithPID.driveDist(drivingPower, 180, distBackToJewel);
 
         //Push the jewel
-        rightJewelColor = JewelDetector.JewelColors.RED;
+        leftJewelColor = JewelDetector.JewelColors.RED;
         long tempTime;
-        switch (rightJewelColor) {
+        switch (leftJewelColor) {
             case RED:
                 // Go 4" to the right and add the distance to next move
                 tempTime = System.currentTimeMillis();

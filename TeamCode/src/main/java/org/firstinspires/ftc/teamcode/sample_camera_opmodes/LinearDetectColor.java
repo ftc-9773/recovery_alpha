@@ -37,6 +37,7 @@ public class LinearDetectColor extends LinearOpModeCamera {
 
             detector.computeJewelColor();
             telemetry.addData("vuMark", mark);
+            telemetry.addData("Jewel", detector.getJewelColor());
             telemetry.update();
         }
         stopCamera();

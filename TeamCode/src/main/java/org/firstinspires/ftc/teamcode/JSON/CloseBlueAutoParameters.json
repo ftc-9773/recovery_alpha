@@ -1,21 +1,22 @@
 {
+  "waitForJewelReading": 3,
   "intakeLowerTime":3000,
   "intakeStartDelay":1000,
   "intakeRunDuration":2000,
   "drivingPower": 0.27,
   "drivingHighPower": 0.5,
   "distToJewelPush":7,
-  "distBackToJewel": 1.35,
+  "distBackToJewel": 1.45,
   "distPushLeft": 4,
   "distPushRight": 2,
   "timePushRight": 1,
   "distToCryptobox": 44.56,
-  "extraDistToLeft": 15.2,
+  "extraDistToLeft": 16,
   "extraDistToCenter": 7.56,
-  "extraDistToRight": 16,
+  "extraDistToRight": 15.2,
   "raiseLiftTme": 600,
-  "rotateAngle": 315,
+  "rotateAngle": 45,
   "pushCubeBackwards": 3,
   "distDriveAwayFromCryptobox": 5,
-  "angleDriveAwayFromCryptobox": 315
+  "angleDriveAwayFromCryptobox": 45
 }

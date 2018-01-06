@@ -20,6 +20,7 @@ import org.firstinspires.ftc.teamcode.PositionTracking.Gyro;
 // an opmode to test teleop, based on the progress ew have made so far
 // should include all of the sub- assembleys made so far
 @Autonomous(name = "Auton Drive Test")
+@Disabled
 public class TestOpmode extends LinearOpMode {
 
     private FTCrobot ftcRobot;

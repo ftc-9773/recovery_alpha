@@ -50,7 +50,8 @@ import org.firstinspires.ftc.teamcode.infrastructure.SafeJsonReader;
  * To push the file:
  * ~/Library/Android/sdk/platform-tools/adb push CubeTrayServoPositions.json /sdcard/FIRST/team9773/json18
  *
- *cd
+ * To pull the file
+ * ~/Library/Android/sdk/platform-tools/adb pull /sdcard/FIRST/team9773/json18/CubeTrayServoPositions.json
  *
  */
 
@@ -102,6 +103,11 @@ public class CubeTray {
     private static final double increment =.001;
     //HOMING variables
     private int zeroPos = 0;
+
+    //restart value - only writes the position every tenth time
+    int iterNum = 0;
+    static final int itersPerWrite = 10;
+    static final boolean RestartOn = true;
 
     // Safety ABORT variables
    //  private static int safteyAbortTime = 50;
@@ -217,15 +223,19 @@ public class CubeTray {
             liftFinalState = LiftFinalStates.LOADING;
         } else if (gamepad1.a){
             liftFinalState = liftFinalState.LOW;
+            setServoPos(TrayPositions.CARRYING);
         } else if (gamepad1.b){
             liftFinalState = liftFinalState.MID;
+            setServoPos(TrayPositions.CARRYING);
         } else if(gamepad1.y){
             liftFinalState = liftFinalState.HIGH;
+            setServoPos(TrayPositions.CARRYING);
         }
         if(gamepad1.right_bumper){
             dump();
         }
         updatePosition();
+
     }
     public void dump(){
         setServoPos(TrayPositions.DUMP_A);
@@ -304,8 +314,21 @@ public class CubeTray {
             liftMotor.setPower(0);
         }
 
-        myCubeTrayPositions.modifyInt("LastLiftHeight",getliftPos());
-        myCubeTrayPositions.modifyString("lastLiftTrayPosr", overallState.toString());
+        // update json file for positions
+        if (iterNum%itersPerWrite == 0) {
+            myCubeTrayPositions.modifyInt("LastLiftHeight", getliftPos());
+            myCubeTrayPositions.modifyString("LastLiftTrayPos", overallState.toString());
+            myCubeTrayPositions.modifyInt("LastWriteTime", (int) System.currentTimeMillis());
+
+            myCubeTrayPositions.updateFile();
+
+            Log.i(TAG,"Wrote the following vals to file: (cubeTrayLogging)");
+            Log.i(TAG + "Height", String.valueOf(getliftPos()));
+            Log.i(TAG + "Pos", overallState.toString());
+
+        }
+        iterNum++;
+
     }
 
     // util function to translate final positions into overall positions based on position - the brains of the state machine
@@ -590,7 +613,7 @@ public class CubeTray {
         overallState = OverallStates.STOWED;
     }
     private OverallStates readTrayPositions(){
-        String value = myCubeTrayPositions.getString("lastLiftTrayPos");
+        String value = myCubeTrayPositions.getString("LastLiftTrayPos");
         OverallStates result = null;
         switch (value) {
             case "LOADING":
@@ -617,7 +640,7 @@ public class CubeTray {
         return result;
     }
 
-    private void setZeroFromLastOpmode(){
+    public void setZeroFromLastOpmode(){
         int lastPos = myCubeTrayPositions.getInt("LastLiftHeight");
         OverallStates lastState = readTrayPositions();
         if (lastPos == 0|| lastPos== -1){

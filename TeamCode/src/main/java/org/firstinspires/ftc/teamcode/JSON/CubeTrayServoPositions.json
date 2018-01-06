@@ -19,8 +19,8 @@
 
   "usingJsonServoPositions": true,
 
-  "safteyAbortTime"       : 50,
-  "safteyAbortMinSpeed"   : 0.5,
+  "safteyAbortTime"     : 50,
+  "safteyAbortMinSpeed" : 0.5,
 
   "leftFlapStowed"        : 0.532,
   "leftFlapLoading"       : 0.5328,
@@ -32,7 +32,7 @@
   "rightFlapLoading"       : 0.6,
   "rightFlapCarrying"      : 0.78,
   "rightFlapDumpingFlap"   : 0.4,
-  "rightFlapDumpingAngle"  : 1.0,
+  "rightFlapDumpingAngle"  : 0.4,
 
   "leftAngleStowed"        : 0.96,
   "leftAngleLoading"       : 0.725,
@@ -46,7 +46,11 @@
   "rightAngleDumpingFlap"   : 0.754,
   "rightAngleDumpingAngle"  : 0.901,
 
-  "LastLiftHeight"      : -1,
-  "lastLiftTrayPos"     : "LOADING"
+
+
+  "LastLiftHeight"    : 0,
+  "LastLiftTrayPos"   :  "STOWED",
+  "LastWriteTime"     : 0
+
 
   }

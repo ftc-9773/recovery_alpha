@@ -16,6 +16,7 @@ import org.firstinspires.ftc.teamcode.resources.ButtonStatus;
  * Created by Vikesh on 11/19/2017.
  */
 @Autonomous(name = "testbed")
+@Disabled
 
 
 public class testbed extends LinearOpMode{

@@ -51,6 +51,7 @@ public class FTCrobot {
     private ButtonStatus gamepad1LeftTrigger = new ButtonStatus();
     private ButtonStatus gamepad1RightTrigger = new ButtonStatus();
     private ButtonStatus leftBumperStatus = new ButtonStatus();
+    private ButtonStatus rightBumperStatus = new ButtonStatus();
     private double rotation;
 
     private SafeJsonReader jsonReader;
@@ -200,11 +201,15 @@ public class FTCrobot {
 
         // relic arm
         if(!disableRelicArm) {
+            rightBumperStatus.recordNewValue(myGamepad1.right_bumper);
             if (dpadupStatus.isJustOn()) {
-                armState = !armState;
+                armState = true;
+                grabState = true;
+            } else if (dpaddownStatus.isJustOn()) {
+                armState = false;
             }
-            if (dpaddownStatus.isJustOn()) {
-                grabState = !grabState;
+            if (rightBumperStatus.isJustOn()&& !armState){
+                grabState = false;
             }
 
             // Relic arm - Gamepad 2 Left Joystick

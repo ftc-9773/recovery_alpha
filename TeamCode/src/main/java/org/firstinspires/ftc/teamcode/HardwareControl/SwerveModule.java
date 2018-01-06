@@ -65,6 +65,7 @@ public class SwerveModule {
     private double Kd;
 
     private double maxPower;
+    private double isTurningThreshold;
 
     /*
     // Step Function constants
@@ -110,6 +111,7 @@ public class SwerveModule {
         Kp = myJsonCoefficients.getDouble("Kp");
         Ke = myJsonCoefficients.getDouble("Ke");
         Kd = myJsonCoefficients.getDouble("Kd");
+        isTurningThreshold = myJsonCoefficients.getDouble("isTurningThreshold");
 
         maxPower = myJsonCoefficients.getDouble("maxPower");
         /* Gets coefficients for step function
@@ -257,7 +259,7 @@ public class SwerveModule {
         }
 */
 
-        if (Math.abs(errorAmt) > .17) {
+        if (Math.abs(errorAmt) > isTurningThreshold) {
             isTurning = true;
         } else {
             isTurning = false;

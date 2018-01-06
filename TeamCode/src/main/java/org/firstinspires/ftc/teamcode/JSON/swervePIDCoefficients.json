@@ -2,5 +2,6 @@
   "Kp": 0.7,
   "Ke": 1.2,
   "Kd": 0.1,
-  "maxPower": 1
+  "maxPower": 1,
+  "isTurningThreshold": 0.22
 }

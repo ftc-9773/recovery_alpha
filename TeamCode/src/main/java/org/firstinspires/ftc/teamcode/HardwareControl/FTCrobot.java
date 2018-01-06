@@ -203,13 +203,10 @@ public class FTCrobot {
         if(!disableRelicArm) {
             rightBumperStatus.recordNewValue(myGamepad1.right_bumper);
             if (dpadupStatus.isJustOn()) {
-                armState = true;
-                grabState = true;
-            } else if (dpaddownStatus.isJustOn()) {
-                armState = false;
+                armState = !armState  ;
             }
-            if (rightBumperStatus.isJustOn()&& !armState){
-                grabState = false;
+            if (dpaddownStatus.isJustOn()&& !armState) {
+                grabState = !grabState;
             }
 
             // Relic arm - Gamepad 2 Left Joystick

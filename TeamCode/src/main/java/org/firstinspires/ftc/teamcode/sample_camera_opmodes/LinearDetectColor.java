@@ -24,20 +24,20 @@ public class LinearDetectColor extends LinearOpModeCamera {
     public void runOpMode() {
         VumarkGlyphPattern pattern = new VumarkGlyphPattern(hardwareMap);
         JewelDetector detector = new JewelDetector(this);
+        detector.startCamera();
         while (!opModeIsActive()) {
-            mark = pattern.getColumn();
-            telemetry.addData("vuMark", mark);
+            telemetry.addData("Red threshold: ", detector.redThreshold);
+            telemetry.addData("Blue threshold: ", detector.blueThreshold);
+            telemetry.addData("Jewel", detector.computeJewelColor());
             telemetry.update();
         }
-        detector.startCamera();
         waitForStart();
         ElapsedTime timer = new ElapsedTime();
 
         while (opModeIsActive()) {
-
-            detector.computeJewelColor();
+            mark = pattern.getColumn();
+            telemetry.addData("Jewel", detector.computeJewelColor());
             telemetry.addData("vuMark", mark);
-            telemetry.addData("Jewel", detector.getJewelColor());
             telemetry.update();
         }
         stopCamera();

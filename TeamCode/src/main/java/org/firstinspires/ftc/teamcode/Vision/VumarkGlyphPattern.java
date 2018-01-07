@@ -1,10 +1,12 @@
 package org.firstinspires.ftc.teamcode.Vision;
 
+import android.graphics.Bitmap;
+
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.vuforia.Image;
 
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.navigation.RelicRecoveryVuMark;
-import org.firstinspires.ftc.robotcore.external.navigation.VuMarkInstanceId;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackable;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
@@ -37,6 +39,22 @@ public class VumarkGlyphPattern {
         relicTrackables.activate();
 
         return relicTemplate;
+    }
+
+    public Bitmap getBitmap() throws InterruptedException {
+        VuforiaLocalizer.CloseableFrame frame = vuforia.getFrameQueue().take();
+//        for(int i = 0; i<frame.getNumImages(); i++){
+        Image image = frame.getImage(0);
+//            if (image.getWidth() == imageWidth && image.getHeight() == imageHeight &&
+//                    image.getFormat() == PIXEL_FORMAT.RGB565)
+//            {
+        Bitmap bm = Bitmap.createBitmap(image.getWidth(), image.getHeight(), Bitmap.Config.RGB_565);
+        return bm;
+//                bm.copyPixelsFromBuffer(image.getPixels());
+//                Utils.bitmapToMat(bm, frame);
+//                break;
+//            }
+//        }
     }
 
     public RelicRecoveryVuMark getColumn(){

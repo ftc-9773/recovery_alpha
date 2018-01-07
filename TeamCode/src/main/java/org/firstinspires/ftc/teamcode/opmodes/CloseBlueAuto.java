@@ -3,7 +3,6 @@ package org.firstinspires.ftc.teamcode.opmodes;
 import android.util.Log;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.robotcontroller.for_camera_opmodes.LinearOpModeCamera;
 import org.firstinspires.ftc.robotcore.external.navigation.RelicRecoveryVuMark;
@@ -18,7 +17,6 @@ import org.firstinspires.ftc.teamcode.Vision.JewelDetector;
 import org.firstinspires.ftc.teamcode.Vision.VumarkGlyphPattern;
 import org.firstinspires.ftc.teamcode.infrastructure.SafeJsonReader;
 import org.firstinspires.ftc.teamcode.resources.Timer;
-import org.firstinspires.ftc.teamcode.sample_camera_opmodes.LinearDetectColor;
 
 /**
  * Created by Vikesh on 12/16/2017.
@@ -115,6 +113,7 @@ public class CloseBlueAuto extends LinearOpModeCamera {
         }
 
         waitForStart();
+
 
         // Read the jewel color
         myJewelDetector.startCamera();

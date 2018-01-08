@@ -61,7 +61,7 @@ public class CloseRedAuto extends LinearOpModeCamera{
         myGyro = new Gyro(hardwareMap);
         myIntakeControllerManual = new IntakeControllerManual(hardwareMap);
         mySwerveController = new SwerveController(hardwareMap, myGyro, telemetry);
-        myDriveWithPID = new DriveWithPID(mySwerveController, myGyro);
+        myDriveWithPID = new DriveWithPID(mySwerveController, myGyro, this);
         myCubeTray = new CubeTray(hardwareMap, gamepad1, gamepad2);
 //        autonomouspath = chooseAutonomousPath(true, (char)1);
         myCubeTray.setZeroFromCompStart();

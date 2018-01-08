@@ -7,6 +7,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
+import org.firstinspires.ftc.robotcontroller.for_camera_opmodes.LinearOpModeCamera;
 import org.firstinspires.ftc.teamcode.HardwareControl.CubeTray;
 import org.firstinspires.ftc.teamcode.HardwareControl.FTCrobot;
 import org.firstinspires.ftc.teamcode.HardwareControl.IntakeController;
@@ -19,7 +20,7 @@ import org.firstinspires.ftc.teamcode.PositionTracking.Gyro;
 
 @TeleOp(name = "swerveOpMode")
 @Disabled
-public class Swerve extends LinearOpMode {
+public class Swerve extends LinearOpModeCamera {
 
     private static final String TAG = "ftc9773 Swerve";
     private static final boolean DEBUG = false;
@@ -31,7 +32,7 @@ public class Swerve extends LinearOpMode {
         Log.e(TAG, "Started initializing");
 
         // Create objects
-        myRobot = new FTCrobot(hardwareMap, telemetry, gamepad1, gamepad2);
+        myRobot = new FTCrobot(hardwareMap, telemetry, gamepad1, gamepad2, this);
 
         // init the lift
         myRobot.homeLift(CubeTray.LiftFinalStates.HIGH);

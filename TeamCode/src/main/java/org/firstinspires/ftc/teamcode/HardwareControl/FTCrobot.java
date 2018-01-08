@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.HardwareControl;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
+import org.firstinspires.ftc.robotcontroller.for_camera_opmodes.LinearOpModeCamera;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.PositionTracking.Gyro;
 import org.firstinspires.ftc.teamcode.infrastructure.ButtonStatus;
@@ -32,11 +33,11 @@ public class FTCrobot {
     private RasiParser opModeControl;
     private String[] currentCommand;
 //    private IntakeController myIntakeController;
-    private IntakeControllerManual myManualIntakeController;
+    public IntakeControllerManual myManualIntakeController;
     public DriveWithPID myDriveWithPID;                      // <--
     public CubeTray myCubeTray;
     private HardwareMap hwMap;
-    private RelicSystem myRelicSystem;
+    public RelicSystem myRelicSystem;
     private Telemetry myTelemetry;
     private Gamepad myGamepad1;
     private Gamepad myGamepad2;
@@ -71,15 +72,15 @@ public class FTCrobot {
     private boolean disableRelicArm = false ;
 
     // INIT
-    public FTCrobot(HardwareMap hwmap, Telemetry telemetry, Gamepad gamepad1, Gamepad gamepad2){
+    public FTCrobot(HardwareMap hwmap, Telemetry telemetry, Gamepad gamepad1, Gamepad gamepad2, LinearOpModeCamera myLinearOpModeCamera){
         this.gp1y = new ButtonStatus();
         this.hwMap = hwmap;
         this.myTelemetry = telemetry;
         // myIntakeController = new IntakeController(hwMap);
-        this.myManualIntakeController = new IntakeControllerManual(hwMap);
         this.myGyro = new Gyro(hwMap);
         this.mySwerveController = new SwerveController(hwMap, myGyro, telemetry);
-        this.myDriveWithPID = new DriveWithPID(mySwerveController, myGyro);
+        this.myManualIntakeController = new IntakeControllerManual(hwMap);
+        this.myDriveWithPID = new DriveWithPID(mySwerveController, myGyro, myLinearOpModeCamera);
         this.myRelicSystem = new RelicSystem(myTelemetry, hwMap);
         this.myCubeTray = new CubeTray(hwmap,gamepad2,null);
         this.myGamepad1 = gamepad1;

@@ -4,6 +4,7 @@ import android.util.Log;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
+import org.firstinspires.ftc.robotcontroller.for_camera_opmodes.LinearOpModeCamera;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.PositionTracking.Gyro;
 import org.firstinspires.ftc.teamcode.infrastructure.PIDController;
@@ -30,6 +31,8 @@ public class DriveWithPID {
     private long blwEncoderZero = 0;
     private long brwEncoderZero = 0;
 
+    private LinearOpModeCamera myOpMode;
+
     private double gyroAngleZero = 0;
 
     //Constants
@@ -38,7 +41,8 @@ public class DriveWithPID {
     private double targetTicks;
 
     // INIT
-    public DriveWithPID (SwerveController mySwerveController, Gyro myGyro) {
+    public DriveWithPID (SwerveController mySwerveController, Gyro myGyro, LinearOpModeCamera myOpMode) {
+        this.myOpMode = myOpMode;
         this.mySwerveController = mySwerveController;
         this.mySwerveController.useFieldCentricOrientation = true;
         this.myGyro = myGyro;
@@ -75,7 +79,7 @@ public class DriveWithPID {
         if (DEBUG) { Log.i(TAG, "Target Ticks: " + targetTicks); }
 
         // Drive
-        while (averageEncoderDist() < targetTicks) {
+        while (!myOpMode.isStopRequested() && averageEncoderDist() < targetTicks) {
             // While the robot has not driven far enough
             mySwerveController.steerSwerve(false , speed, Math.toRadians(angleDegrees), 0, -1);
             mySwerveController.moveRobot(false);

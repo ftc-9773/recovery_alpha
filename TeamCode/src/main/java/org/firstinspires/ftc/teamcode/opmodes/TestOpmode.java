@@ -8,6 +8,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
+import org.firstinspires.ftc.robotcontroller.for_camera_opmodes.LinearOpModeCamera;
 import org.firstinspires.ftc.teamcode.HardwareControl.FTCrobot;
 import org.firstinspires.ftc.teamcode.HardwareControl.IntakeController;
 import org.firstinspires.ftc.teamcode.HardwareControl.SwerveController;
@@ -20,8 +21,7 @@ import org.firstinspires.ftc.teamcode.PositionTracking.Gyro;
 // an opmode to test teleop, based on the progress ew have made so far
 // should include all of the sub- assembleys made so far
 @Autonomous(name = "Auton Drive Test")
-@Disabled
-public class TestOpmode extends LinearOpMode {
+public class TestOpmode extends LinearOpModeCamera {
 
     private FTCrobot ftcRobot;
 
@@ -29,7 +29,7 @@ public class TestOpmode extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
         telemetry.addData("Init:", "waiting...");
         telemetry.update();
-        ftcRobot = new FTCrobot(hardwareMap, telemetry, gamepad1, gamepad2);
+        ftcRobot = new FTCrobot(hardwareMap, telemetry, gamepad1, gamepad2, this);
 
         Log.i("Start", "Is starting");
 

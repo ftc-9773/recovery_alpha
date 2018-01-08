@@ -5,6 +5,7 @@ import android.util.Log;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
+import org.firstinspires.ftc.robotcontroller.for_camera_opmodes.LinearOpModeCamera;
 import org.firstinspires.ftc.teamcode.HardwareControl.CubeTray;
 import org.firstinspires.ftc.teamcode.HardwareControl.FTCrobot;
 
@@ -14,7 +15,7 @@ import org.firstinspires.ftc.teamcode.HardwareControl.FTCrobot;
  */
 
     @TeleOp(name = "ReStartTeleop" )
-    public class RestartTeleOp extends LinearOpMode {
+    public class RestartTeleOp extends LinearOpModeCamera {
 
         private static final String TAG = "ftc9773 RestartTeleop";
         private static final boolean DEBUG = false;
@@ -30,7 +31,7 @@ import org.firstinspires.ftc.teamcode.HardwareControl.FTCrobot;
 
 
             // Create objects
-            myRobot = new FTCrobot(hardwareMap, telemetry, gamepad1, gamepad2);
+            myRobot = new FTCrobot(hardwareMap, telemetry, gamepad1, gamepad2, this);
 
             // init the lift
             myRobot.myCubeTray.setZeroFromLastOpmode();

@@ -1,0 +1,10 @@
+intkl;
+intki;
+wait, 1.0;
+intko;
+intks;
+drv, .5, 0, 12;
+ctload;
+ctlow;
+cthigh;
+end;

@@ -17,10 +17,11 @@ import java.util.Arrays;
 
 public class  RasiParser {
 
+    private String nextLineString = "";
     private String[] tags = {"L", "C", "R"};
     public String[] commands;
     private String[] commandOut = new String[4];
-    private String input;
+    private String input = "";
     private BufferedReader buffReader = null;
     private int index = 0;
     private String rasiTag;
@@ -41,8 +42,11 @@ public class  RasiParser {
             e.printStackTrace();
         }
         try {
-            while(buffReader.readLine() != null) {
-                input += buffReader.readLine();
+            while((nextLineString = buffReader.readLine()) != null) {
+                input += nextLineString;
+                if(DEBUG){
+                    Log.i(TAG + " inputString ", input);
+                }
             }
         }
         catch(IOException e) {
@@ -58,7 +62,7 @@ public class  RasiParser {
 
         index = 0;
         StringBuilder inputBuilder = new StringBuilder(input);
-        if (DEBUG) { Log.i(TAG, "StringBuilder is: ." + inputBuilder); }
+        if (DEBUG) { Log.i(TAG, "StringBuilder is: " + inputBuilder); }
 
         while(inputBuilder.length() > index) {
             if (inputBuilder.charAt(index) == ' ') {
@@ -72,8 +76,9 @@ public class  RasiParser {
         if (DEBUG) { Log.i(TAG, "New StringBuilder: ." + inputBuilder); }
 
         input = inputBuilder.toString();
-        this.commands = input.split(";");
+        commands = input.split(";");
         if (DEBUG) {
+            Log.i(TAG + " commands 0 ", commands[0]);
             Log.i(TAG, "Printing commands:");
             for (String i: this.commands) {
                 Log.i(TAG, "next-" + i);
@@ -100,10 +105,13 @@ public class  RasiParser {
                 return;
             }
             commandReadingIndex++;
+            if (DEBUG) {
+                Log.i(TAG+"commandOut 0 is ", commandOut[0]);
+            }
         } else {
             Log.i(TAG, "THERE I A REALLY BIG PROBLEM - TRIED TO ACCESS TOO MANY COMMANDS");
         }
-        if (DEBUG) {
+        if (DEBUG && false) {
             String thinggy = "Printing this command:";
             for (String i: commandOut) {
                 thinggy += ", " + i;
@@ -112,19 +120,36 @@ public class  RasiParser {
         }
     }
     public String getParameter(int parameterNumber){
-        Log.i(TAG, "Command is: ." + commandOut[parameterNumber]);
+        if (DEBUG){
+            Log.i(TAG +" commandout length ", Integer.toString(commandOut.length));
+        }
         return commandOut[parameterNumber];
     }
     public int getAsInt(int parameterNumber){
+        if (DEBUG){
+            Log.i(TAG +" commandout length ", Integer.toString(commandOut.length));
+        }
         return Integer.valueOf(commandOut[parameterNumber]);
     }
     public long getAsLong(int parameterNumber){
+        if (DEBUG){
+            Log.i(TAG +" commandout length ", Integer.toString(commandOut.length));
+        }
         return Long.valueOf(commandOut[parameterNumber]);
     }
     public double getAsDouble(int parameterNumber){
-        return Double.valueOf(commandOut[parameterNumber]);
+        if (DEBUG){
+            Log.i(TAG +" commandout length ", Integer.toString(commandOut.length));
+        }
+        if(!Double.isNaN(Double.valueOf(commandOut[parameterNumber]))) {
+            return Double.valueOf(commandOut[parameterNumber]);
+        }
+        return 0.0;
     }
     public boolean getAsBoolean(int parameterNumber){
+        if (DEBUG){
+            Log.i(TAG +" commandout length ", Integer.toString(commandOut.length));
+        }
         return Boolean.valueOf(commandOut[parameterNumber]);
     }
 }

@@ -88,9 +88,17 @@ public class  RasiParser {
     }
 
     public void loadNextCommand(){
+        if(DEBUG){
+            Log.i(TAG + " index: ", Integer.toString(commandReadingIndex));
+            Log.i(TAG + " array length: ", Integer.toString(commands.length));
+        }
         if(commandReadingIndex<commands.length) {
             String currentCommand = commands[commandReadingIndex];
             commandOut = currentCommand.split(":");
+            if(DEBUG){
+                Log.i(TAG + "length", Integer.toString(commandOut.length));
+                Log.i(TAG + "rasiTag", commandOut[0]);
+            }
             if(commandOut.length == 1){
                 commandOut = commandOut[0].split(",");
             }
@@ -108,8 +116,6 @@ public class  RasiParser {
             if (DEBUG) {
                 Log.i(TAG+"commandOut 0 is ", commandOut[0]);
             }
-        } else {
-            Log.i(TAG, "THERE I A REALLY BIG PROBLEM - TRIED TO ACCESS TOO MANY COMMANDS");
         }
         if (DEBUG && false) {
             String thinggy = "Printing this command:";
@@ -141,10 +147,7 @@ public class  RasiParser {
         if (DEBUG){
             Log.i(TAG +" commandout length ", Integer.toString(commandOut.length));
         }
-        if(!Double.isNaN(Double.valueOf(commandOut[parameterNumber]))) {
             return Double.valueOf(commandOut[parameterNumber]);
-        }
-        return 0.0;
     }
     public boolean getAsBoolean(int parameterNumber){
         if (DEBUG){

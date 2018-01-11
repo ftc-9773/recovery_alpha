@@ -40,8 +40,7 @@ public class RasiActions {
                 case "intkl":
                     //ftcRobot.myManualIntakeController.lowerIntake(true);
                     Timer timer = new Timer(2.0);
-                    rasiParser.getParameter(2);
-                    while (!timer.isDone() && linearOpModeCamera.opModeIsActive()) {}
+                    while (!timer.isDone() && !linearOpModeCamera.isStopRequested()) {}
                     //ftcRobot.myManualIntakeController.lowerIntake(false);
                     Log.i("RasiActions", "intkl");
                     break;
@@ -59,7 +58,7 @@ public class RasiActions {
                     Log.i("RasiActions", "intks");
                 case "ctload":
                     timer2 = new Timer(2.0);
-                    while(linearOpModeCamera.opModeIsActive()&&!timer2.isDone()) {
+                    while(!linearOpModeCamera.isStopRequested()&&!timer2.isDone()) {
                         //ftcRobot.myCubeTray.setToPos(CubeTray.LiftFinalStates.LOADING);
                         //ftcRobot.myCubeTray.updatePosition();
                     }
@@ -67,21 +66,27 @@ public class RasiActions {
                     break;
                 case "ctlow":
                     timer2 = new Timer(2.0);
-                    while(linearOpModeCamera.opModeIsActive()&&!timer2.isDone()) {
+                    while(!linearOpModeCamera.isStopRequested()&&!timer2.isDone()) {
                         //ftcRobot.myCubeTray.setToPos(CubeTray.LiftFinalStates.LOW);
                         //ftcRobot.myCubeTray.updatePosition();
                     }
                     break;
                 case "cthigh":
                     Timer timer2 = new Timer(2.0);
-                    while(linearOpModeCamera.opModeIsActive()&&!timer2.isDone()) {
+                    while(!linearOpModeCamera.isStopRequested()&&!timer2.isDone()) {
                         //ftcRobot.myCubeTray.setToPos(CubeTray.LiftFinalStates.HIGH);
                         //ftcRobot.myCubeTray.updatePosition();
                     }
                     Log.i("RasiActions", "cthigh");
                     break;
+                case "wait":
+                    timer2 = new Timer(rasiParser.getAsDouble(1));
+                    while (!timer2.isDone()&&!linearOpModeCamera.isStopRequested()) {}
+                    Log.i("RasiActions", "wait");
+                    break;
                 case "end":
                     linearOpModeCamera.requestOpModeStop();
+                    while(linearOpModeCamera.opModeIsActive()){}
                     Log.i("RasiActions", "end");
                     break;
                 default:

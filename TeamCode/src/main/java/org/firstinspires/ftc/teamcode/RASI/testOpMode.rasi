@@ -1,9 +1,12 @@
-intkl, 0, 0;
-intki;
-intko;
+X:intkl;
+X:intki;
+C:intko;
 intks;
-drv, 0.5, 0.0, 12.0;
+C:cthigh;
+wait, 1.0;
+C:drv, 0.5, 0.0, 12.0;
 ctload;
 ctlow;
-cthigh;
+B:cthigh;
+wait, 1.0;
 end;

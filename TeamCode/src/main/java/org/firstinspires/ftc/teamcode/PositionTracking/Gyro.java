@@ -90,5 +90,7 @@ public class Gyro {
         jsonZero.modifyDouble("currentAngle", getHeading());
         jsonZero.modifyInt("writeTime", (int) System.currentTimeMillis());
         jsonZero.updateFile();
+        Log.i("GyroPositionLogged", "Position: " +  jsonZero.getDouble("currentAngle"));
+        Log.i("GyroPositionLogged", "Time: " + jsonZero.getInt("writeTime"));
     }
 }

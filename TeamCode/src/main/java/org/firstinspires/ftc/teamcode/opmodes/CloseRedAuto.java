@@ -27,6 +27,7 @@ public class CloseRedAuto extends LinearOpModeCamera{
     JewelDetector myJewelDetector = new JewelDetector(this);
     JewelServoController myJewelServo;
     IntakeControllerManual myIntakeControllerManual;
+    RelicSystem myRelicsystem;
     SwerveController mySwerveController;
     CubeTray myCubeTray;
     Gyro myGyro;
@@ -63,6 +64,7 @@ public class CloseRedAuto extends LinearOpModeCamera{
         mySwerveController = new SwerveController(hardwareMap, myGyro, telemetry);
         myDriveWithPID = new DriveWithPID(mySwerveController, myGyro, this);
         myCubeTray = new CubeTray(hardwareMap, gamepad1, gamepad2);
+        myRelicsystem = new RelicSystem(telemetry, hardwareMap);
 //        autonomouspath = chooseAutonomousPath(true, (char)1);
         myCubeTray.setZeroFromCompStart();
 
@@ -91,6 +93,7 @@ public class CloseRedAuto extends LinearOpModeCamera{
         double extraDistToLeft = mySafeJsonReader.getDouble("extraDistToLeft");
         double readJewelMaxTime = mySafeJsonReader.getDouble("readJewelMaxTime");
         double pushRightPower = mySafeJsonReader.getDouble("pushRightPower");
+        double distDriveBack = mySafeJsonReader.getDouble("distDriveBack");
 
 
         // Start of Autonomous:
@@ -119,6 +122,7 @@ public class CloseRedAuto extends LinearOpModeCamera{
 
         // Lower intake
         times[0] = System.currentTimeMillis();
+        myRelicsystem.runSequence(0, true, true);
         myCubeTray.setToPos(CubeTray.LiftFinalStates.LOADING);
         while(opModeIsActive() && System.currentTimeMillis()-intakeLowerTime<times[0]){
             myIntakeControllerManual.lowerIntake(true);
@@ -182,7 +186,7 @@ public class CloseRedAuto extends LinearOpModeCamera{
             default:
                 // Do nothing
         }
-        myDriveWithPID.driveDist(drivingPower, 0, distBackToJewel);
+        myDriveWithPID.driveDist(drivingPower, 0, distDriveBack);
 
         //Drive to cryptobox
 

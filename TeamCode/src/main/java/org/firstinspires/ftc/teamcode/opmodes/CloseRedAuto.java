@@ -90,6 +90,7 @@ public class CloseRedAuto extends LinearOpModeCamera{
         double angleDriveAwayFromCryptobox = mySafeJsonReader.getDouble("angleDriveAwayFromCryptobox");
         double extraDistToLeft = mySafeJsonReader.getDouble("extraDistToLeft");
         double readJewelMaxTime = mySafeJsonReader.getDouble("readJewelMaxTime");
+        double pushRightPower = mySafeJsonReader.getDouble("pushRightPower");
 
 
         // Start of Autonomous:
@@ -106,7 +107,7 @@ public class CloseRedAuto extends LinearOpModeCamera{
 
         // Read the jewel color
         myJewelDetector.startCamera();
-        JewelDetector.JewelColors leftJewelColor =  myJewelDetector.getJewelColor();
+        JewelDetector.JewelColors leftJewelColor =  myJewelDetector.computeJewelColor();
 
         /*
 
@@ -122,11 +123,13 @@ public class CloseRedAuto extends LinearOpModeCamera{
         while(opModeIsActive() && System.currentTimeMillis()-intakeLowerTime<times[0]){
             myIntakeControllerManual.lowerIntake(true);
             myCubeTray.updatePosition();
+            myCubeTray.setServoPos(CubeTray.TrayPositions.LOADING);
         }
 
-        Timer timer1 = new Timer(readJewelMaxTime);
-        while (timer1.isDone()) {
-            leftJewelColor = myJewelDetector.getJewelColor();
+        // Read Jewel
+        Timer time1 = new Timer(readJewelMaxTime);
+        while (!time1.isDone()) {
+            leftJewelColor = myJewelDetector.computeJewelColor();
             if (leftJewelColor == JewelDetector.JewelColors.BLUE || leftJewelColor == JewelDetector.JewelColors.RED) {
                 break;
             }
@@ -139,20 +142,20 @@ public class CloseRedAuto extends LinearOpModeCamera{
         telemetry.update();
 
         // Drive to the right
-        myDriveWithPID.driveDist(drivingPower, 90, distToJewelPush);
-        myDriveWithPID.driveDist(drivingPower, 180, distBackToJewel);
+        myDriveWithPID.driveDist(drivingPower*.8, 90, distToJewelPush);
 
         //Push the jewel
         long tempTime;
         switch (leftJewelColor) {
             case BLUE:
-                // Go 4" to the right and subtract the distance from next move
+                // Go 4" to the left and subtract the distance from next move
                 tempTime = System.currentTimeMillis();
-                while (System.currentTimeMillis() - tempTime < 500) {
+                while (System.currentTimeMillis() - tempTime < 700) {
                     myJewelServo.lowerArm();
 
                 }
-                myDriveWithPID.driveDist(drivingPower, 90, distPushRight);
+                myDriveWithPID.driveDist(drivingPower, 180, distBackToJewel);
+                myDriveWithPID.driveDist(drivingPower, 90, distPushLeft);
                 tempTime = System.currentTimeMillis();
                 while (System.currentTimeMillis() - tempTime < 500) {
                     myJewelServo.raiseArm();
@@ -161,13 +164,14 @@ public class CloseRedAuto extends LinearOpModeCamera{
                 distToCryptobox -= distPushRight;
                 break;
             case RED:
-                // Go 4" left and add an distJewelPush to next move
+                // Go 4" right and add an distJewelPush to next move
                 tempTime = System.currentTimeMillis();
-                while (System.currentTimeMillis() - tempTime < 500) {
+                while (System.currentTimeMillis() - tempTime < 700) {
                     myJewelServo.lowerArm();
 
                 }
-                myDriveWithPID.driveDist(drivingPower, 270, distPushLeft);
+                myDriveWithPID.driveDist(drivingPower, 180, distBackToJewel);
+                myDriveWithPID.driveDist(pushRightPower, 270, distPushRight);
                 tempTime = System.currentTimeMillis();
                 while (System.currentTimeMillis() - tempTime < 500) {
                     myJewelServo.raiseArm();
@@ -178,6 +182,7 @@ public class CloseRedAuto extends LinearOpModeCamera{
             default:
                 // Do nothing
         }
+        myDriveWithPID.driveDist(drivingPower, 0, distBackToJewel);
 
         //Drive to cryptobox
 

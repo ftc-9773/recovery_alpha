@@ -191,13 +191,13 @@ public class CloseRedAuto extends LinearOpModeCamera{
         //Drive to cryptobox
 
         switch (mark) {
-            case LEFT:
+            case RIGHT:
                 //Add no extra distance
                 distToCryptobox += extraDistToLeft;
                 rotateAngle = 360 - rotateAngle;
                 angleDriveAwayFromCryptobox = 360 - angleDriveAwayFromCryptobox;
                 break;
-            case RIGHT:
+            case LEFT:
                 //Add extra distance
                 distToCryptobox += extraDistToRight;
                 break;

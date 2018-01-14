@@ -38,6 +38,7 @@ public class FTCrobot {
     public CubeTray myCubeTray;
     private HardwareMap hwMap;
     public RelicSystem myRelicSystem;
+    private JewelServoController myJewelServo;
     private Telemetry myTelemetry;
     private Gamepad myGamepad1;
     private Gamepad myGamepad2;
@@ -83,6 +84,7 @@ public class FTCrobot {
         this.myDriveWithPID = new DriveWithPID(mySwerveController, myGyro, myLinearOpModeCamera);
         this.myRelicSystem = new RelicSystem(myTelemetry, hwMap);
         this.myCubeTray = new CubeTray(hwmap,gamepad2,null);
+        this.myJewelServo = new JewelServoController(hwmap);
         this.myGamepad1 = gamepad1;
         this.myGamepad2 = gamepad2;
 
@@ -250,6 +252,8 @@ public class FTCrobot {
         } else {
             myTelemetry.addData("Field Centric", "Off");
         }
+
+        myJewelServo.raiseArm();
 
         myTelemetry.update();
     }

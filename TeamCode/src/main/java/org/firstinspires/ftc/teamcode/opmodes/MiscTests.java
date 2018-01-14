@@ -13,7 +13,6 @@ import org.firstinspires.ftc.teamcode.HardwareControl.JewelServoController;
  */
 
 @TeleOp(name = "Misc Tests")
-@Disabled
 public class MiscTests extends LinearOpMode {
 
     JewelServoController jewel;
@@ -21,18 +20,8 @@ public class MiscTests extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
         jewel = new JewelServoController(hardwareMap);
         waitForStart();
-
-        jewel.lowerArm();
-
-        long time = System.currentTimeMillis();
-        while (System.currentTimeMillis() - time < 1000) {
-            Log.i("waiting", "waiting");
-        }
-        jewel.raiseArm();
-
-        time = System.currentTimeMillis();
-        while (System.currentTimeMillis() - time < 1000) {
-            Log.i("waiting", "waiting");
+        while (opModeIsActive()) {
+            jewel.lowerArm();
         }
     }
 }

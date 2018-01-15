@@ -5,7 +5,6 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcontroller.for_camera_opmodes.LinearOpModeCamera;
 import org.firstinspires.ftc.robotcore.external.navigation.RelicRecoveryVuMark;
-import org.firstinspires.ftc.teamcode.Vision.JewelDetector;
 import org.firstinspires.ftc.teamcode.Vision.VumarkGlyphPattern;
 
 /**
@@ -23,22 +22,22 @@ public class LinearDetectColor extends LinearOpModeCamera {
     @Override
     public void runOpMode() {
         VumarkGlyphPattern pattern = new VumarkGlyphPattern(hardwareMap);
-        JewelDetector detector = new JewelDetector(this);
-        detector.startCamera();
-        while (!opModeIsActive()) {
-            mark = pattern.getColumn();
-            telemetry.addData("vuMark", mark);
-//            telemetry.addData("Red threshold: ", detector.redThreshold);
-//            telemetry.addData("Blue threshold: ", detector.blueThreshold);
-//            telemetry.addData("Jewel", detector.computeJewelColor());
-            telemetry.update();
-        }
+//        JewelDetector detector = new JewelDetector(this);
+//        detector.startCamera();
+////        while (!opModeIsActive()) {
+//            mark = pattern.getColumn();
+//            telemetry.addData("vuMark", mark);
+////            telemetry.addData("Red threshold: ", detector.redThreshold);
+////            telemetry.addData("Blue threshold: ", detector.blueThreshold);
+////            telemetry.addData("Jewel", detector.computeJewelColor());
+//            telemetry.update();
+//        }
         waitForStart();
         ElapsedTime timer = new ElapsedTime();
 
         while (opModeIsActive()) {
             mark = pattern.getColumn();
-            telemetry.addData("Jewel", detector.getJewelColor());
+//            telemetry.addData("Jewel", detector.getJewelColor());
             telemetry.addData("vuMark", mark);
             telemetry.update();
         }

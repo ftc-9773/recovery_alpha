@@ -17,7 +17,6 @@ public class CryptoboxOpMode extends LinearOpMode{
     public void runOpMode() throws InterruptedException {
         cryptoboxDetector = new CryptoboxDetector();
         cryptoboxDetector.init(hardwareMap.appContext, CameraViewDisplay.getInstance());
-        cryptoboxDetector.rotateMat = false;
         cryptoboxDetector.enable();
 
         waitForStart();

@@ -26,9 +26,11 @@ public class LinearDetectColor extends LinearOpModeCamera {
         JewelDetector detector = new JewelDetector(this);
         detector.startCamera();
         while (!opModeIsActive()) {
-            telemetry.addData("Red threshold: ", detector.redThreshold);
-            telemetry.addData("Blue threshold: ", detector.blueThreshold);
-            telemetry.addData("Jewel", detector.computeJewelColor());
+            mark = pattern.getColumn();
+            telemetry.addData("vuMark", mark);
+//            telemetry.addData("Red threshold: ", detector.redThreshold);
+//            telemetry.addData("Blue threshold: ", detector.blueThreshold);
+//            telemetry.addData("Jewel", detector.computeJewelColor());
             telemetry.update();
         }
         waitForStart();

@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.Vision.DogeCVTests;
 import com.disnodeteam.dogecv.CameraViewDisplay;
 import com.disnodeteam.dogecv.detectors.GenericDetector;
 import com.disnodeteam.dogecv.filters.LeviColorFilter;
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.opencv.core.Size;
@@ -11,6 +12,7 @@ import org.opencv.core.Size;
  * Created by michaelzhou on 1/7/18.
  */
 
+@Autonomous(name="RelicOpMode", group="dogecv")
 public class RelicOpMode extends LinearOpMode{
     GenericDetector genericDetector;
 

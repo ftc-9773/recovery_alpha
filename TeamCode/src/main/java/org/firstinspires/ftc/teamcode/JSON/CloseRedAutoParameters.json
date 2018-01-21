@@ -10,7 +10,7 @@
   "pushRightPower": 0.55,
   "distPushRight": 5,
   "distDriveBack": 1,
-  "distToCryptobox": 8,
+  "distToCryptobox": 8,x
   "extraDistToLeft": 11,
   "extraDistToCenter": 1.75,
   "extraDistToRight": 10.5,

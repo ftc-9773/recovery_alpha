@@ -61,6 +61,10 @@ public class FTCrobot {
     private double minPowerXY;
     private double minPowerRot;
     private double zeroRange;
+    private double xyCoefficient;
+    private double rotCoefficient;
+    private double highPrecisionScalingFactor;
+    private double highPrecisionRotationFactor;
 
 
     private static final String TAG = "9773_FTCrobot";
@@ -92,18 +96,36 @@ public class FTCrobot {
         minPowerXY = jsonReader.getDouble("MinPowerXY");
         minPowerRot = jsonReader.getDouble("MinPowerRotation");
         zeroRange = jsonReader.getDouble("ZeroRange");
+        highPrecisionScalingFactor = jsonReader.getDouble("highPrecisionScalingFactor");
+        highPrecisionRotationFactor = jsonReader.getDouble("highPrecisionRotationFactor");
+        xyCoefficient = (1 - minPowerXY) / Math.pow(1 - zeroRange, 3);
+        rotCoefficient = (1 - minPowerRot) / Math.pow(1 - zeroRange, 3);
     }
 
-    private double valWithThresholdAndPower3Scaling(double val, double minNonZeroVal, boolean highPrecisionMode) {
-        if (val > zeroRange) {
-            if (highPrecisionMode) return Math.pow(0.5*val, 3) + minNonZeroVal;
-            return Math.pow(val, 3) + minNonZeroVal;
+    private double scaleXYAxes (double value, boolean highPrecisionMode) {
+        if (value > zeroRange) {
+            if (highPrecisionMode) return (value + minPowerXY) * highPrecisionScalingFactor;
+            return xyCoefficient * Math.pow(value - zeroRange, 3) + minPowerXY;
         }
-        if (val < -zeroRange) {
-            if (highPrecisionMode) return Math.pow(0.5*val, 3) - minNonZeroVal;
-            return Math.pow(val, 3) - minNonZeroVal;
+        if (value < -zeroRange) {
+            if (highPrecisionMode) return (value - minPowerXY) * highPrecisionScalingFactor;
+            return xyCoefficient * Math.pow(value + zeroRange, 3) - minPowerXY;
         }
         return 0.0;
+
+    }
+
+    private double scaleRotationAxis (double value, boolean highPrecisionMode) {
+        if (value > zeroRange) {
+            if (highPrecisionMode) return (value + minPowerRot) * highPrecisionRotationFactor;
+            return rotCoefficient * Math.pow(value - zeroRange, 3) + minPowerRot;
+        }
+        if (value < -zeroRange) {
+            if (highPrecisionMode) return (value - minPowerRot) * highPrecisionRotationFactor;
+            return rotCoefficient * Math.pow(value + zeroRange, 3) - minPowerRot;
+        }
+        return 0.0;
+
     }
 
     public void runGamepadCommands(){
@@ -115,7 +137,7 @@ public class FTCrobot {
 
         // Get current direction
         boolean highPrecisionMode = myGamepad1.left_bumper;
-        double drivingRotation = valWithThresholdAndPower3Scaling(myGamepad1.right_stick_x, minPowerRot, highPrecisionMode);
+        double drivingRotation = scaleRotationAxis(myGamepad1.right_stick_x, highPrecisionMode);
         //double drivingRotation = Math.pow(myGamepad1.right_stick_x, 3);
         // Direction Lock
         if (drivingRotation != 0) {
@@ -140,8 +162,8 @@ public class FTCrobot {
         }
         // compute speed. Old behaviour: set minPower and zeroZone to 0.0
         // compute for x & y
-        double drivingX =   valWithThresholdAndPower3Scaling(myGamepad1.left_stick_x, minPowerXY, highPrecisionMode);
-        double drivingY = - valWithThresholdAndPower3Scaling(myGamepad1.left_stick_y, minPowerXY, highPrecisionMode);
+        double drivingX =   scaleXYAxes(myGamepad1.left_stick_x, highPrecisionMode);
+        double drivingY = - scaleXYAxes(myGamepad1.left_stick_y, highPrecisionMode);
         Log.d(TAG, "driving X is " + drivingX);
         Log.d(TAG, "driving Y is " + drivingY);
         Log.d(TAG, "driving rot is " + drivingRotation);

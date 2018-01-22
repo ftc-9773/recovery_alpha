@@ -137,37 +137,26 @@ public class FTCrobot {
 
         // Get current direction
         boolean highPrecisionMode = myGamepad1.left_bumper;
-        double drivingRotation = scaleRotationAxis(myGamepad1.right_stick_x, highPrecisionMode);
-        //double drivingRotation = Math.pow(myGamepad1.right_stick_x, 3);
+
         // Direction Lock
-        if (drivingRotation != 0) {
-            Log.e(TAG, "Rotation is 0");
-            // Disable rotation lock if driver spins the robot
-            directionLock = -1;
+        double drivingRotation;
+        if (mySwerveController.useFieldCentricOrientation) {
+            double x = myGamepad1.right_stick_x;
+            double y = myGamepad1.right_stick_y;
+            drivingRotation = Math.sqrt(x*x + y+y);
+            directionLock = Math.toDegrees(Math.atan2(y, x));
         } else {
-            Log.e(TAG, "Checking dpad");
-            if (myGamepad1.dpad_up) {
-                Log.d(TAG, "Up dpad pressed");
-                directionLock = 0;
-            } else if (myGamepad1.dpad_right) {
-                Log.d(TAG, "Right dpad pressed");
-                directionLock = 90;
-            } else if (myGamepad1.dpad_down) {
-                Log.d(TAG, "down dpad pressed");
-                directionLock = 180;
-            } else if (myGamepad1.dpad_left) {
-                Log.d(TAG, "Left dpad pressed");
-                directionLock = 270;
-            }
+            drivingRotation = scaleRotationAxis(myGamepad1.right_stick_x, highPrecisionMode);
         }
+
         // compute speed. Old behaviour: set minPower and zeroZone to 0.0
         // compute for x & y
         double drivingX =   scaleXYAxes(myGamepad1.left_stick_x, highPrecisionMode);
         double drivingY = - scaleXYAxes(myGamepad1.left_stick_y, highPrecisionMode);
-        Log.d(TAG, "driving X is " + drivingX);
+/*        Log.d(TAG, "driving X is " + drivingX);
         Log.d(TAG, "driving Y is " + drivingY);
         Log.d(TAG, "driving rot is " + drivingRotation);
-
+*/
         //double drivingX =   Math.pow(myGamepad1.left_stick_x, 3);
         //double drivingY = - Math.pow(myGamepad1.left_stick_y, 3);
         //if (highPrecisionMode) {

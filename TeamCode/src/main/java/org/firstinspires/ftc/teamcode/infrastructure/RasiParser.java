@@ -84,6 +84,7 @@ public class  RasiParser {
                 Log.i(TAG, "next-" + i);
             }
         }
+        Log.i(TAG + "rasiTagIs ", rasiTag);
 
     }
 
@@ -98,6 +99,8 @@ public class  RasiParser {
             if(DEBUG){
                 Log.i(TAG + "length", Integer.toString(commandOut.length));
                 Log.i(TAG + "rasiTag", commandOut[0]);
+                Log.i(TAG + " isTagCorrect",  Boolean.toString(commandOut[0].equals(rasiTag)));
+                Log.i(TAG + " isLengthCorrect",  Boolean.toString(commandOut.length == 2));
             }
             if(commandOut.length == 1){
                 commandOut = commandOut[0].split(",");

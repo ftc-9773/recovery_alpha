@@ -241,6 +241,7 @@ public class FTCrobot {
         if (gamepad1RightTrigger.isJustOn()) {
             myGyro.setZeroPosition();
         }
+        myTelemetry.update();
     }
 
     // homes cube tray lift to top. takes cube tray position object

@@ -24,14 +24,14 @@ public class  RasiParser {
     private String input = "";
     private BufferedReader buffReader = null;
     private int index = 0;
-    private String rasiTag;
+    private String rasiTag[];
     FileReader fileReader = null;
     private int commandReadingIndex = 0;
 
     private static String TAG= "9773_RasiParser";
     private static boolean DEBUG = true;
 
-    public RasiParser(String fileName, String rasiTag){
+    public RasiParser(String fileName, String[] rasiTag){
         this.rasiTag = rasiTag;
         try {
             fileReader = new FileReader("/storage/emulated/0/FIRST/team9773/rasi18/" + fileName + ".rasi");
@@ -84,7 +84,7 @@ public class  RasiParser {
                 Log.i(TAG, "next-" + i);
             }
         }
-        Log.i(TAG + "rasiTagIs ", rasiTag);
+        Log.i(TAG + "rasiTagIs ", Arrays.toString(rasiTag));
 
     }
 
@@ -105,7 +105,7 @@ public class  RasiParser {
             if(commandOut.length == 1){
                 commandOut = commandOut[0].split(",");
             }
-            else if(commandOut.length == 2 && commandOut[0] == rasiTag){
+            else if(commandOut.length == 2 && Arrays.asList(rasiTag).contains(commandOut[0])){
                 commandOut = commandOut[1].split(",");
             }
             else if(commandOut.length > 2){

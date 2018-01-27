@@ -23,7 +23,7 @@ public class RasiActions {
     private FTCrobot ftcRobot;
     private Timer timer2;
     private LinearOpModeCamera linearOpModeCamera;
-    public RasiActions(String rasiFilename, String rasiTag, LinearOpModeCamera myLinearOpModeCamera, Gamepad gamepad1, Gamepad gamepad2, Telemetry telemetry, HardwareMap hwMap){
+    public RasiActions(String rasiFilename, String[] rasiTag, LinearOpModeCamera myLinearOpModeCamera, Gamepad gamepad1, Gamepad gamepad2, Telemetry telemetry, HardwareMap hwMap){
         this.linearOpModeCamera = myLinearOpModeCamera;
         rasiParser = new RasiParser(rasiFilename, rasiTag);
         ftcRobot = new FTCrobot(hwMap, telemetry, gamepad1, gamepad2, myLinearOpModeCamera);
@@ -84,6 +84,12 @@ public class RasiActions {
                     while (!timer2.isDone()&&!linearOpModeCamera.isStopRequested()) {}
                     Log.i("RasiActions", "wait");
                     break;
+                case "jservo":
+                    if(rasiParser.getParameter(1) == "right"){ftcRobot.jewelServoController.setToRightPos();}
+                    if(rasiParser.getParameter(1) == "left"){ftcRobot.jewelServoController.setToLeftPos();}
+                    if(rasiParser.getParameter(1) == "center"){ftcRobot.jewelServoController.setToCenterPos();}
+                    if(rasiParser.getParameter(1) == "retract"){ftcRobot.jewelServoController.setToRetractPos();}
+                    if(rasiParser.getParameter(1) == "block"){ftcRobot.jewelServoController.setToBlockPos();}
                 case "end":
                     linearOpModeCamera.requestOpModeStop();
                     while(linearOpModeCamera.opModeIsActive()){}

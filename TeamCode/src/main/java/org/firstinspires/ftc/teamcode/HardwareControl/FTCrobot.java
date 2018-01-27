@@ -54,6 +54,7 @@ public class FTCrobot {
     private ButtonStatus gamepad1RightTrigger = new ButtonStatus();
     private ButtonStatus leftBumperStatus = new ButtonStatus();
     private ButtonStatus rightBumperStatus = new ButtonStatus();
+    public JewelServoController jewelServoController;
     private double rotation;
 
     private SafeJsonReader jsonReader;
@@ -91,6 +92,7 @@ public class FTCrobot {
         this.myJewelServo = new JewelServoController(hwmap);
         this.myGamepad1 = gamepad1;
         this.myGamepad2 = gamepad2;
+        this.jewelServoController = new JewelServoController(hwmap);
 
         jsonReader = new SafeJsonReader("FTCRobotParameters");
         minPowerXY = jsonReader.getDouble("MinPowerXY");
@@ -263,8 +265,6 @@ public class FTCrobot {
         } else {
             myTelemetry.addData("Field Centric", "Off");
         }
-
-        myJewelServo.raiseArm();
 
         myTelemetry.update();
     }

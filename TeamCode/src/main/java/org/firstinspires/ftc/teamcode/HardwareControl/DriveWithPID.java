@@ -158,7 +158,7 @@ public class DriveWithPID {
             } else {
                 mySwerveController.steerSwerve(true, 0, 0, -rotationSpeed, -1);
             }
-            mySwerveController.moveRobot(true);
+            mySwerveController.moveRobot(false);
 
 //            Log.i(TAG, "speed: " + speed + "  Rotation speed: " + rotationSpeed);
             lastAngle = currentAngle;

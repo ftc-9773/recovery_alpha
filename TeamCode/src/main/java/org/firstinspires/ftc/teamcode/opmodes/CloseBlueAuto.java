@@ -129,7 +129,7 @@ public class CloseBlueAuto extends LinearOpModeCamera {
 
         // Lower intake
         times[0] = System.currentTimeMillis();
-        myCubeTray.setToPos(CubeTray.LiftFinalStates.LOADING);
+        myCubeTray.setToPos(CubeTray.LiftFinalStates.LOW);
         while(opModeIsActive() && System.currentTimeMillis()-intakeLowerTime<times[0]){
             myIntakeControllerManual.lowerIntake(true);
             myCubeTray.updatePosition();

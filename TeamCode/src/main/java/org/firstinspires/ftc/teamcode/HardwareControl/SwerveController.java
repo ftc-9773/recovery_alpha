@@ -85,13 +85,9 @@ public class SwerveController {
         // direction lock  - in Degrees
 
         // Check to make sure rotation is off before doing directionLock
-        if (rotation != 0) {
-            directionLock = -1;
-        }
 
         if (DEBUG) Log.d(TAG, "Rotation: " + rotation + "  DirectionLock: " + directionLock);
 
-        // handle cardinal directions
         if (directionLock != -1 && useFieldCentricOrientation) {
             // Calculate Error
             double error = negToPosPi(Math.toRadians(directionLock) - myGyro.getHeading());

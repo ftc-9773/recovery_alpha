@@ -39,7 +39,7 @@ public class TrayTestTeleop extends LinearOpMode {
             myCubeTrayController.updateFromGamepad();
 
             //
-            myCubeTrayController.liftMotor.setTargetPosition(myCubeTrayController.liftTargetPosition);
+          //  myCubeTrayController.liftMotor.setTargetPosition(myCubeTrayController.liftTargetPosition);
             // send telemetry back to driver station
             composeTelemetry();
             telemetry.update();
@@ -57,7 +57,7 @@ public class TrayTestTeleop extends LinearOpMode {
         telemetry.addData("rawLiftPosition: ", myCubeTrayController.getRawLiftPos());
         telemetry.addData("scaledLiftPosition:  ", myCubeTrayController.getliftPos());
 
-        telemetry.addData("targetPosition set: ", myCubeTrayController.liftMotor.getTargetPosition());
+        //telemetry.addData("targetPosition set: ", myCubeTrayController.liftMotor.getTargetPosition());
 
 
     }

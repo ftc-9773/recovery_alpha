@@ -1,4 +1,5 @@
 {
-  "downPosition": 0.7,
-  "upPosition:": 0.15
+  "LeftPos" : 0.85,
+   "RightPos" : 0.53,
+  "centerPos" : 0.22
 }

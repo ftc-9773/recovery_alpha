@@ -174,11 +174,11 @@ public class CloseBlueAuto extends LinearOpModeCamera {
                 // Go 4" to the RIGHT and add the distance to next move
                 tempTime = System.currentTimeMillis();
                 while (System.currentTimeMillis() - tempTime < 400) {
-                    myJewelServo.lowerArm();
+                    //myJewelServo.lowerArm();
                 }
                 myDriveWithPID.driveDist(drivingPower, 180, distBackToJewel);
                 myDriveWithPID.driveTime(drivingPower, 90, timePushRight);
-                myJewelServo.raiseArm();
+                //myJewelServo.raiseArm();
 
                 distToCryptobox += distPushRight;
                 break;
@@ -186,11 +186,11 @@ public class CloseBlueAuto extends LinearOpModeCamera {
                 // Go 4" LEFT and subtract the distance from next move
                 tempTime = System.currentTimeMillis();
                 while (System.currentTimeMillis() - tempTime < 400) {
-                    myJewelServo.lowerArm();
+                  //  myJewelServo.lowerArm();
                 }
                 myDriveWithPID.driveDist(drivingPower, 180, distBackToJewel);
                 myDriveWithPID.driveDist(drivingMidPower, 270, distPushLeft);
-                myJewelServo.raiseArm();
+                //myJewelServo.raiseArm();
                 distToCryptobox -= distPushLeft;
                 break;
             default:

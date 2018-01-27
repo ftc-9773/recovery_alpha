@@ -152,13 +152,13 @@ public class FarRedAuto extends LinearOpModeCamera {
                 // Go 4" to the right and subtract the distance from next move
                 tempTime = System.currentTimeMillis();
                 while (System.currentTimeMillis() - tempTime < 500) {
-                    myJewelServo.lowerArm();
+                   // myJewelServo.lowerArm();
 
                 }
                 myDriveWithPID.driveDist(drivingPower, 90, distPushRight);
                 tempTime = System.currentTimeMillis();
                 while (System.currentTimeMillis() - tempTime < 500) {
-                    myJewelServo.raiseArm();
+                   // myJewelServo.raiseArm();
 
                 }
                 distSidewaysToCryptobox -= distPushRight;
@@ -167,13 +167,13 @@ public class FarRedAuto extends LinearOpModeCamera {
                 // Go 4" left and add an distJewelPush to next move
                 tempTime = System.currentTimeMillis();
                 while (System.currentTimeMillis() - tempTime < 500) {
-                    myJewelServo.lowerArm();
+                 //   myJewelServo.lowerArm();
 
                 }
                 myDriveWithPID.driveDist(drivingPower, 270, distPushLeft);
                 tempTime = System.currentTimeMillis();
                 while (System.currentTimeMillis() - tempTime < 500) {
-                    myJewelServo.raiseArm();
+                  //  myJewelServo.raiseArm();
 
                 }
                 distSidewaysToCryptobox += distPushLeft;

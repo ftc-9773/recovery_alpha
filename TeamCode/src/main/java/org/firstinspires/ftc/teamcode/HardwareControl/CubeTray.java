@@ -57,9 +57,9 @@ import org.firstinspires.ftc.teamcode.infrastructure.SafeJsonReader;
 
 
 public class CubeTray {
-    public enum TrayPositions {STOWED, LOADING, CARRYING, DUMP_A}
+    public enum TrayPositions {STOWED, LOADING,LOADING_TWO, CARRYING, DUMP_A, DUMP_B}
     public enum OverallStates {LOADING, CARRY, STOWED, TO_LOADING, FROM_STOWED, TO_CARRY}
-    public enum LiftFinalStates {STOWED, LOADING, LOW, MID, HIGH}
+    public enum LiftFinalStates {STOWED, LOADING,LOADING_TWO, LOW, MID, HIGH}
     public boolean homing = false;
 
     // Json setup
@@ -80,7 +80,8 @@ public class CubeTray {
     private Servo rightFlap ;
     private Servo leftAngle ;
     private Servo rightAngle ;
-    public DcMotor liftMotor ;
+    private DcMotor liftMotor ;
+    private JewelServoController blockServo;
     // define gamepad value
     private Gamepad gamepad1;
 
@@ -132,10 +133,12 @@ public class CubeTray {
 
     //define servo positions - each array of postitons go in the following order:
     // stowed, loading, carrying, dumpingFlap, dumpingAngleAndFlap
-    private static double[] leftFlapPositions = {0.532, 0.5328, 0.35, 0.73, 0.73 } ;
-    private static double[] rightFlapPostions = {.581, 0.6, 0.78, 0.4,1,1 } ;
-    private static double[] leftAnglePostions = {0.885, 0.554, 0.169, 0.169, 0.039} ;  // dump used to be .039
-    private static double[] rightAnglePostions = {0.07, 0.350, 0.754, 0.754,0.901 } ;   // dump used to be .901
+    private static double[] leftFlapPositions = {0.532, 0.5328, 0.35, 0.73, 0.73, 0.35} ;
+    private static double[] rightFlapPostions = {.581, 0.6, 0.78, 0.4,1,1, 0.78 } ;
+    private static double[] leftAnglePostions = {0.885, 0.554, 0.169, 0.169, 0.039,0.725} ;  // dump used to be .039
+    private static double[] rightAnglePostions = {0.07, 0.350, 0.754, 0.754,0.901, 0.285 } ;   // dump used to be .901
+
+    private boolean blockServoUpWhenInLoad = true;
 
 
     public CubeTray(HardwareMap hwMap, Gamepad gamepad1, Gamepad gamepad2){  // constructor takes hardware map
@@ -144,6 +147,8 @@ public class CubeTray {
         rightFlap = hwMap.servo.get("ctrfServo");
         leftAngle = hwMap.servo.get("ctlaServo");
         rightAngle = hwMap.servo.get("ctraServo");
+        blockServo = new JewelServoController(hwMap);
+
         // passes gamepad, instead of gamepad values for ease of use
         this.gamepad1 = gamepad1;
         this.gamepad2 = gamepad2;
@@ -171,6 +176,7 @@ public class CubeTray {
 
         // set up servos
         boolean usingJsonServoPositons = myCubeTrayPositions.getBoolean("usingJsonServoPositions");
+        //boolean blockServoUpWhenInLoad = myCubeTrayPositions.getBoolean("jewelServoBlockInLoad");
 
         String logging = "Positions are: ";
         for (double i: leftFlapPositions) {
@@ -249,8 +255,8 @@ public class CubeTray {
         switch (overallState) {
             case LOADING:
                 // when the state is loading, sets both lift and tray to loading position
-                liftTargetPosition = loadPosTicks;
-                setServoPos(TrayPositions.LOADING);
+//                liftTargetPosition = loadPosTicks;
+//                setServoPos(TrayPositions.LOADING);
                 break;
 
             case CARRY:
@@ -275,7 +281,7 @@ public class CubeTray {
                     liftTargetPosition = loadPosTicks ;
                     setServoPos(TrayPositions.LOADING);
                 break;
-                        //
+
             case TO_LOADING:
                 // if the lift is above the threshold, set target to be threshold
                 if (getliftPos() >= toLoadingThreshold) {
@@ -283,9 +289,16 @@ public class CubeTray {
                     setServoPos(TrayPositions.CARRYING);
                 } else {
                     // otherwise, set to loadingState
-                    overallState = OverallStates.LOADING;
-                    liftTargetPosition = loadPosTicks;
-                    setServoPos(TrayPositions.LOADING);
+                    if (liftFinalState.equals(LiftFinalStates.LOADING_TWO)){
+                        overallState = OverallStates.LOADING;
+                        liftTargetPosition = loadPosTicks;
+                        setServoPos(TrayPositions.LOADING_TWO);
+
+                    } else {
+                        overallState = OverallStates.LOADING;
+                        liftTargetPosition = loadPosTicks;
+                        setServoPos(TrayPositions.LOADING);
+                    }
                 }
                 break;
             case TO_CARRY:
@@ -363,6 +376,7 @@ public class CubeTray {
                     transitionTimer = System.currentTimeMillis();
                 }
                 break;
+            case LOADING_TWO:
             case LOADING:
                 if(overallState == OverallStates.STOWED) {
                     overallState = OverallStates.FROM_STOWED;
@@ -407,7 +421,7 @@ public class CubeTray {
     }
     // sets to position
 
-    public void setToPoitionPID(int targetPos){
+    public void setToPoitionPID(int targetPos){   //TODO:  major change: will need to retune PID coefficents
         if (!liftMotor.getMode().equals(DcMotor.RunMode.RUN_WITHOUT_ENCODER)){
             liftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         }
@@ -435,12 +449,19 @@ public class CubeTray {
                 break;
             case LOADING:
                 posNum = 1;
+
                 break;
             case CARRYING:
                 posNum = 2;
                 break;
             case DUMP_A:
                 posNum = 3;
+                break;
+            case DUMP_B:
+                posNum = 4;
+                break;
+            case LOADING_TWO:
+                posNum = 5;
                 break;
             default:
                 break;
@@ -454,6 +475,13 @@ public class CubeTray {
         rightFlapPos = rightFlapPostions[posNum];
         leftAnglePos = leftAnglePostions[posNum];
         rightAnglePos = rightAnglePostions[posNum];
+        // actuate blockServo
+        // sets block servo to block postition when in
+        if(posNum == 1 && blockServoUpWhenInLoad){
+            blockServo.setToBlockPos();
+        } else{
+            blockServo.setToRetractPos();
+        }
 
         String logging = " setting servo positions:Positions are: ";
         for (double i: leftFlapPositions) {
@@ -604,6 +632,17 @@ public class CubeTray {
             Log.w(TAG, "unnable to build servo " +servoName + " dumpingB pos; set to hardcoded default");
 
         }
+
+        double loadingAutoTempVal = myCubeTrayPositions.getDouble(servoName + "LoadingTwo");
+        if(dumpingAngleTempVal != 0.0) {
+            positions[5] = dumpingAngleTempVal;
+            Log.i(TAG, "built servo " +servoName + " dumpB pos to" +dumpingAngleTempVal);
+        }   else{
+            success = false;
+            Log.w(TAG, "unnable to build servo " +servoName + " dumpingB pos; set to hardcoded default");
+
+        }
+
         return positions;
     }
 

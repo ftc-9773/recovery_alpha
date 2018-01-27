@@ -17,21 +17,37 @@ public class JewelServoController {
 
     Servo jewelServo;
 
-    double downPosition = 0.705;
-    double upPosition = 0.1;
+    double leftPos = 0.8;
+    double rightPos = 0.5;
+    double centerPos = 0.2;
 
     public JewelServoController(HardwareMap hardwareMap) {
         jewelServo = hardwareMap.servo.get("jServo");
             SafeJsonReader servoPositions = new SafeJsonReader("JewelArmPositions");
-            downPosition = servoPositions.getDouble("downPosition");
-            upPosition = servoPositions.getDouble("upPosition");
+        leftPos = checkIfIssueWithRead(leftPos,"LeftPos", servoPositions);
+        centerPos = checkIfIssueWithRead(centerPos,"CenterPos", servoPositions);
+        rightPos = checkIfIssueWithRead(rightPos,"RightPos", servoPositions);
+
+
+    }
+    public void setToLeftPos() {
+        jewelServo.setPosition(leftPos);
+    }
+    public void setToRightPos() {
+        jewelServo.setPosition(rightPos);
+    }
+    public void setToCenterPos() {
+        jewelServo.setPosition(centerPos);
     }
 
-    public void lowerArm() {
-        jewelServo.setPosition(downPosition);
+    private double checkIfIssueWithRead(double backupVal, String name, SafeJsonReader reader){
+        double readVal = reader.getDouble(name);
+        if (readVal != 0.0) return readVal;
+        else return backupVal;
     }
 
-    public void raiseArm() {
-        jewelServo.setPosition(upPosition);
-    }
+    // aliases
+    public void setToBlockPos(){  setToCenterPos();}
+    public void setToRetractPos() {setToRightPos();}
+
 }

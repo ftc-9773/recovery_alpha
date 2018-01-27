@@ -44,6 +44,7 @@ public class RelicSystem {
         }else{
             grabServo.setPosition(.69);
         }
+        telemetry.update();
     }
     public void runToPosition(int position){
         extensionMotor.setTargetPosition(position);

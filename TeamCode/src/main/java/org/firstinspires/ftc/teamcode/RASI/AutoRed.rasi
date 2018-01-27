@@ -1,2 +1,7 @@
-drv,
+ctload;
+ctlow;
+jservo, center;
+drv, 0.5, 180, 3;
+BLUE:jservo, left;
+RED:jservo, right;
 end;

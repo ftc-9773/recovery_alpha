@@ -59,7 +59,7 @@ import org.firstinspires.ftc.teamcode.infrastructure.SafeJsonReader;
 public class CubeTray {
     public enum TrayPositions {STOWED, LOADING,LOADING_TWO, CARRYING, DUMP_A, DUMP_B}
     public enum OverallStates {LOADING, CARRY, STOWED, TO_LOADING, FROM_STOWED, TO_CARRY}
-    public enum LiftFinalStates {STOWED, LOADING,LOADING_TWO, LOW, MID, HIGH}
+    public enum LiftFinalStates {STOWED, LOADING,LOADING_TWO, LOW, MID, HIGH, JEWEL}
     public boolean homing = false;
 
     // Json setup
@@ -124,6 +124,7 @@ public class CubeTray {
     private static int bottomPosTicks = 450;
     private static int loadPosTicks = 190;
     private int toLoadingThreshold  = 500;
+    private static int jewelPosTicks = 700;
 
     private static final int positionTolerance = 40;
 
@@ -271,6 +272,9 @@ public class CubeTray {
                         break;
                     case HIGH:
                         liftTargetPosition = topPosTicks;
+                        break;
+                    case JEWEL:
+                        liftTargetPosition = jewelPosTicks;
                         break;
                     default:
                         // otherwise do nothing

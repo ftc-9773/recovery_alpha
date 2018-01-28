@@ -142,15 +142,7 @@ public class FTCrobot {
 
         // Direction Lock
         double drivingRotation;
-        if (mySwerveController.useFieldCentricOrientation) {
-            double x = myGamepad1.right_stick_x;
-            double y = myGamepad1.right_stick_y;
-            drivingRotation = Math.sqrt(x*x + y+y);
-            directionLock = Math.toDegrees(Math.atan2(y, x));
-        } else {
-            drivingRotation = scaleRotationAxis(myGamepad1.right_stick_x, highPrecisionMode);
-        }
-
+        drivingRotation = scaleRotationAxis(myGamepad1.right_stick_x, highPrecisionMode);
         // compute speed. Old behaviour: set minPower and zeroZone to 0.0
         // compute for x & y
         double drivingX =   scaleXYAxes(myGamepad1.left_stick_x, highPrecisionMode);
@@ -167,7 +159,7 @@ public class FTCrobot {
         //    drivingRotation *= 0.5;
         //}
 
-        mySwerveController.steerSwerve(true, drivingX, drivingY, drivingRotation, directionLock);
+        mySwerveController.steerSwerve(true, drivingX, drivingY, drivingRotation, -1);
         mySwerveController.moveRobot(highPrecisionMode);
 // */
 

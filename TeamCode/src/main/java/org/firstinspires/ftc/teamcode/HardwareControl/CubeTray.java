@@ -274,6 +274,8 @@ public class CubeTray {
                         break;
                     case JEWEL:
                         liftTargetPosition = jewelPosTicks;
+                        setServoPos(TrayPositions.CARRYING);
+                        myJewelServo.setToCenterPos();
                     default:
                         // otherwise do nothing
                         break;
@@ -336,6 +338,9 @@ public class CubeTray {
 
         }
         iterNum++;
+        Log.e (TAG, "Ser o position leftAngle = " + leftAngle.getPosition() );
+        Log.e (TAG, "Ser o position rightAngle = " + rightAngle.getPosition() );
+
 
     }
 
@@ -440,21 +445,21 @@ public class CubeTray {
         switch (trayPos) {
             case STOWED:
                 posNum = 0;
-                myJewelServo.setToRetractPos();
+                myJewelServo.setToBlockPos();
                 break;
             case LOADING:
                 posNum = 1;
                 if(useBlockerServo){
-                    myJewelServo.setToBlockPos();
-                }else myJewelServo.setToRetractPos();
+                    myJewelServo.setToRetractPos();
+                }else myJewelServo.setToBlockPos();
                 break;
             case CARRYING:
                 posNum = 2;
-                myJewelServo.setToRetractPos();
+                myJewelServo.setToBlockPos();
                 break;
             case DUMP_A:
                 posNum = 3;
-                myJewelServo.setToRetractPos();
+                myJewelServo.setToBlockPos();
                 break;
             default:
                 break;
@@ -468,6 +473,7 @@ public class CubeTray {
         rightFlapPos = rightFlapPostions[posNum];
         leftAnglePos = leftAnglePostions[posNum];
         rightAnglePos = rightAnglePostions[posNum];
+
 
         String logging = " setting servo positions:Positions are: ";
         for (double i: leftFlapPositions) {

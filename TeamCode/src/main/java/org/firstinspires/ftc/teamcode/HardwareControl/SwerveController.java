@@ -91,7 +91,7 @@ public class SwerveController {
         if (directionLock != -1 && useFieldCentricOrientation) {
             // Calculate Error
             double error = negToPosPi(Math.toRadians(directionLock) - myGyro.getHeading());
-            rotation = turningPID.getPIDCorrection(error);
+            //rotation = turningPID.getPIDCorrection(error);
             //Log.e(TAG, "true error: " + error + "  rotation: " + rotation);
         }
 

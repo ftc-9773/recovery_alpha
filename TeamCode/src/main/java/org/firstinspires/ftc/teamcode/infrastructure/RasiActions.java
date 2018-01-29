@@ -23,7 +23,9 @@ public class RasiActions {
     private FTCrobot ftcRobot;
     private Timer timer2;
     private LinearOpModeCamera linearOpModeCamera;
+    private Gyro myGyro;
     public RasiActions(String rasiFilename, String[] rasiTag, LinearOpModeCamera myLinearOpModeCamera, Gamepad gamepad1, Gamepad gamepad2, Telemetry telemetry, HardwareMap hwMap){
+        myGyro = new Gyro(hwMap);
         this.linearOpModeCamera = myLinearOpModeCamera;
         rasiParser = new RasiParser(rasiFilename, rasiTag);
         ftcRobot = new FTCrobot(hwMap, telemetry, gamepad1, gamepad2, myLinearOpModeCamera);
@@ -38,11 +40,10 @@ public class RasiActions {
                     Log.i("RasiActions", "drv");
                     break;
                 case "intkl":
-                    ftcRobot.myManualIntakeController.lowerIntake(true);
-                    Timer timer = new Timer(2.0);
-                    while (!timer.isDone() && !linearOpModeCamera.isStopRequested()) {}
-                    ftcRobot.myManualIntakeController.lowerIntake(false);
-                    Log.i("RasiActions", "intkl");
+                    timer2 = new Timer(1);
+                    ftcRobot.myRelicSystem.runToPosition(100);
+                    while(!timer2.isDone()&&linearOpModeCamera.opModeIsActive()){}
+                    ftcRobot.myRelicSystem.runToPosition(0);
                     break;
                 case "intki":
                     ftcRobot.myManualIntakeController.RunIntake(0, -1);
@@ -72,12 +73,26 @@ public class RasiActions {
                     }
                     break;
                 case "cthigh":
-                    Timer timer2 = new Timer(2.0);
+                    timer2 = new Timer(2.0);
                     while(!linearOpModeCamera.isStopRequested()&&!timer2.isDone()) {
                         ftcRobot.myCubeTray.setToPos(CubeTray.LiftFinalStates.HIGH);
                         ftcRobot.myCubeTray.updatePosition();
                     }
                     Log.i("RasiActions", "cthigh");
+                    break;
+                case "ctmid":
+                    timer2 = new Timer(2.0);
+                    while(!linearOpModeCamera.isStopRequested()&&!timer2.isDone()) {
+                        ftcRobot.myCubeTray.setToPos(CubeTray.LiftFinalStates.MID);
+                        ftcRobot.myCubeTray.updatePosition();
+                    }
+                    break;
+                case "ctjwl":
+                    timer2 = new Timer(2.0);
+                    while(!linearOpModeCamera.isStopRequested()&&!timer2.isDone()) {
+                        ftcRobot.myCubeTray.setToPos(CubeTray.LiftFinalStates.JEWEL);
+                        ftcRobot.myCubeTray.updatePosition();
+                    }
                     break;
                 case "wait":
                     timer2 = new Timer(rasiParser.getAsDouble(1));
@@ -90,6 +105,10 @@ public class RasiActions {
                     if(rasiParser.getParameter(1) == "center"){ftcRobot.jewelServoController.setToCenterPos();}
                     if(rasiParser.getParameter(1) == "retract"){ftcRobot.jewelServoController.setToRetractPos();}
                     if(rasiParser.getParameter(1) == "block"){ftcRobot.jewelServoController.setToBlockPos();}
+                    break;
+                case "recheading":
+                    myGyro.recordHeading();
+                    break;
                 case "end":
                     linearOpModeCamera.requestOpModeStop();
                     while(linearOpModeCamera.opModeIsActive()){}

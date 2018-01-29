@@ -47,6 +47,8 @@ public class RelicSystem {
         telemetry.update();
     }
     public void runToPosition(int position){
+        extensionMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         extensionMotor.setTargetPosition(position);
+        extensionMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
     }
 }

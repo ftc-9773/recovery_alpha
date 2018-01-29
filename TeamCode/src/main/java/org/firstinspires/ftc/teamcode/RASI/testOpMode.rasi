@@ -1,12 +1,2 @@
 intkl;
-intki;
-wait, 2;
-intko;
-wait, 2;
-intks;
-ctload;
-ctlow;
-ctmid;
-cthigh;
-drv, 0.5, 0.0, 12.0;
 end;

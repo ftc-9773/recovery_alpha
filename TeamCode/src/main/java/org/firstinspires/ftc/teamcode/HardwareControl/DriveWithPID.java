@@ -7,6 +7,7 @@ import com.qualcomm.robotcore.hardware.ColorSensor;
 
 import org.firstinspires.ftc.robotcontroller.for_camera_opmodes.LinearOpModeCamera;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.PositionTracking.Gyro;
 import org.firstinspires.ftc.teamcode.infrastructure.PIDController;
 import org.firstinspires.ftc.teamcode.infrastructure.SafeJsonReader;
@@ -111,7 +112,7 @@ public class DriveWithPID {
 
     }
 
-    public void driveColorSensor(double speed, double angleDegrees, ColorSensor colorSensor, int rMin, int rMax, int gMin, int gMax, int bMin, int bMax) {
+    public void driveDistanceDerivative(double speed, double angleDegrees, DistanceColorSensor distanceSensor, double minDist, double maxDist, double minDeriv) {
 
         // Point modules
         boolean inThres = false;
@@ -122,7 +123,7 @@ public class DriveWithPID {
 
         // Drive
         while (!inThres) {
-            inThres = colorSensor.red()>rMin && colorSensor.red()<rMax && colorSensor.green() > gMax && colorSensor.green() < gMin && colorSensor.blue() > bMin && colorSensor.blue() < bMax;
+            inThres = distanceSensor.getDerivative(DistanceUnit.CM) > minDeriv && distanceSensor.getDistance(DistanceUnit.CM) < maxDist && distanceSensor.getDistance(DistanceUnit.CM) > minDist;
             mySwerveController.steerSwerve(false, speed, Math.toRadians(angleDegrees), 0, -1);
             mySwerveController.moveRobot(false);
         }

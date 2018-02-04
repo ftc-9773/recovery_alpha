@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.HardwareControl;
 
+import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
@@ -25,6 +26,8 @@ import android.util.Log;
  */
 
 public class FTCrobot {
+    public ColorSensor leftColorSensor;
+    public ColorSensor rightColorSensor;
     private SwerveController mySwerveController;
     private double directionLock = -1;
     private double stickl1x;
@@ -83,6 +86,8 @@ public class FTCrobot {
         this.hwMap = hwmap;
         this.myTelemetry = telemetry;
         // myIntakeController = new IntakeController(hwMap);
+        this.leftColorSensor = hwMap.colorSensor.get("leftColorSensor");
+        this.rightColorSensor = hwMap.colorSensor.get("rightColorSensor");
         this.myGyro = new Gyro(hwMap);
         this.mySwerveController = new SwerveController(hwMap, myGyro, telemetry);
         this.myManualIntakeController = new IntakeControllerManual(hwMap);

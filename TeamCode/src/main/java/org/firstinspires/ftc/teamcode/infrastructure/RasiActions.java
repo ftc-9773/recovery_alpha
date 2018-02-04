@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.infrastructure;
 
 import android.util.Log;
 
+import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
@@ -35,9 +36,15 @@ public class RasiActions {
         rasiParser.loadNextCommand();
         while (!linearOpModeCamera.isStopRequested()) {
             switch (rasiParser.getParameter(0)) {
-                case "drv":
+                case "drvd":
                     ftcRobot.myDriveWithPID.driveDist(rasiParser.getAsDouble(1), rasiParser.getAsDouble(2), rasiParser.getAsDouble(3));
                     Log.i("RasiActions", "drv");
+                    break;
+                case "drv2red":
+                    ftcRobot.myDriveWithPID.driveColorSensor(rasiParser.getAsDouble(1), rasiParser.getAsDouble(2), ftcRobot.leftColorSensor, 180, 256, 0, 100, 0, 100);
+                break;
+                case "drv2blue":
+                    ftcRobot.myDriveWithPID.driveColorSensor(rasiParser.getAsDouble(1), rasiParser.getAsDouble(2), ftcRobot.rightColorSensor, 0, 100, 0, 100, 180, 256);
                     break;
                 case "intkl":
                     timer2 = new Timer(1);

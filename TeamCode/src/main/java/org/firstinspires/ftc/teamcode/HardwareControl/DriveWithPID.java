@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.HardwareControl;
 import android.util.Log;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.ColorSensor;
 
 import org.firstinspires.ftc.robotcontroller.for_camera_opmodes.LinearOpModeCamera;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
@@ -110,6 +111,23 @@ public class DriveWithPID {
 
     }
 
+    public void driveColorSensor(double speed, double angleDegrees, ColorSensor colorSensor, int rMin, int rMax, int gMin, int gMax, int bMin, int bMax) {
+
+        // Point modules
+        boolean inThres = false;
+        double zeroTime = System.currentTimeMillis();
+        while (System.currentTimeMillis() - zeroTime < 600) {
+            mySwerveController.steerSwerve(false, 1, Math.toRadians(angleDegrees), 0, -1);
+        }
+
+        // Drive
+        while (!inThres) {
+            inThres = colorSensor.red()>rMin && colorSensor.red()<rMax && colorSensor.green() > gMax && colorSensor.green() < gMin && colorSensor.blue() > bMin && colorSensor.blue() < bMax;
+            mySwerveController.steerSwerve(false, speed, Math.toRadians(angleDegrees), 0, -1);
+            mySwerveController.moveRobot(false);
+        }
+
+    }
 
     // Turn the Robot
     public void turnRobot (double targetAngleDegrees) throws InterruptedException {

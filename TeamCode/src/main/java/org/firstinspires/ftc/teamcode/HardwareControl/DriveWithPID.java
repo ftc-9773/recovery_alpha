@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.HardwareControl;
 
 import android.util.Log;
 
+import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cRangeSensor;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 
@@ -112,7 +113,7 @@ public class DriveWithPID {
 
     }
 
-    public void driveDistanceDerivative(double speed, double angleDegrees, DistanceColorSensor distanceSensor, double minDist, double maxDist, double minDeriv) {
+    public void driveUltrasonic(double speed, double angleDegrees, ModernRoboticsI2cRangeSensor distanceSensor, double minDist, double maxDist) {
 
         // Point modules
         boolean inThres = false;
@@ -123,7 +124,7 @@ public class DriveWithPID {
 
         // Drive
         while (!inThres) {
-            inThres = distanceSensor.getDerivative(DistanceUnit.CM) > minDeriv && distanceSensor.getDistance(DistanceUnit.CM) < maxDist && distanceSensor.getDistance(DistanceUnit.CM) > minDist;
+            inThres = distanceSensor.cmUltrasonic() < maxDist && distanceSensor.cmUltrasonic() > minDist;
             mySwerveController.steerSwerve(false, speed, Math.toRadians(angleDegrees), 0, -1);
             mySwerveController.moveRobot(false);
         }

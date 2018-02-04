@@ -1,11 +1,14 @@
 package org.firstinspires.ftc.teamcode.HardwareControl;
 
+import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cRangeSensor;
 import com.qualcomm.robotcore.hardware.ColorSensor;
+import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcontroller.for_camera_opmodes.LinearOpModeCamera;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.PositionTracking.Gyro;
 import org.firstinspires.ftc.teamcode.infrastructure.ButtonStatus;
 import org.firstinspires.ftc.teamcode.infrastructure.RasiParser;
@@ -26,8 +29,9 @@ import android.util.Log;
  */
 
 public class FTCrobot {
-    public ColorSensor leftColorSensor;
-    public ColorSensor rightColorSensor;
+    public ModernRoboticsI2cRangeSensor distanceSensor;
+    public DistanceColorSensor leftColorSensor;
+    public DistanceColorSensor rightColorSensor;
     private SwerveController mySwerveController;
     private double directionLock = -1;
     private double stickl1x;
@@ -86,13 +90,14 @@ public class FTCrobot {
         this.hwMap = hwmap;
         this.myTelemetry = telemetry;
         // myIntakeController = new IntakeController(hwMap);
-        this.leftColorSensor = hwMap.colorSensor.get("leftColorSensor");
-        this.rightColorSensor = hwMap.colorSensor.get("rightColorSensor");
+        this.distanceSensor = hwMap.get(ModernRoboticsI2cRangeSensor.class, "ultrasonicSensor");
+        this.leftColorSensor = new DistanceColorSensor(hwMap, "leftColorSensor");
+        this.rightColorSensor = new DistanceColorSensor(hwMap, "rightColorSensor");
         this.myGyro = new Gyro(hwMap);
         this.mySwerveController = new SwerveController(hwMap, myGyro, telemetry);
         this.myManualIntakeController = new IntakeControllerManual(hwMap);
         this.myDriveWithPID = new DriveWithPID(mySwerveController, myGyro, myLinearOpModeCamera);
-        this.myRelicSystem = new RelicSystem(myTelemetry, hwMap);
+        this.myRelicSystem = new RelicSystem(myTelemetry, hwMap, myLinearOpModeCamera);
         this.myCubeTray = new CubeTray(hwmap,gamepad2,null);
         this.myJewelServo = new JewelServoController(hwmap);
         this.myGamepad1 = gamepad1;

@@ -274,6 +274,7 @@ public class CubeTray {
                         break;
                     case JEWEL:
                         liftTargetPosition = jewelPosTicks;
+                        myJewelServo.setToCenterPos();
                     default:
                         // otherwise do nothing
                         break;
@@ -456,6 +457,7 @@ public class CubeTray {
                 posNum = 3;
                 myJewelServo.setToRetractPos();
                 break;
+
             default:
                 break;
         }

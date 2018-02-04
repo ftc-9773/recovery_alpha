@@ -40,15 +40,12 @@ public class RasiActions {
                     ftcRobot.myDriveWithPID.driveDist(rasiParser.getAsDouble(1), rasiParser.getAsDouble(2), rasiParser.getAsDouble(3));
                     Log.i("RasiActions", "drv");
                     break;
-                case "drv2red":
-                    ftcRobot.myDriveWithPID.driveColorSensor(rasiParser.getAsDouble(1), rasiParser.getAsDouble(2), ftcRobot.leftColorSensor, 180, 256, 0, 100, 0, 100);
+                case "drvultra":
+                    ftcRobot.myDriveWithPID.driveUltrasonic(rasiParser.getAsDouble(1), rasiParser.getAsDouble(2), ftcRobot.distanceSensor, rasiParser.getAsDouble(3), rasiParser.getAsDouble(4));
                 break;
-                case "drv2blue":
-                    ftcRobot.myDriveWithPID.driveColorSensor(rasiParser.getAsDouble(1), rasiParser.getAsDouble(2), ftcRobot.rightColorSensor, 0, 100, 0, 100, 180, 256);
-                    break;
                 case "intkl":
                     timer2 = new Timer(1);
-                    ftcRobot.myRelicSystem.runToPosition(100);
+                    ftcRobot.myRelicSystem.runToPosition(300);
                     while(!timer2.isDone()&&linearOpModeCamera.opModeIsActive()){}
                     ftcRobot.myRelicSystem.runToPosition(0);
                     break;
@@ -107,11 +104,12 @@ public class RasiActions {
                     Log.i("RasiActions", "wait");
                     break;
                 case "jservo":
-                    if(rasiParser.getParameter(1) == "right"){ftcRobot.jewelServoController.setToRightPos();}
-                    if(rasiParser.getParameter(1) == "left"){ftcRobot.jewelServoController.setToLeftPos();}
-                    if(rasiParser.getParameter(1) == "center"){ftcRobot.jewelServoController.setToCenterPos();}
-                    if(rasiParser.getParameter(1) == "retract"){ftcRobot.jewelServoController.setToRetractPos();}
-                    if(rasiParser.getParameter(1) == "block"){ftcRobot.jewelServoController.setToBlockPos();}
+                    timer2 = new Timer(2);
+                    if(rasiParser.getParameter(1) == "right"){while(!timer2.isDone() && linearOpModeCamera.opModeIsActive()){ftcRobot.jewelServoController.setToRightPos();}}
+                    if(rasiParser.getParameter(1) == "left"){while(!timer2.isDone() && linearOpModeCamera.opModeIsActive()){ftcRobot.jewelServoController.setToLeftPos();}}
+                    if(rasiParser.getParameter(1) == "center"){while(!timer2.isDone() && linearOpModeCamera.opModeIsActive()){ftcRobot.jewelServoController.setToCenterPos();}}
+                    if(rasiParser.getParameter(1) == "retract"){while(!timer2.isDone() && linearOpModeCamera.opModeIsActive()){ftcRobot.jewelServoController.setToRetractPos();}}
+                    if(rasiParser.getParameter(1) == "block"){while(!timer2.isDone() && linearOpModeCamera.opModeIsActive()){ftcRobot.jewelServoController.setToBlockPos();}}
                     break;
                 case "recheading":
                     myGyro.recordHeading();

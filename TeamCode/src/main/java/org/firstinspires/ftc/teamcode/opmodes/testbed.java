@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.opmodes;
 
 import android.graphics.Color;
 
+import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cRangeSensor;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -10,11 +11,14 @@ import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.OpticalDistanceSensor;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.hardware.UltrasonicSensor;
 
+import org.firstinspires.ftc.robotcontroller.for_camera_opmodes.LinearOpModeCamera;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.HardwareControl.DistanceColorSensor;
 import org.firstinspires.ftc.teamcode.HardwareControl.DriveWithPID;
+import org.firstinspires.ftc.teamcode.HardwareControl.FTCrobot;
 import org.firstinspires.ftc.teamcode.HardwareControl.SwerveController;
 import org.firstinspires.ftc.teamcode.PositionTracking.Gyro;
 import org.firstinspires.ftc.teamcode.resources.ButtonStatus;
@@ -24,21 +28,23 @@ import org.firstinspires.ftc.teamcode.resources.ButtonStatus;
  */
 @Autonomous(name = "testbed")
 
-public class testbed extends LinearOpMode{
+public class testbed extends LinearOpModeCamera {
 
-    private DistanceColorSensor leftDistanceSensor;
-    private DistanceColorSensor rightDistanceSensor;
+    //private ModernRoboticsI2cRangeSensor ultrasonicSensor;
+    private FTCrobot ftcRobot;
 
     @Override
     public void runOpMode() throws InterruptedException {
-        leftDistanceSensor = new DistanceColorSensor(hardwareMap, "leftColorSensor");
-        rightDistanceSensor = new DistanceColorSensor(hardwareMap, "rightColorSensor");
+        ftcRobot = new FTCrobot(hardwareMap, telemetry, gamepad1, gamepad2, this);
+        /*ultrasonicSensor = hardwareMap.get(ModernRoboticsI2cRangeSensor.class, "ultrasonicSensor");
         waitForStart();
         while(opModeIsActive()){
-            telemetry.addData("leftDistance", leftDistanceSensor.getDistance(DistanceUnit.CM));
-            telemetry.addData("rightDistance", rightDistanceSensor.getDistance(DistanceUnit.CM));
-            telemetry.addData("leftDerivative", leftDistanceSensor.getDerivative(DistanceUnit.CM));
-            telemetry.addData("rightDerivative", rightDistanceSensor.getDerivative(DistanceUnit.CM));
+            telemetry.addData("distance: ", ultrasonicSensor.cmUltrasonic());
+            telemetry.update();
+        }*/
+        waitForStart();
+        while(opModeIsActive()) {
+            ftcRobot.jewelServoController.setToCenterPos();
         }
     }
 }

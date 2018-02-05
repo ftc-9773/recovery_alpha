@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.infrastructure;
 
 import android.util.Log;
 
+import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
@@ -23,7 +24,9 @@ public class RasiActions {
     private FTCrobot ftcRobot;
     private Timer timer2;
     private LinearOpModeCamera linearOpModeCamera;
+    private Gyro myGyro;
     public RasiActions(String rasiFilename, String[] rasiTag, LinearOpModeCamera myLinearOpModeCamera, Gamepad gamepad1, Gamepad gamepad2, Telemetry telemetry, HardwareMap hwMap){
+        myGyro = new Gyro(hwMap);
         this.linearOpModeCamera = myLinearOpModeCamera;
         rasiParser = new RasiParser(rasiFilename, rasiTag);
         ftcRobot = new FTCrobot(hwMap, telemetry, gamepad1, gamepad2, myLinearOpModeCamera);
@@ -33,16 +36,21 @@ public class RasiActions {
         rasiParser.loadNextCommand();
         while (!linearOpModeCamera.isStopRequested()) {
             switch (rasiParser.getParameter(0)) {
-                case "drv":
+                case "turn":
+                    ftcRobot.myDriveWithPID.turnRobot(rasiParser.getAsDouble(1));
+                    break;
+                case "drvd":
                     ftcRobot.myDriveWithPID.driveDist(rasiParser.getAsDouble(1), rasiParser.getAsDouble(2), rasiParser.getAsDouble(3));
                     Log.i("RasiActions", "drv");
                     break;
+                case "drvultra":
+                    ftcRobot.myDriveWithPID.driveUltrasonic(rasiParser.getAsDouble(1), rasiParser.getAsDouble(2), ftcRobot.distanceSensor, rasiParser.getAsDouble(3), rasiParser.getAsDouble(4));
+                break;
                 case "intkl":
-                    ftcRobot.myManualIntakeController.lowerIntake(true);
-                    Timer timer = new Timer(2.0);
-                    while (!timer.isDone() && !linearOpModeCamera.isStopRequested()) {}
-                    ftcRobot.myManualIntakeController.lowerIntake(false);
-                    Log.i("RasiActions", "intkl");
+                    timer2 = new Timer(1);
+                    ftcRobot.myRelicSystem.runToPosition(300);
+                    while(!timer2.isDone()&&linearOpModeCamera.opModeIsActive()){}
+                    ftcRobot.myRelicSystem.runToPosition(0);
                     break;
                 case "intki":
                     ftcRobot.myManualIntakeController.RunIntake(0, -1);
@@ -72,24 +80,46 @@ public class RasiActions {
                     }
                     break;
                 case "cthigh":
-                    Timer timer2 = new Timer(2.0);
+                    timer2 = new Timer(2.0);
                     while(!linearOpModeCamera.isStopRequested()&&!timer2.isDone()) {
                         ftcRobot.myCubeTray.setToPos(CubeTray.LiftFinalStates.HIGH);
                         ftcRobot.myCubeTray.updatePosition();
                     }
                     Log.i("RasiActions", "cthigh");
                     break;
+                case "ctmid":
+                    timer2 = new Timer(2.0);
+                    while(!linearOpModeCamera.isStopRequested()&&!timer2.isDone()) {
+                        ftcRobot.myCubeTray.setToPos(CubeTray.LiftFinalStates.MID);
+                        ftcRobot.myCubeTray.updatePosition();
+                    }
+                    break;
+                case "ctjwlc":
+                    timer2 = new Timer(2.0);
+                    while(!linearOpModeCamera.isStopRequested()&&!timer2.isDone()) {
+                        ftcRobot.myCubeTray.setToPos(CubeTray.LiftFinalStates.JEWELC);
+                        ftcRobot.myCubeTray.updatePosition();
+                    }
+                    break;
+                case "ctjwlr":
+                    timer2 = new Timer(2.0);
+                    while(!linearOpModeCamera.isStopRequested()&&!timer2.isDone()) {
+                        ftcRobot.myCubeTray.setToPos(CubeTray.LiftFinalStates.JEWELR);
+                        ftcRobot.myCubeTray.updatePosition();
+                    }
+                    break;
+                case "ctjwll":
+                    timer2 = new Timer(2.0);
+                    while(!linearOpModeCamera.isStopRequested()&&!timer2.isDone()) {
+                        ftcRobot.myCubeTray.setToPos(CubeTray.LiftFinalStates.JEWELL);
+                        ftcRobot.myCubeTray.updatePosition();
+                    }
+                    break;
                 case "wait":
                     timer2 = new Timer(rasiParser.getAsDouble(1));
                     while (!timer2.isDone()&&!linearOpModeCamera.isStopRequested()) {}
                     Log.i("RasiActions", "wait");
                     break;
-                case "jservo":
-                    if(rasiParser.getParameter(1) == "right"){ftcRobot.jewelServoController.setToRightPos();}
-                    if(rasiParser.getParameter(1) == "left"){ftcRobot.jewelServoController.setToLeftPos();}
-                    if(rasiParser.getParameter(1) == "center"){ftcRobot.jewelServoController.setToCenterPos();}
-                    if(rasiParser.getParameter(1) == "retract"){ftcRobot.jewelServoController.setToRetractPos();}
-                    if(rasiParser.getParameter(1) == "block"){ftcRobot.jewelServoController.setToBlockPos();}
                 case "end":
                     linearOpModeCamera.requestOpModeStop();
                     while(linearOpModeCamera.opModeIsActive()){}

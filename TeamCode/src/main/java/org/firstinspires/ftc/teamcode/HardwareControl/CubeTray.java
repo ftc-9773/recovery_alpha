@@ -59,7 +59,7 @@ import org.firstinspires.ftc.teamcode.infrastructure.SafeJsonReader;
 public class CubeTray {
     public enum TrayPositions {STOWED, LOADING, CARRYING, DUMP_A}
     public enum OverallStates {LOADING, CARRY, STOWED, TO_LOADING, FROM_STOWED, TO_CARRY}
-    public enum LiftFinalStates {STOWED, LOADING, LOW, MID, HIGH, JEWEL}
+    public enum LiftFinalStates {STOWED, LOADING, LOW, MID, HIGH, JEWELC, JEWELR, JEWELL}
     public boolean homing = false;
 
     // Json setup
@@ -272,10 +272,17 @@ public class CubeTray {
                     case HIGH:
                         liftTargetPosition = topPosTicks;
                         break;
-                    case JEWEL:
+                    case JEWELC:
                         liftTargetPosition = jewelPosTicks;
-                        setServoPos(TrayPositions.CARRYING);
                         myJewelServo.setToCenterPos();
+                        break;
+                    case JEWELR:
+                        liftTargetPosition = jewelPosTicks;
+                        myJewelServo.setToRightPos();
+                        break;
+                    case JEWELL:
+                        liftTargetPosition = jewelPosTicks;
+                        myJewelServo.setToLeftPos();
                     default:
                         // otherwise do nothing
                         break;
@@ -445,22 +452,23 @@ public class CubeTray {
         switch (trayPos) {
             case STOWED:
                 posNum = 0;
-                myJewelServo.setToBlockPos();
+                myJewelServo.setToRetractPos();
                 break;
             case LOADING:
                 posNum = 1;
                 if(useBlockerServo){
-                    myJewelServo.setToRetractPos();
-                }else myJewelServo.setToBlockPos();
+                    myJewelServo.setToBlockPos();
+                }else myJewelServo.setToRetractPos();
                 break;
             case CARRYING:
                 posNum = 2;
-                myJewelServo.setToBlockPos();
+                myJewelServo.setToRetractPos();
                 break;
             case DUMP_A:
                 posNum = 3;
-                myJewelServo.setToBlockPos();
+                myJewelServo.setToRetractPos();
                 break;
+
             default:
                 break;
         }
@@ -473,7 +481,6 @@ public class CubeTray {
         rightFlapPos = rightFlapPostions[posNum];
         leftAnglePos = leftAnglePostions[posNum];
         rightAnglePos = rightAnglePostions[posNum];
-
 
         String logging = " setting servo positions:Positions are: ";
         for (double i: leftFlapPositions) {

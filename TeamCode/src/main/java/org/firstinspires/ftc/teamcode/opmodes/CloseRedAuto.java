@@ -220,6 +220,7 @@ public class CloseRedAuto extends LinearOpModeCamera{
         // Drive away from the box
         myDriveWithPID.driveDist(drivingPower, angleDriveAwayFromCryptobox, distDriveAwayFromCryptobox);
 
+        //record heading
         myGyro.recordHeading();
     }
 }

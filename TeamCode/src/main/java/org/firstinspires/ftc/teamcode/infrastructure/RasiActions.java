@@ -91,10 +91,24 @@ public class RasiActions {
                         ftcRobot.myCubeTray.updatePosition();
                     }
                     break;
-                case "ctjwl":
+                case "ctjwlc":
                     timer2 = new Timer(2.0);
                     while(!linearOpModeCamera.isStopRequested()&&!timer2.isDone()) {
-                        ftcRobot.myCubeTray.setToPos(CubeTray.LiftFinalStates.JEWEL);
+                        ftcRobot.myCubeTray.setToPos(CubeTray.LiftFinalStates.JEWELC);
+                        ftcRobot.myCubeTray.updatePosition();
+                    }
+                    break;
+                case "ctjwlr":
+                    timer2 = new Timer(2.0);
+                    while(!linearOpModeCamera.isStopRequested()&&!timer2.isDone()) {
+                        ftcRobot.myCubeTray.setToPos(CubeTray.LiftFinalStates.JEWELR);
+                        ftcRobot.myCubeTray.updatePosition();
+                    }
+                    break;
+                case "ctjwll":
+                    timer2 = new Timer(2.0);
+                    while(!linearOpModeCamera.isStopRequested()&&!timer2.isDone()) {
+                        ftcRobot.myCubeTray.setToPos(CubeTray.LiftFinalStates.JEWELL);
                         ftcRobot.myCubeTray.updatePosition();
                     }
                     break;
@@ -102,17 +116,6 @@ public class RasiActions {
                     timer2 = new Timer(rasiParser.getAsDouble(1));
                     while (!timer2.isDone()&&!linearOpModeCamera.isStopRequested()) {}
                     Log.i("RasiActions", "wait");
-                    break;
-                case "jservo":
-                    timer2 = new Timer(2);
-                    if(rasiParser.getParameter(1) == "right"){while(!timer2.isDone() && linearOpModeCamera.opModeIsActive()){ftcRobot.jewelServoController.setToRightPos();}}
-                    if(rasiParser.getParameter(1) == "left"){while(!timer2.isDone() && linearOpModeCamera.opModeIsActive()){ftcRobot.jewelServoController.setToLeftPos();}}
-                    if(rasiParser.getParameter(1) == "center"){while(!timer2.isDone() && linearOpModeCamera.opModeIsActive()){ftcRobot.jewelServoController.setToCenterPos();}}
-                    if(rasiParser.getParameter(1) == "retract"){while(!timer2.isDone() && linearOpModeCamera.opModeIsActive()){ftcRobot.jewelServoController.setToRetractPos();}}
-                    if(rasiParser.getParameter(1) == "block"){while(!timer2.isDone() && linearOpModeCamera.opModeIsActive()){ftcRobot.jewelServoController.setToBlockPos();}}
-                    break;
-                case "recheading":
-                    myGyro.recordHeading();
                     break;
                 case "end":
                     linearOpModeCamera.requestOpModeStop();

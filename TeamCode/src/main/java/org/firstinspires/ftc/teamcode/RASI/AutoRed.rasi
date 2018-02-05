@@ -7,6 +7,8 @@ RED: ctjwlr;
 BLUE: ctjwll;
 drv, 0.5, 0, 4;
 ctlow;
+drvd, 0.5, 270, 6.0;
+turn, 180;
 drvultra, 0.5, 270, 0, 15;
 RIGHT: drvd, 0.5, 270, 3.0;
 CENTER: drvd, 0.5, 270, 9.0;

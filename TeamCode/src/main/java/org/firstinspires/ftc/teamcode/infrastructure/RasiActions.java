@@ -36,6 +36,9 @@ public class RasiActions {
         rasiParser.loadNextCommand();
         while (!linearOpModeCamera.isStopRequested()) {
             switch (rasiParser.getParameter(0)) {
+                case "turn":
+                    ftcRobot.myDriveWithPID.turnRobot(rasiParser.getAsDouble(1));
+                    break;
                 case "drvd":
                     ftcRobot.myDriveWithPID.driveDist(rasiParser.getAsDouble(1), rasiParser.getAsDouble(2), rasiParser.getAsDouble(3));
                     Log.i("RasiActions", "drv");

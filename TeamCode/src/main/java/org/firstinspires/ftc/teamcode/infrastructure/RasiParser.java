@@ -124,12 +124,12 @@ public class  RasiParser {
             }
 
             //If the array has length one, there is no tag, so we should load the command.
-            if(commandOut.length == 1){
+            if(commandOut.length == 1 && currentCommand.charAt(0) != '/' && currentCommand.charAt(1) != '/'){
                 commandOut = commandOut[0].split(",");
             }
 
             //if the array has length 2, there is a tag. We check if the tag array contains this tag, and if it does, we load the command.
-            else if(commandOut.length == 2 && Arrays.asList(rasiTag).contains(commandOut[0])){
+            else if(commandOut.length == 2 && Arrays.asList(rasiTag).contains(commandOut[0]) && currentCommand.charAt(0) != '/' && currentCommand.charAt(1) != '/'){
                 commandOut = commandOut[1].split(",");
             }
 

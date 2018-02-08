@@ -65,7 +65,7 @@ public class DriveWithPID {
 
         // Point modules
         final double time1 = System.currentTimeMillis();
-        while (System.currentTimeMillis() - time1 < 500) {
+        while (myOpMode.opModeIsActive() && System.currentTimeMillis() - time1 < 500) {
             mySwerveController.steerSwerve(false, speed, Math.toRadians(angleDegrees), 0, -1);
 
             if (!mySwerveController.getIsTurning() && System.currentTimeMillis() - time1 > 200) {
@@ -123,7 +123,7 @@ public class DriveWithPID {
         }
 
         // Drive
-        while (!inThres) {
+        while (myOpMode.opModeIsActive() && !inThres) {
             inThres = distanceSensor.cmUltrasonic() < maxDist && distanceSensor.cmUltrasonic() > minDist;
             mySwerveController.steerSwerve(false, speed, Math.toRadians(angleDegrees), 0, -1);
             mySwerveController.moveRobot(false);

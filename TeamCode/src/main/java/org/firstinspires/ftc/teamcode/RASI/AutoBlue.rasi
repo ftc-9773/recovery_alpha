@@ -1,7 +1,13 @@
+ctload;
 intkl;
-drvd, 0.25, 180, 9.0;
-drvd, 0.5, 0, 9.0;
-drvd, 0.5, 75, 24;
+ctlow;
+ctjwlc;
+drv, 0.5, 180, 9.0;
+RED: ctjwll;
+BLUE: ctjwlr;
+drvd, 0.5, 0, 4;
+ctload;
+drvd, 0.5, 90, 6.0;
 turn, 180;
 drvultra, 0.5, 90, 0, 15;
 RIGHT: drvd, 0.5, 90, 3.0;

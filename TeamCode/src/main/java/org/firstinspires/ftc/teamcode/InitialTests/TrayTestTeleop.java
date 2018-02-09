@@ -48,8 +48,6 @@ public class TrayTestTeleop extends LinearOpMode {
 
     private void composeTelemetry(){
 
-        telemetry.addData("LeftFlap Position: ", myCubeTrayController.leftFlapPos);
-        telemetry.addData("RightFlap Position: ", myCubeTrayController.rightFlapPos);
 
         telemetry.addData("LeftAngle position: ", myCubeTrayController.leftAnglePos);
         telemetry.addData("RightAngle position: ", myCubeTrayController.rightAnglePos);

@@ -57,10 +57,12 @@ import org.firstinspires.ftc.teamcode.infrastructure.SafeJsonReader;
 
 
 public class CubeTray {
-    public enum TrayPositions {STOWED, LOADING, CARRYING, DUMP_A}
-    public enum OverallStates {LOADING, CARRY, STOWED, TO_LOADING, FROM_STOWED, TO_CARRY}
+    // setup enum valeus for state machine
+    public enum TrayPositions {STOWED, LOADING, CARRYING, DUMP_A, JEWEL}
+    public enum OverallStates {LOADING, CARRY, STOWED, TO_LOADING, FROM_STOWED, TO_CARRY, TO_JEWEL}
     public enum LiftFinalStates {STOWED, LOADING, LOW, MID, HIGH, JEWELC, JEWELR, JEWELL}
     public boolean homing = false;
+    public boolean grabbing = true;
 
     // Json setup
     private SafeJsonReader myCubeTrayPositions;
@@ -77,8 +79,8 @@ public class CubeTray {
     // define limit switch
     private AnalogInput limitSwitch;
     // define servos & motor for the tray
-    private Servo leftFlap  ;
-    private Servo rightFlap ;
+    private Servo grabber  ;
+    private Servo jewelServo ;
     private Servo leftAngle ;
     private Servo rightAngle ;
     public DcMotor liftMotor ;
@@ -94,8 +96,7 @@ public class CubeTray {
     private static final String TAG = "ftc9773_CubeTray" ;
 
     // servo position variables for testing
-    public double leftFlapPos ;
-    public double rightFlapPos;
+    public double grabberPos;
     public double leftAnglePos;
     public double rightAnglePos;
 
@@ -135,16 +136,15 @@ public class CubeTray {
 
     //define servo positions - each array of postitons go in the following order:
     // stowed, loading, carrying, dumpingFlap, dumpingAngleAndFlap
-    private static double[] leftFlapPositions = {0.532, 0.5328, 0.35, 0.73, 0.73 } ;
-    private static double[] rightFlapPostions = {.581, 0.6, 0.78, 0.4,1,1 } ;
+    private static double[] grabberPositions = {.581, 0.6, 0.78, 0.4,1,1 } ;
     private static double[] leftAnglePostions = {0.885, 0.554, 0.169, 0.169, 0.039} ;  // dump used to be .039
     private static double[] rightAnglePostions = {0.07, 0.350, 0.754, 0.754,0.901 } ;   // dump used to be .901
 
 
     public CubeTray(HardwareMap hwMap, Gamepad gamepad1, Gamepad gamepad2){  // constructor takes hardware map
         // attach all the servos to their hardware map components
-        leftFlap = hwMap.servo.get("ctlfServo");
-        rightFlap = hwMap.servo.get("ctrfServo");
+        //jewelServo = hwMap.servo.get("ctjServo");
+        grabber = hwMap.servo.get("ctgServo");
         leftAngle = hwMap.servo.get("ctlaServo");
         rightAngle = hwMap.servo.get("ctraServo");
         // passes gamepad, instead of gamepad values for ease of use
@@ -179,24 +179,23 @@ public class CubeTray {
         boolean usingJsonServoPositons = myCubeTrayPositions.getBoolean("usingJsonServoPositions");
 
         String logging = "Positions are: ";
-        for (double i: leftFlapPositions) {
+        for (double i: grabberPositions) {
             logging += ", " + i;
         }
-        Log.i(TAG, logging);
+        Log.v(TAG, logging);
 
 
         if (usingJsonServoPositons) {
             leftAnglePostions = buildServoPosArrayFromJson("leftAngle", leftAnglePostions);
             rightAnglePostions = buildServoPosArrayFromJson("rightAngle", rightAnglePostions);
-            leftFlapPositions = buildServoPosArrayFromJson("leftFlap", leftFlapPositions);
-            rightFlapPostions = buildServoPosArrayFromJson("rightFlap", rightFlapPostions);
+            grabberPositions = buildServoPosArrayFromJson("grabber", grabberPositions);
 
         }
         logging = "Positions are: ";
-        for (double i: leftFlapPositions) {
+        for (double i: grabberPositions) {
             logging += ", " + i;
         }
-        Log.i(TAG, logging);
+        Log.v(TAG, logging);
 
 
         //todo: finish tuning PID
@@ -240,6 +239,8 @@ public class CubeTray {
         if(gamepad1.right_bumper){
             dump();
         }
+        grabbing  = gamepad1.right_trigger > .5;
+
         updatePosition();
 
     }
@@ -263,6 +264,10 @@ public class CubeTray {
 
                 switch (liftFinalState){
                     // when in carry position, can set directly to target position
+                    case STOWED:
+                        break;
+                    case LOADING:
+                        break;
                     case LOW:
                         liftTargetPosition = bottomPosTicks;
                         break;
@@ -274,7 +279,8 @@ public class CubeTray {
                         break;
                     case JEWELC:
                         liftTargetPosition = jewelPosTicks;
-                        myJewelServo.setToCenterPos();
+                        dump();
+                        myJewelServo.setToRightPos();
                         break;
                     case JEWELR:
                         liftTargetPosition = jewelPosTicks;
@@ -314,6 +320,16 @@ public class CubeTray {
                     updatePosition();    // idk if I should do this
                 }
                 break;
+            case TO_JEWEL:
+                liftTargetPosition = bottomPosTicks;
+                setServoPos(TrayPositions.JEWEL);
+                long curTime = System.currentTimeMillis();
+                if(curTime - transitionTimer>trayUpTime){
+                    overallState = OverallStates.CARRY;
+                    updatePosition();    // idk if I should do this
+                }
+
+                break;
             case FROM_STOWED:
                 setServoPos(TrayPositions.LOADING);
                 liftTargetPosition = loadPosTicks ;
@@ -347,6 +363,8 @@ public class CubeTray {
         iterNum++;
         Log.e (TAG, "Ser o position leftAngle = " + leftAngle.getPosition() );
         Log.e (TAG, "Ser o position rightAngle = " + rightAngle.getPosition() );
+        Log.e (TAG, "Ser o position grabber = " + grabber.getPosition() );
+
 
 
     }
@@ -390,6 +408,13 @@ public class CubeTray {
                     overallState = OverallStates.TO_LOADING;
                 }
                 break;
+            case JEWELC:
+                if(overallState == OverallStates.STOWED) {
+                    overallState = OverallStates.FROM_STOWED;
+                } else if (!overallState.equals(OverallStates.CARRY)&&!overallState.equals(OverallStates.TO_CARRY)) {
+                    overallState = OverallStates.TO_JEWEL;
+                    transitionTimer = System.currentTimeMillis();
+                }
 
             default:
                 break;
@@ -441,8 +466,11 @@ public class CubeTray {
     /// servo util functions
 
     public void updateServos() {
-        leftFlap.setPosition(leftFlapPos);
-        rightFlap.setPosition(rightFlapPos);
+        if (grabbing){
+            grabber.setPosition(grabberPositions[2]);
+        } else {
+            grabber.setPosition(grabberPos);
+        }
         leftAngle.setPosition(leftAnglePos);
         rightAngle.setPosition(rightAnglePos);
     }
@@ -466,24 +494,27 @@ public class CubeTray {
                 break;
             case DUMP_A:
                 posNum = 3;
-                myJewelServo.setToRetractPos();
                 break;
 
+            case JEWEL:
+                posNum = 3;
+                myJewelServo.setToCenterPos();
+                break;
             default:
                 break;
         }
         if (posNum == -1) return;
         setToPosNum(posNum);
+
     }
     private void setToPosNum(int posNum){
         // set the servos to their positions using the positions array
-        leftFlapPos = leftFlapPositions[posNum];
-        rightFlapPos = rightFlapPostions[posNum];
+        grabberPos = grabberPositions[posNum];
         leftAnglePos = leftAnglePostions[posNum];
         rightAnglePos = rightAnglePostions[posNum];
 
         String logging = " setting servo positions:Positions are: ";
-        for (double i: leftFlapPositions) {
+        for (double i: grabberPositions) {
             logging += ", " + i;
         }
         Log.i(TAG, logging);
@@ -514,6 +545,7 @@ public class CubeTray {
     }
 
 
+/*
     private void RunServoAdjustmentPotocol(){
         if (gamepad2.a) {
             leftFlapPos -= increment;
@@ -530,6 +562,7 @@ public class CubeTray {
             rightAnglePos -= increment;
         }
     }
+*/
 
     private void printInfo(){
         if(DEBUG){

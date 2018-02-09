@@ -102,14 +102,14 @@ public class RasiActions {
                     }
                     break;
                 case "ctjwlr":
-                    timer2 = new Timer(2.0);
+                    timer2 = new Timer(0.5);
                     while(!linearOpModeCamera.isStopRequested()&&!timer2.isDone()) {
                         ftcRobot.myCubeTray.setToPos(CubeTray.LiftFinalStates.JEWELR);
                         ftcRobot.myCubeTray.updatePosition();
                     }
                     break;
                 case "ctjwll":
-                    timer2 = new Timer(2.0);
+                    timer2 = new Timer(0.5);
                     while(!linearOpModeCamera.isStopRequested()&&!timer2.isDone()) {
                         ftcRobot.myCubeTray.setToPos(CubeTray.LiftFinalStates.JEWELL);
                         ftcRobot.myCubeTray.updatePosition();

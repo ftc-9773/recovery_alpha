@@ -57,7 +57,7 @@ public class NewCloseRedAuto extends LinearOpModeCamera{
         telemetry.update();
 
         //init:
-        myRelicSystem = new RelicSystem(telemetry, hardwareMap);
+        myRelicSystem = new RelicSystem(telemetry, hardwareMap, this);
         vumarkPattern = new VumarkGlyphPattern(hardwareMap);
         myJewelServo = new JewelServoController(hardwareMap);
         myGyro = new Gyro(hardwareMap);
@@ -142,7 +142,7 @@ public class NewCloseRedAuto extends LinearOpModeCamera{
         while(opModeIsActive() && !myTimer1.isDone()){}
 
         //Move lift ot Jewel position
-        myCubeTray.setToPos(CubeTray.LiftFinalStates.JEWEL);
+        myCubeTray.setToPos(CubeTray.LiftFinalStates.JEWELC);
         Timer myTimer2 = new Timer(2);
         while(opModeIsActive()&& !myTimer2.isDone()){myCubeTray.updatePosition();}
 

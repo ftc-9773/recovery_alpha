@@ -30,9 +30,17 @@ public class CloseRedAutoRASId extends LinearOpModeCamera {
 
         while(!opModeIsActive() && !isStopRequested()){
             relicRecoveryVuMark = vumarkGlyphPattern.getColumn();
+
+            telemetry.addData("Initialization", "Success");
             telemetry.addData("vumark", relicRecoveryVuMark);
             telemetry.update();
         }
+
+        //Default to center
+        if (relicRecoveryVuMark == RelicRecoveryVuMark.UNKNOWN) {
+            relicRecoveryVuMark = RelicRecoveryVuMark.CENTER;
+        }
+
 
         waitForStart();
 
@@ -52,7 +60,7 @@ public class CloseRedAutoRASId extends LinearOpModeCamera {
         telemetry.addData("rasitag[1] ", rasiTag[1]);
         telemetry.update();
 
-        rasiActions = new RasiActions("AutoRed", rasiTag, this, gamepad1, gamepad2, telemetry, hardwareMap);
+        rasiActions = new RasiActions("AutoFarRed", rasiTag, this, gamepad1, gamepad2, telemetry, hardwareMap);
 
         rasiActions.runRasi();
     }

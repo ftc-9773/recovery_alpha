@@ -1,9 +1,9 @@
 package org.firstinspires.ftc.teamcode.HardwareControl;
 
-import android.util.Log;
 
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
+import android.util.Log;
 
 import org.firstinspires.ftc.teamcode.infrastructure.SafeJsonReader;
 
@@ -17,9 +17,11 @@ public class JewelServoController {
 
     Servo jewelServo;
 
-    double leftPos = 0.8;
-    double rightPos = 0.5;
-    double centerPos = 0.2;
+    double leftPos = 0.81;
+    double rightPos = 0.35;
+    double centerPos = 0.16;
+    String TAG = "ftc9773_JewelArm";
+
 
     public JewelServoController(HardwareMap hardwareMap) {
         jewelServo = hardwareMap.servo.get("jServo");
@@ -40,6 +42,9 @@ public class JewelServoController {
         jewelServo.setPosition(centerPos);
     }
 
+
+
+
     private double checkIfIssueWithRead(double backupVal, String name, SafeJsonReader reader){
         double readVal = reader.getDouble(name);
         if (readVal != 0.0) return readVal;
@@ -48,6 +53,6 @@ public class JewelServoController {
 
     // aliases
     public void setToBlockPos(){  setToCenterPos();}
-    public void setToRetractPos() {setToRightPos();}
+    public void setToRetractPos() {setToLeftPos();}
 
 }

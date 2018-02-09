@@ -8,13 +8,19 @@ import org.firstinspires.ftc.teamcode.infrastructure.RasiActions;
 /**
  * Created by vikesh on 1/7/18.
  */
+
+/* to push the rasi file:
+cd TeamCode/src/main/java/org/firstinspires/ftc/teamcode/RASI/
+
+~/Library/Android/sdk/platform-tools/adb push RASI/AutonTesting.rasi /sdcard/FIRST/team9773/rasi18
+ */
 @Autonomous(name = "RASI shakedown")
 public class AutonTest extends LinearOpModeCamera{
     private RasiActions rasiActions;
     @Override
     public void runOpMode() throws InterruptedException {
         String[] rasiTags = {"C"};
-        rasiActions = new RasiActions("testOpMode", rasiTags, this, gamepad1, gamepad2, telemetry, hardwareMap);
+        rasiActions = new RasiActions("AutonTesting", rasiTags, this, gamepad1, gamepad2, telemetry, hardwareMap);
         waitForStart();
         rasiActions.runRasi();
     }

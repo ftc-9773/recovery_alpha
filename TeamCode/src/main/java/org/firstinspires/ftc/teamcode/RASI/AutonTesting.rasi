@@ -1,7 +1,8 @@
 ctload;
+wait, 1;
 ctjwlc;
-wait, 2;
+wait, 10;
 ctjwlr;
-wait, 2;
+wait, 10;
 ctjwll;
 end;

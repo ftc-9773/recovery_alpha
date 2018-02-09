@@ -282,14 +282,16 @@ public class CubeTray {
                     case JEWELC:
                         liftTargetPosition = jewelPosTicks;
                         dump();
-                        myJewelServo.setToRightPos();
+                        myJewelServo.setToCenterPos();
                         break;
                     case JEWELR:
                         liftTargetPosition = jewelPosTicks;
+                        dump();
                         myJewelServo.setToRightPos();
                         break;
                     case JEWELL:
                         liftTargetPosition = jewelPosTicks;
+                        dump();
                         myJewelServo.setToLeftPos();
                     default:
                         // otherwise do nothing
@@ -413,7 +415,7 @@ public class CubeTray {
             case JEWELC:
                 if(overallState == OverallStates.STOWED) {
                     overallState = OverallStates.FROM_STOWED;
-                } else if (!overallState.equals(OverallStates.CARRY)&&!overallState.equals(OverallStates.TO_CARRY)) {
+                } else if (!overallState.equals(OverallStates.CARRY)&&!overallState.equals(OverallStates.TO_JEWEL)) {
                     overallState = OverallStates.TO_JEWEL;
                     transitionTimer = System.currentTimeMillis();
                 }

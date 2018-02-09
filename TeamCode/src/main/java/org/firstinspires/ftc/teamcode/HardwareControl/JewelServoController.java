@@ -11,6 +11,11 @@ import java.io.IOException;
 
 /**
  * Created by nicky on 1/2/18.
+ *
+ * to push the file
+ * cd TeamCode/src/main/java/org/firstinspires/ftc/teamcode/
+ *
+ * ~/Library/Android/sdk/platform-tools/adb push JSON/JewelArmPositions.json /sdcard/FIRST/team9773/json18
  */
 
 public class JewelServoController {

@@ -16,7 +16,7 @@ public class  RasiParser {
     private String input = "";
     public String[] commands;
     private String[] commandOut = new String[4];
-    private String[] rasiTag;
+    public String[] rasiTag;
     private int index = 0;
     private int commandReadingIndex = 0;
 

@@ -92,7 +92,7 @@ public class CubeTray {
     public int liftTargetPosition = 0;  // change to private
 
     //DEBUGING
-    private static final boolean DEBUG = true;
+    private static final boolean DEBUG = false;
     private static final String TAG = "ftc9773_CubeTray" ;
 
     // servo position variables for testing
@@ -169,11 +169,13 @@ public class CubeTray {
         loadPosTicks = myCubeTrayPositions.getInt("loadPosTicks");
         toLoadingThreshold = myCubeTrayPositions.getInt("toLoadingThreshold");
 
+        /*
         Log.i(TAG, "sensor position set to: " + sensorPosTicks);
         Log.i(TAG, "TopPosTicks set to: " + topPosTicks);
         Log.i(TAG, "middle position ticks set to: " + middlePosTicks);
         Log.i(TAG, "bottom position set to: " + bottomPosTicks);
         Log.i(TAG, "load position set to: " + loadPosTicks);
+*/
 
         // set up servos
         boolean usingJsonServoPositons = myCubeTrayPositions.getBoolean("usingJsonServoPositions");
@@ -182,7 +184,7 @@ public class CubeTray {
         for (double i: grabberPositions) {
             logging += ", " + i;
         }
-        Log.v(TAG, logging);
+        //Log.v(TAG, logging);
 
 
         if (usingJsonServoPositons) {
@@ -195,7 +197,7 @@ public class CubeTray {
         for (double i: grabberPositions) {
             logging += ", " + i;
         }
-        Log.v(TAG, logging);
+        //Log.v(TAG, logging);
 
 
         //todo: finish tuning PID
@@ -206,9 +208,9 @@ public class CubeTray {
         Double kd = myCubeTrayPositions.getDouble("liftHeightD");
         liftHeightPidController = new PIDController(kp, ki, kd);
 
-        Log.i(TAG,"liftHeightP = " + kp);
-        Log.i(TAG,"liftHeight I = " + ki);
-        Log.i(TAG,"liftHeight D = " + kd);
+        //Log.i(TAG,"liftHeightP = " + kp);
+        //Log.i(TAG,"liftHeight I = " + ki);
+        //Log.i(TAG,"liftHeight D = " + kd);
 
         // abort stuff
         // afteyAbortTime = myCubeTrayPositions.getInt("safteyAbortTime");
@@ -355,15 +357,15 @@ public class CubeTray {
 
             myCubeTrayPositions.updateFile();
 
-            Log.i(TAG,"Wrote the following vals to file: (cubeTrayLogging)");
-            Log.i(TAG + "Height", String.valueOf(getliftPos()));
-            Log.i(TAG + "Pos", overallState.toString());
+            //Log.i(TAG,"Wrote the following vals to file: (cubeTrayLogging)");
+            //Log.i(TAG + "Height", String.valueOf(getliftPos()));
+            //Log.i(TAG + "Pos", overallState.toString());
 
         }
         iterNum++;
-        Log.e (TAG, "Ser o position leftAngle = " + leftAngle.getPosition() );
-        Log.e (TAG, "Ser o position rightAngle = " + rightAngle.getPosition() );
-        Log.e (TAG, "Ser o position grabber = " + grabber.getPosition() );
+        //Log.e (TAG, "Ser o position leftAngle = " + leftAngle.getPosition() );
+        //Log.e (TAG, "Ser o position rightAngle = " + rightAngle.getPosition() );
+        //Log.e (TAG, "Ser o position grabber = " + grabber.getPosition() );
 
 
 
@@ -458,7 +460,7 @@ public class CubeTray {
         }
         double correction = liftHeightPidController.getPIDCorrection(targetPos, getliftPos());
 
-        Log.d(TAG,"lift position correction =" + correction);
+        //Log.d(TAG,"lift position correction =" + correction);
 
         liftMotor.setPower(correction);
     }
@@ -517,7 +519,7 @@ public class CubeTray {
         for (double i: grabberPositions) {
             logging += ", " + i;
         }
-        Log.i(TAG, logging);
+        //Log.i(TAG, logging);
     }
 
 
@@ -617,30 +619,30 @@ public class CubeTray {
         double stowedTempVal = myCubeTrayPositions.getDouble(servoName + "Stowed");
         if(stowedTempVal != 0.0) {
             positions[0] = stowedTempVal;
-            Log.i(TAG, "built servo " +servoName + " stowed pos to" +stowedTempVal);
+            //Log.i(TAG, "built servo " +servoName + " stowed pos to" +stowedTempVal);
         }   else {
             success = false;
-            Log.w(TAG, "unnable to build servo " +servoName + " stowed pos; set to hardcoded default");
+            //Log.w(TAG, "unnable to build servo " +servoName + " stowed pos; set to hardcoded default");
         }
 
         // build loading pos setting
         double loadingTempVal = myCubeTrayPositions.getDouble(servoName + "Loading");
         if(loadingTempVal != 0.0) {
             positions[1] = loadingTempVal;
-            Log.i(TAG, "built servo " +servoName + " loading pos to" +loadingTempVal);
+            //Log.i(TAG, "built servo " +servoName + " loading pos to" +loadingTempVal);
 
         }   else {
             success = false;
-            Log.w(TAG, "unnable to build servo " +servoName + " laoding pos; set to hardcoded default");
+            //Log.w(TAG, "unnable to build servo " +servoName + " laoding pos; set to hardcoded default");
         }
 
         // build carrying pos setting
         double carryingTempVal = myCubeTrayPositions.getDouble(servoName + "Carrying");
         if(carryingTempVal != 0.0) {
             positions[2] = carryingTempVal;
-            Log.i(TAG, "built servo " +servoName + " carrying pos to" +carryingTempVal);
+            //Log.i(TAG, "built servo " +servoName + " carrying pos to" +carryingTempVal);
         }   else {
-            Log.w(TAG, "unnable to build servo " +servoName + " carrying pos; set to hardcoded default");
+            //Log.w(TAG, "unnable to build servo " +servoName + " carrying pos; set to hardcoded default");
             success = false;
         }
 
@@ -648,9 +650,9 @@ public class CubeTray {
         double dumpingFlapTempVal = myCubeTrayPositions.getDouble(servoName + "DumpingFlap");
         if(dumpingFlapTempVal != 0.0) {
             positions[3] = dumpingFlapTempVal;
-            Log.i(TAG, "built servo " +servoName + " dumpA pos to" +dumpingFlapTempVal);
+            //Log.i(TAG, "built servo " +servoName + " dumpA pos to" +dumpingFlapTempVal);
         }   else {
-            Log.w(TAG, "unnable to build servo " +servoName + " DumpA pos; set to hardcoded default");
+            //Log.w(TAG, "unnable to build servo " +servoName + " DumpA pos; set to hardcoded default");
             success = false;
         }
 
@@ -658,10 +660,10 @@ public class CubeTray {
         double dumpingAngleTempVal = myCubeTrayPositions.getDouble(servoName + "DumpingAngle");
         if(dumpingAngleTempVal != 0.0) {
             positions[4] = dumpingAngleTempVal;
-            Log.i(TAG, "built servo " +servoName + " dumpB pos to" +dumpingAngleTempVal);
+            //Log.i(TAG, "built servo " +servoName + " dumpB pos to" +dumpingAngleTempVal);
         }   else{
             success = false;
-            Log.w(TAG, "unnable to build servo " +servoName + " dumpingB pos; set to hardcoded default");
+            //Log.w(TAG, "unnable to build servo " +servoName + " dumpingB pos; set to hardcoded default");
 
         }
         return positions;

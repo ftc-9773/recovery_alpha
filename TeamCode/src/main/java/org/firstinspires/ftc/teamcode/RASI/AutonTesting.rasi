@@ -1,1 +1,7 @@
-drv, 0.5, 270, 0, 5
+ctload;
+ctjwlc;
+wait, 2;
+ctjwlr;
+wait, 2;
+ctjwll;
+end;

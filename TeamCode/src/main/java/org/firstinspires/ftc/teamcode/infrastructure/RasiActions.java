@@ -121,6 +121,9 @@ public class RasiActions {
                     timer2 = new Timer(rasiParser.getAsDouble(1));
                     while (!timer2.isDone()&&!linearOpModeCamera.isStopRequested()) {}
                     break;
+                case "gyrolg":
+                    myGyro.recordHeading();
+                    break;
                 case "end":
                     linearOpModeCamera.requestOpModeStop();
                     while(linearOpModeCamera.opModeIsActive()){}

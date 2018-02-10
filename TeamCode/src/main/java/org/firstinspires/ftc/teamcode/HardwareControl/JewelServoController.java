@@ -22,9 +22,9 @@ public class JewelServoController {
 
     Servo jewelServo;
 
-    double leftPos = 0.81;
-    double rightPos = 0.35;
-    double centerPos = 0.16;
+    double leftPos = 0.77;
+    double rightPos = 0.16;
+    double centerPos = 0.35;
     String TAG = "ftc9773_JewelArm";
 
 
@@ -52,8 +52,15 @@ public class JewelServoController {
 
     private double checkIfIssueWithRead(double backupVal, String name, SafeJsonReader reader){
         double readVal = reader.getDouble(name);
-        if (readVal != 0.0) return readVal;
-        else return backupVal;
+        double result;
+        if (readVal != 0.0) {
+             result = readVal;
+        }
+        else {
+             result = backupVal;
+        }
+        Log.i(TAG,"Building servo position: " + name + " to " + result);
+        return result;
     }
 
     // aliases

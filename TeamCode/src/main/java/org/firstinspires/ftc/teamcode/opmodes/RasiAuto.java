@@ -25,7 +25,7 @@ public class RasiAuto extends LinearOpModeCamera {
     private RelicRecoveryVuMark relicRecoveryVuMark;
     private JewelDetector jewelDetector;
     private String[] rasiTag = new String[2];
-    private String[] rasiFileNames = new String[] {"AutoCloseRed", "AutoFarRed", "AutoCloseBlue", "AutoFarBlue"};
+    private String[] rasiFileNames = new String[] {"AutoFarRed", "AutoFarBlue"};
     private RasiActions rasiActions;
     private JewelDetector.JewelColors jewelColors;
 
@@ -44,10 +44,11 @@ public class RasiAuto extends LinearOpModeCamera {
 
             if (down.isJustOn()) fileNameIndex --;
             if (up.isJustOn()) fileNameIndex ++;
-            if (fileNameIndex > 3) fileNameIndex = 0;
-            if (fileNameIndex < 0) fileNameIndex = 3;
+            if (fileNameIndex > rasiFileNames.length-1) fileNameIndex = 0;
+            if (fileNameIndex < 0) fileNameIndex = rasiFileNames.length-1;
             telemetry.addData("Choose an Autonomous Path", "");
             telemetry.addData("Current Path", rasiFileNames[fileNameIndex]);
+            telemetry.addData("Start", "PRESS Y BEFORE START");
             telemetry.update();
         }
 

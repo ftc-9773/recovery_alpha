@@ -63,6 +63,7 @@ public class CubeTray {
     public enum LiftFinalStates {STOWED, LOADING, LOW, MID, HIGH, JEWELC, JEWELR, JEWELL}
     public boolean homing = false;
     public boolean grabbing = true;
+    public boolean AutonomousMode = false;
 
     // Json setup
     private SafeJsonReader myCubeTrayPositions;
@@ -120,12 +121,12 @@ public class CubeTray {
 
 
     // setup variables for positioning    // default values are hardcoded in case of issue
-    private static int sensorPosTicks = 3615;
-    private static int topPosTicks = 3260;
-    private static int middlePosTicks = 1850;
+    private static int sensorPosTicks = 3355;
+    private static int topPosTicks = 3360;
+    private static int middlePosTicks = 1950;
     private static int bottomPosTicks = 450;
-    private static int loadPosTicks = 190;
-    private int toLoadingThreshold  = 500;
+    private static int loadPosTicks = 250;
+    private int toLoadingThreshold  = 250;
     private static int jewelPosTicks = 1000;
 
     private static final int positionTolerance = 40;
@@ -136,7 +137,7 @@ public class CubeTray {
 
     //define servo positions - each array of postitons go in the following order:
     // stowed, loading, carrying, dumpingFlap, dumpingAngleAndFlap
-    private static double[] grabberPositions = {.581, 0.6, 0.78, 0.4,1,1 } ;
+    private static double[] grabberPositions = {0.55, 0.62, 0.77, 0.4,.4,.4 } ;
     private static double[] leftAnglePostions = {0.885, 0.554, 0.169, 0.169, 0.039} ;  // dump used to be .039
     private static double[] rightAnglePostions = {0.07, 0.350, 0.754, 0.754,0.901 } ;   // dump used to be .901
 
@@ -494,6 +495,9 @@ public class CubeTray {
                 break;
             case CARRYING:
                 posNum = 2;
+                if(AutonomousMode && liftFinalState.equals(LiftFinalStates.LOADING)){
+                    myJewelServo.setToCenterPos();
+                } else
                 myJewelServo.setToRetractPos();
                 break;
             case DUMP_A:

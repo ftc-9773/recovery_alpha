@@ -32,6 +32,7 @@ public class RasiActions {
         this.linearOpModeCamera = myLinearOpModeCamera;
         rasiParser = new RasiParser(rasiFilename, rasiTag);
         ftcRobot = new FTCrobot(hwMap, telemetry, gamepad1, gamepad2, myLinearOpModeCamera);
+        ftcRobot.myCubeTray.AutonomousMode = true;
     }
 
     // Run the rasi commands
@@ -69,7 +70,7 @@ public class RasiActions {
                     ftcRobot.myManualIntakeController.RunIntake(0, 1);
                     ftcRobot.myManualIntakeController.RunIntake(0, 0);
                 case "ctload":
-                    timer2 = new Timer(2.0);
+                    timer2 = new Timer(1);
                     while(!linearOpModeCamera.isStopRequested()&&!timer2.isDone()) {
                         ftcRobot.myCubeTray.setToPos(CubeTray.LiftFinalStates.LOADING);
                         ftcRobot.myCubeTray.updatePosition();
@@ -105,15 +106,15 @@ public class RasiActions {
                     break;
                 case "ctjwlr":
                     timer2 = new Timer(0.5);
+                    ftcRobot.myCubeTray.setToPos(CubeTray.LiftFinalStates.JEWELR);
                     while(!linearOpModeCamera.isStopRequested()&&!timer2.isDone()) {
-                        ftcRobot.myCubeTray.setToPos(CubeTray.LiftFinalStates.JEWELR);
                         ftcRobot.myCubeTray.updatePosition();
                     }
                     break;
                 case "ctjwll":
                     timer2 = new Timer(0.5);
+                    ftcRobot.myCubeTray.setToPos(CubeTray.LiftFinalStates.JEWELL);
                     while(!linearOpModeCamera.isStopRequested()&&!timer2.isDone()) {
-                        ftcRobot.myCubeTray.setToPos(CubeTray.LiftFinalStates.JEWELL);
                         ftcRobot.myCubeTray.updatePosition();
                     }
                     break;

@@ -48,7 +48,7 @@ import org.firstinspires.ftc.teamcode.infrastructure.SafeJsonReader;
  * cd TeamCode/src/main/java/org/firstinspires/ftc/teamcode/JSON/
  *
  * To push the file:
- * ~/Library/Android/sdk/platform-tools/adb push CubeTrayServoPositions.json /sdcard/FIRST/team9773/json18
+ * ~/Library/Android/sdk/platform-tools/adb push JSON/CubeTrayServoPositions.json /sdcard/FIRST/team9773/json18
  *
  * To pull the file
  * ~/Library/Android/sdk/platform-tools/adb pull /sdcard/FIRST/team9773/json18/CubeTrayServoPositions.json

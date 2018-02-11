@@ -3,7 +3,7 @@
    "sensorPosTicks" : 3355,
    "topPosTicks"    : 3360,
    "middlePosTicks" : 1950,
-   "bottomPosTicks" : 450,
+   "bottomPosTicks" : 550,
   "loadPosTicks"    : 250,
   "toLoadingThreshold": 250,
   "CompStartPos" : 2188,

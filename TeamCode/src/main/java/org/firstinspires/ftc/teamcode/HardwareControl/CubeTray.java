@@ -171,11 +171,11 @@ public class CubeTray {
         toLoadingThreshold = myCubeTrayPositions.getInt("toLoadingThreshold");
 
         /*
-        Log.i(TAG, "sensor position set to: " + sensorPosTicks);
-        Log.i(TAG, "TopPosTicks set to: " + topPosTicks);
-        Log.i(TAG, "middle position ticks set to: " + middlePosTicks);
-        Log.i(TAG, "bottom position set to: " + bottomPosTicks);
-        Log.i(TAG, "load position set to: " + loadPosTicks);
+        if (DEBUG) Log.i(TAG, "sensor position set to: " + sensorPosTicks);
+        if (DEBUG) Log.i(TAG, "TopPosTicks set to: " + topPosTicks);
+        if (DEBUG) Log.i(TAG, "middle position ticks set to: " + middlePosTicks);
+        if (DEBUG) Log.i(TAG, "bottom position set to: " + bottomPosTicks);
+        if (DEBUG) Log.i(TAG, "load position set to: " + loadPosTicks);
 */
 
         // set up servos
@@ -185,7 +185,7 @@ public class CubeTray {
         for (double i: grabberPositions) {
             logging += ", " + i;
         }
-        //Log.v(TAG, logging);
+        //if (DEBUG) Log.v(TAG, logging);
 
 
         if (usingJsonServoPositons) {
@@ -198,7 +198,7 @@ public class CubeTray {
         for (double i: grabberPositions) {
             logging += ", " + i;
         }
-        //Log.v(TAG, logging);
+        if (DEBUG) Log.v(TAG, logging);
 
 
         //todo: finish tuning PID
@@ -209,9 +209,9 @@ public class CubeTray {
         Double kd = myCubeTrayPositions.getDouble("liftHeightD");
         liftHeightPidController = new PIDController(kp, ki, kd);
 
-        //Log.i(TAG,"liftHeightP = " + kp);
-        //Log.i(TAG,"liftHeight I = " + ki);
-        //Log.i(TAG,"liftHeight D = " + kd);
+        //if (DEBUG) Log.i(TAG,"liftHeightP = " + kp);
+        //if (DEBUG) Log.i(TAG,"liftHeight I = " + ki);
+        //if (DEBUG) Log.i(TAG,"liftHeight D = " + kd);
 
         // abort stuff
         // afteyAbortTime = myCubeTrayPositions.getInt("safteyAbortTime");
@@ -360,15 +360,15 @@ public class CubeTray {
 
             myCubeTrayPositions.updateFile();
 
-            //Log.i(TAG,"Wrote the following vals to file: (cubeTrayLogging)");
-            //Log.i(TAG + "Height", String.valueOf(getliftPos()));
-            //Log.i(TAG + "Pos", overallState.toString());
+            //if (DEBUG) Log.i(TAG,"Wrote the following vals to file: (cubeTrayLogging)");
+            //if (DEBUG) Log.i(TAG + "Height", String.valueOf(getliftPos()));
+            //if (DEBUG) Log.i(TAG + "Pos", overallState.toString());
 
         }
         iterNum++;
-        //Log.e (TAG, "Ser o position leftAngle = " + leftAngle.getPosition() );
-        //Log.e (TAG, "Ser o position rightAngle = " + rightAngle.getPosition() );
-        //Log.e (TAG, "Ser o position grabber = " + grabber.getPosition() );
+        if (DEBUG) Log.v (TAG, "Ser o position leftAngle = " + leftAngle.getPosition() );
+        if (DEBUG) Log.v (TAG, "Ser o position rightAngle = " + rightAngle.getPosition() );
+        if (DEBUG) Log.v (TAG, "Ser o position grabber = " + grabber.getPosition() );
 
 
 
@@ -463,7 +463,7 @@ public class CubeTray {
         }
         double correction = liftHeightPidController.getPIDCorrection(targetPos, getliftPos());
 
-        //Log.d(TAG,"lift position correction =" + correction);
+        //if (DEBUG) if (DEBUG) Log.d(TAG,"lift position correction =" + correction);
 
         liftMotor.setPower(correction);
     }
@@ -473,8 +473,10 @@ public class CubeTray {
     public void updateServos() {
         if (grabbing){
             grabber.setPosition(grabberPositions[2]);
+            if (DEBUG) Log.e("Nicky", "" + grabberPositions[2]);
         } else {
             grabber.setPosition(grabberPos);
+            if (DEBUG) Log.e("Nicky", "" + grabberPos);
         }
         leftAngle.setPosition(leftAnglePos);
         rightAngle.setPosition(rightAnglePos);
@@ -521,11 +523,15 @@ public class CubeTray {
         leftAnglePos = leftAnglePostions[posNum];
         rightAnglePos = rightAnglePostions[posNum];
 
+        if (DEBUG) Log.d(TAG, "Thought I wrote grabber to" + grabberPos);
+
+        if (DEBUG) Log.d(TAG, "wrote grabber servo to " + grabber.getPosition());
+
         String logging = " setting servo positions:Positions are: ";
         for (double i: grabberPositions) {
             logging += ", " + i;
         }
-        //Log.i(TAG, logging);
+        if (DEBUG) Log.i(TAG,"wrote the following Grabber positions" + logging);
     }
 
 
@@ -574,13 +580,13 @@ public class CubeTray {
 
     private void printInfo(){
         if(DEBUG){
-            Log.d(TAG, "overall state: " + overallState);
-            Log.d(TAG,"Final State: " + liftFinalState);
-            Log.d(TAG, "cubeTray state: "+ trayState);
-            Log.d(TAG, "lift cur target pos: " + liftTargetPosition);
-            Log.d(TAG, "lift current dPosition :  " + liftMotor.getCurrentPosition());
-            Log.d(TAG, "lift motor current mode " + liftMotor.getMode());
-            Log.d(TAG,"power written to lift" + liftMotor.getPower());
+            if (DEBUG) Log.d(TAG, "overall state: " + overallState);
+            if (DEBUG) Log.d(TAG,"Final State: " + liftFinalState);
+            if (DEBUG) Log.d(TAG, "cubeTray state: "+ trayState);
+            if (DEBUG) Log.d(TAG, "lift cur target pos: " + liftTargetPosition);
+            if (DEBUG) Log.d(TAG, "lift current dPosition :  " + liftMotor.getCurrentPosition());
+            if (DEBUG) Log.d(TAG, "lift motor current mode " + liftMotor.getMode());
+            if (DEBUG) Log.d(TAG,"power written to lift" + liftMotor.getPower());
 
 
         }
@@ -612,43 +618,43 @@ public class CubeTray {
         if (!state.equals(LiftFinalStates.STOWED)) {
             liftFinalState = state;
         } else{
-            Log.w(TAG, "SetToPos is unnable to set to STOWED position as of now. Sorry.");
+            if (DEBUG) Log.w(TAG, "SetToPos is unnable to set to STOWED position as of now. Sorry.");
         }
     }
 
 
     private double[] buildServoPosArrayFromJson(String servoName, double[] positions){
         boolean success = true;
-        Log.i(TAG, "building servo: " + servoName);
+        if (DEBUG) Log.i(TAG, "building servo: " + servoName);
 
         // build stowed pos setting
         double stowedTempVal = myCubeTrayPositions.getDouble(servoName + "Stowed");
         if(stowedTempVal != 0.0) {
             positions[0] = stowedTempVal;
-            //Log.i(TAG, "built servo " +servoName + " stowed pos to" +stowedTempVal);
+            //if (DEBUG) Log.i(TAG, "built servo " +servoName + " stowed pos to" +stowedTempVal);
         }   else {
             success = false;
-            //Log.w(TAG, "unnable to build servo " +servoName + " stowed pos; set to hardcoded default");
+            //if (DEBUG) Log.w(TAG, "unnable to build servo " +servoName + " stowed pos; set to hardcoded default");
         }
 
         // build loading pos setting
         double loadingTempVal = myCubeTrayPositions.getDouble(servoName + "Loading");
         if(loadingTempVal != 0.0) {
             positions[1] = loadingTempVal;
-            //Log.i(TAG, "built servo " +servoName + " loading pos to" +loadingTempVal);
+            //if (DEBUG) Log.i(TAG, "built servo " +servoName + " loading pos to" +loadingTempVal);
 
         }   else {
             success = false;
-            //Log.w(TAG, "unnable to build servo " +servoName + " laoding pos; set to hardcoded default");
+            //if (DEBUG) Log.w(TAG, "unnable to build servo " +servoName + " laoding pos; set to hardcoded default");
         }
 
         // build carrying pos setting
         double carryingTempVal = myCubeTrayPositions.getDouble(servoName + "Carrying");
         if(carryingTempVal != 0.0) {
             positions[2] = carryingTempVal;
-            //Log.i(TAG, "built servo " +servoName + " carrying pos to" +carryingTempVal);
+            //if (DEBUG) Log.i(TAG, "built servo " +servoName + " carrying pos to" +carryingTempVal);
         }   else {
-            //Log.w(TAG, "unnable to build servo " +servoName + " carrying pos; set to hardcoded default");
+            //if (DEBUG) Log.w(TAG, "unnable to build servo " +servoName + " carrying pos; set to hardcoded default");
             success = false;
         }
 
@@ -656,9 +662,9 @@ public class CubeTray {
         double dumpingFlapTempVal = myCubeTrayPositions.getDouble(servoName + "DumpingFlap");
         if(dumpingFlapTempVal != 0.0) {
             positions[3] = dumpingFlapTempVal;
-            //Log.i(TAG, "built servo " +servoName + " dumpA pos to" +dumpingFlapTempVal);
+            //if (DEBUG) Log.i(TAG, "built servo " +servoName + " dumpA pos to" +dumpingFlapTempVal);
         }   else {
-            //Log.w(TAG, "unnable to build servo " +servoName + " DumpA pos; set to hardcoded default");
+            //if (DEBUG) Log.w(TAG, "unnable to build servo " +servoName + " DumpA pos; set to hardcoded default");
             success = false;
         }
 
@@ -666,10 +672,10 @@ public class CubeTray {
         double dumpingAngleTempVal = myCubeTrayPositions.getDouble(servoName + "DumpingAngle");
         if(dumpingAngleTempVal != 0.0) {
             positions[4] = dumpingAngleTempVal;
-            //Log.i(TAG, "built servo " +servoName + " dumpB pos to" +dumpingAngleTempVal);
+            //if (DEBUG) Log.i(TAG, "built servo " +servoName + " dumpB pos to" +dumpingAngleTempVal);
         }   else{
             success = false;
-            //Log.w(TAG, "unnable to build servo " +servoName + " dumpingB pos; set to hardcoded default");
+            //if (DEBUG) Log.w(TAG, "unnable to build servo " +servoName + " dumpingB pos; set to hardcoded default");
 
         }
         return positions;
@@ -712,11 +718,11 @@ public class CubeTray {
         int lastPos = myCubeTrayPositions.getInt("LastLiftHeight");
         OverallStates lastState = readTrayPositions();
         if (lastPos == 0|| lastPos== -1){
-            Log.e (TAG, "unnable to read Lift Height");
+            if (DEBUG) Log.e (TAG, "unnable to read Lift Height");
             return;
         }
         if (lastState.equals (null)){
-            Log.e (TAG, "unnabe to read Lift state");
+            if (DEBUG) Log.e (TAG, "unnabe to read Lift state");
             return;
         }
         zeroPos = liftMotor.getCurrentPosition() - lastPos;

@@ -1,11 +1,2 @@
-ctload;
-wait, 1;
-ctlow;
-wait, 1;
-ctjwlc;
-wait, 1;
-ctjwlr;
-wait, 1;
-ctjwll;
-wait, 1;
+intkl;
 end;

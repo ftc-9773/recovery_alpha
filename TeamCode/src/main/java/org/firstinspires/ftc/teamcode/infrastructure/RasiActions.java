@@ -55,8 +55,8 @@ public class RasiActions {
                     ftcRobot.myDriveWithPID.driveTime(rasiParser.getAsDouble(1), rasiParser.getAsDouble(2), rasiParser.getAsDouble(3));
                     break;
                 case "intkl":
-                    timer2 = new Timer(1);
-                    ftcRobot.myRelicSystem.runToPosition(300);
+                    timer2 = new Timer(1.3);
+                    ftcRobot.myRelicSystem.runToPosition(400);
                     while(!timer2.isDone()&&linearOpModeCamera.opModeIsActive()){}
                     ftcRobot.myRelicSystem.runToPosition(0);
                     break;

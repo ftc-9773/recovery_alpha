@@ -1,5 +1,5 @@
 ctload;
-drvd, 0.35, 180, 2.5;
+drvd, 0.35, 180, 1;
 ctjwlc;
 RED: ctjwll;
 BLUE: ctjwlr;
@@ -11,7 +11,7 @@ drvd, 0.6, 268, 24.2;
 turn, 270;
 intkl;
 drvt, 0.55, 180, 1.2;
-R: drvd, 0.5, 0, 31;
+R: drvd, 0.5, 0, 29;
 C: drvd, 0.5, 0, 23;
 L: drvd, 0.5, 0, 15;
 turn, 270;

@@ -48,7 +48,7 @@ import org.firstinspires.ftc.teamcode.infrastructure.SafeJsonReader;
  * cd TeamCode/src/main/java/org/firstinspires/ftc/teamcode/JSON/
  *
  * To push the file:
- * ~/Library/Android/sdk/platform-tools/adb push JSON/CubeTrayServoPositions.json /sdcard/FIRST/team9773/json18
+ * ~/Library/Android/sdk/platform-tools/adb push CubeTrayServoPositions.json /sdcard/FIRST/team9773/json18
  *
  * To pull the file
  * ~/Library/Android/sdk/platform-tools/adb pull /sdcard/FIRST/team9773/json18/CubeTrayServoPositions.json
@@ -60,7 +60,7 @@ public class CubeTray {
     // setup enum valeus for state machine
     public enum TrayPositions {STOWED, LOADING, CARRYING, DUMP_A, JEWEL}
     public enum OverallStates {LOADING, CARRY, STOWED, TO_LOADING, FROM_STOWED, TO_CARRY, TO_JEWEL}
-    public enum LiftFinalStates {STOWED, LOADING, LOW, MID, HIGH, JEWELC, JEWELR, JEWELL}
+    public enum LiftFinalStates {STOWED, LOADING, LOW, MID, HIGH, JEWELC, JEWELR, JEWELL, JEWELE}
     public boolean homing = false;
     public boolean grabbing = true;
     public boolean AutonomousMode = false;
@@ -294,6 +294,7 @@ public class CubeTray {
                         liftTargetPosition = jewelPosTicks;
                         dump();
                         myJewelServo.setToLeftPos();
+                        break;
                     default:
                         // otherwise do nothing
                         break;

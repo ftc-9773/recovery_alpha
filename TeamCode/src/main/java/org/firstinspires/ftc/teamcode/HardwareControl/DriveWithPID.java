@@ -2,10 +2,13 @@ package org.firstinspires.ftc.teamcode.HardwareControl;
 
 import android.util.Log;
 
+import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cRangeSensor;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.ColorSensor;
 
 import org.firstinspires.ftc.robotcontroller.for_camera_opmodes.LinearOpModeCamera;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.PositionTracking.Gyro;
 import org.firstinspires.ftc.teamcode.infrastructure.PIDController;
 import org.firstinspires.ftc.teamcode.infrastructure.SafeJsonReader;
@@ -62,7 +65,7 @@ public class DriveWithPID {
 
         // Point modules
         final double time1 = System.currentTimeMillis();
-        while (System.currentTimeMillis() - time1 < 500) {
+        while (myOpMode.opModeIsActive() && System.currentTimeMillis() - time1 < 500) {
             mySwerveController.steerSwerve(false, speed, Math.toRadians(angleDegrees), 0, -1);
 
             if (!mySwerveController.getIsTurning() && System.currentTimeMillis() - time1 > 200) {
@@ -110,6 +113,23 @@ public class DriveWithPID {
 
     }
 
+    public void driveUltrasonic(double speed, double angleDegrees, ModernRoboticsI2cRangeSensor distanceSensor, double minDist, double maxDist) {
+
+        // Point modules
+        boolean inThres = false;
+        double zeroTime = System.currentTimeMillis();
+        while (System.currentTimeMillis() - zeroTime < 600) {
+            mySwerveController.steerSwerve(false, 1, Math.toRadians(angleDegrees), 0, -1);
+        }
+
+        // Drive
+        while (myOpMode.opModeIsActive() && !inThres) {
+            inThres = distanceSensor.cmUltrasonic() < maxDist && distanceSensor.cmUltrasonic() > minDist;
+            mySwerveController.steerSwerve(false, speed, Math.toRadians(angleDegrees), 0, -1);
+            mySwerveController.moveRobot(false);
+        }
+
+    }
 
     // Turn the Robot
     public void turnRobot (double targetAngleDegrees) throws InterruptedException {

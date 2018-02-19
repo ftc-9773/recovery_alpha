@@ -22,13 +22,13 @@ public class MiscTests extends LinearOpMode {
         jewel = new JewelServoController(hardwareMap);
         waitForStart();
 
-        jewel.lowerArm();
+     //   jewel.lowerArm();
 
         long time = System.currentTimeMillis();
         while (System.currentTimeMillis() - time < 1000) {
             Log.i("waiting", "waiting");
         }
-        jewel.raiseArm();
+       // jewel.raiseArm();
 
         time = System.currentTimeMillis();
         while (System.currentTimeMillis() - time < 1000) {

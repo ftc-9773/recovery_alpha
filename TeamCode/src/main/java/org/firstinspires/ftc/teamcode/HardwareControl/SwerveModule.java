@@ -251,7 +251,7 @@ public class SwerveModule {
         } else {
             tellServo = 0;
         }
-        Log.i(TAG, "Desired Position: " + velocityVector.getAngle()/Math.PI + "pi,   Error Amt: " + errorAmt + ",   Tell servo is: " + tellServo);
+        //Log.i(TAG, "Desired Position: " + velocityVector.getAngle()/Math.PI + "pi,   Error Amt: " + errorAmt + ",   Tell servo is: " + tellServo);
         swerveServo.setPower(tellServo);
 
         if (setOnTwoPI(currentPosition - lastPosition) > isTurningThreshold) {

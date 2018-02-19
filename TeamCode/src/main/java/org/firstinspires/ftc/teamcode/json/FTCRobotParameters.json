@@ -2,6 +2,8 @@
   "MinPowerXY"            : 0.3,
   "MinPowerRotation"      : 0.5,
   "ZeroRange"             : 0.1,
+  "highPrecisionScalingFactor"  : 0.25,
+  "highPrecisionRotationFactor" : 0.45,
 
   "DisableDriving"        : false,
   "DisableLift"           : true,

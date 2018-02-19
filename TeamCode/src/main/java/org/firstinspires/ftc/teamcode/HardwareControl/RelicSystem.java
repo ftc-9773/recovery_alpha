@@ -1,11 +1,16 @@
 package org.firstinspires.ftc.teamcode.HardwareControl;
 
+import android.util.Log;
+
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
+import org.firstinspires.ftc.robotcontroller.for_camera_opmodes.LinearOpModeCamera;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.teamcode.InitialTests.SimplebotTeleopPOV_Linear;
 
 /**
  * Created by Vikesh on 11/25/2017.
@@ -19,8 +24,10 @@ public class RelicSystem {
     private int index = 0;
     private Telemetry telemetry;
     private long lastTime;
+    private LinearOpModeCamera linearOpMode;
 
-    public RelicSystem(Telemetry telemetry, HardwareMap hwMap){
+    public RelicSystem(Telemetry telemetry, HardwareMap hwMap, LinearOpModeCamera linearOpModeCamera){
+        this.linearOpMode = linearOpModeCamera;
         this.armServo = hwMap.servo.get("rlaServo");
         this.grabServo = hwMap.servo.get("rlcServo");
         this.extensionMotor = hwMap.dcMotor.get("rlMotor");
@@ -44,8 +51,20 @@ public class RelicSystem {
         }else{
             grabServo.setPosition(.69);
         }
+        telemetry.update();
     }
     public void runToPosition(int position){
-        extensionMotor.setTargetPosition(position);
+        Log.i("current arm position",Integer.toString(extensionMotor.getCurrentPosition()));
+        if(position < extensionMotor.getCurrentPosition()) {
+            while (extensionMotor.getCurrentPosition() > position && linearOpMode.opModeIsActive()) {
+                extensionMotor.setPower(-0.5);
+            }
+        }
+        else if(position > extensionMotor.getCurrentPosition()) {
+            while (extensionMotor.getCurrentPosition() < position && linearOpMode.opModeIsActive()) {
+                extensionMotor.setPower(1.0);
+            }
+        }
+        extensionMotor.setPower(0);
     }
 }

@@ -1,10 +1,14 @@
 package org.firstinspires.ftc.teamcode.HardwareControl;
 
+import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cRangeSensor;
+import com.qualcomm.robotcore.hardware.ColorSensor;
+import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcontroller.for_camera_opmodes.LinearOpModeCamera;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.PositionTracking.Gyro;
 import org.firstinspires.ftc.teamcode.infrastructure.ButtonStatus;
 import org.firstinspires.ftc.teamcode.infrastructure.RasiParser;
@@ -25,6 +29,9 @@ import android.util.Log;
  */
 
 public class FTCrobot {
+    public ModernRoboticsI2cRangeSensor distanceSensor;
+    public DistanceColorSensor leftColorSensor;
+    public DistanceColorSensor rightColorSensor;
     private SwerveController mySwerveController;
     private double directionLock = -1;
     private double stickl1x;
@@ -38,6 +45,7 @@ public class FTCrobot {
     public CubeTray myCubeTray;
     private HardwareMap hwMap;
     public RelicSystem myRelicSystem;
+    private JewelServoController myJewelServo;
     private Telemetry myTelemetry;
     private Gamepad myGamepad1;
     private Gamepad myGamepad2;
@@ -53,6 +61,7 @@ public class FTCrobot {
     private ButtonStatus gamepad1RightTrigger = new ButtonStatus();
     private ButtonStatus leftBumperStatus = new ButtonStatus();
     private ButtonStatus rightBumperStatus = new ButtonStatus();
+    public JewelServoController jewelServoController;
     private double rotation;
 
     private SafeJsonReader jsonReader;
@@ -60,6 +69,10 @@ public class FTCrobot {
     private double minPowerXY;
     private double minPowerRot;
     private double zeroRange;
+    private double xyCoefficient;
+    private double rotCoefficient;
+    private double highPrecisionScalingFactor;
+    private double highPrecisionRotationFactor;
 
 
     private static final String TAG = "9773_FTCrobot";
@@ -77,31 +90,54 @@ public class FTCrobot {
         this.hwMap = hwmap;
         this.myTelemetry = telemetry;
         // myIntakeController = new IntakeController(hwMap);
+        this.distanceSensor = hwMap.get(ModernRoboticsI2cRangeSensor.class, "ultrasonicSensor");
+        this.leftColorSensor = new DistanceColorSensor(hwMap, "leftColorSensor");
+        this.rightColorSensor = new DistanceColorSensor(hwMap, "rightColorSensor");
         this.myGyro = new Gyro(hwMap);
         this.mySwerveController = new SwerveController(hwMap, myGyro, telemetry);
         this.myManualIntakeController = new IntakeControllerManual(hwMap);
         this.myDriveWithPID = new DriveWithPID(mySwerveController, myGyro, myLinearOpModeCamera);
-        this.myRelicSystem = new RelicSystem(myTelemetry, hwMap);
+        this.myRelicSystem = new RelicSystem(myTelemetry, hwMap, myLinearOpModeCamera);
         this.myCubeTray = new CubeTray(hwmap,gamepad2,null);
+        this.myJewelServo = new JewelServoController(hwmap);
         this.myGamepad1 = gamepad1;
         this.myGamepad2 = gamepad2;
+        this.jewelServoController = new JewelServoController(hwmap);
 
         jsonReader = new SafeJsonReader("FTCRobotParameters");
         minPowerXY = jsonReader.getDouble("MinPowerXY");
         minPowerRot = jsonReader.getDouble("MinPowerRotation");
         zeroRange = jsonReader.getDouble("ZeroRange");
+        highPrecisionScalingFactor = jsonReader.getDouble("highPrecisionScalingFactor");
+        highPrecisionRotationFactor = jsonReader.getDouble("highPrecisionRotationFactor");
+        xyCoefficient = (1 - minPowerXY) / Math.pow(1 - zeroRange, 3);
+        rotCoefficient = (1 - minPowerRot) / Math.pow(1 - zeroRange, 3);
     }
 
-    private double valWithThresholdAndPower3Scaling(double val, double minNonZeroVal, boolean highPrecisionMode) {
-        if (val > zeroRange) {
-            if (highPrecisionMode) return Math.pow(0.5*val, 3) + minNonZeroVal;
-            return Math.pow(val, 3) + minNonZeroVal;
+    private double scaleXYAxes (double value, boolean highPrecisionMode) {
+        if (value > zeroRange) {
+            if (highPrecisionMode) return (value + minPowerXY) * highPrecisionScalingFactor;
+            return xyCoefficient * Math.pow(value - zeroRange, 3) + minPowerXY;
         }
-        if (val < -zeroRange) {
-            if (highPrecisionMode) return Math.pow(0.5*val, 3) - minNonZeroVal;
-            return Math.pow(val, 3) - minNonZeroVal;
+        if (value < -zeroRange) {
+            if (highPrecisionMode) return (value - minPowerXY) * highPrecisionScalingFactor;
+            return xyCoefficient * Math.pow(value + zeroRange, 3) - minPowerXY;
         }
         return 0.0;
+
+    }
+
+    private double scaleRotationAxis (double value, boolean highPrecisionMode) {
+        if (value > zeroRange) {
+            if (highPrecisionMode) return (value + minPowerRot) * highPrecisionRotationFactor;
+            return rotCoefficient * Math.pow(value - zeroRange, 3) + minPowerRot;
+        }
+        if (value < -zeroRange) {
+            if (highPrecisionMode) return (value - minPowerRot) * highPrecisionRotationFactor;
+            return rotCoefficient * Math.pow(value + zeroRange, 3) - minPowerRot;
+        }
+        return 0.0;
+
     }
 
     public void runGamepadCommands(){
@@ -113,37 +149,18 @@ public class FTCrobot {
 
         // Get current direction
         boolean highPrecisionMode = myGamepad1.left_bumper;
-        double drivingRotation = valWithThresholdAndPower3Scaling(myGamepad1.right_stick_x, minPowerRot, highPrecisionMode);
-        //double drivingRotation = Math.pow(myGamepad1.right_stick_x, 3);
+
         // Direction Lock
-        if (drivingRotation != 0) {
-            Log.e(TAG, "Rotation is 0");
-            // Disable rotation lock if driver spins the robot
-            directionLock = -1;
-        } else {
-            Log.e(TAG, "Checking dpad");
-            if (myGamepad1.dpad_up) {
-                Log.d(TAG, "Up dpad pressed");
-                directionLock = 0;
-            } else if (myGamepad1.dpad_right) {
-                Log.d(TAG, "Right dpad pressed");
-                directionLock = 90;
-            } else if (myGamepad1.dpad_down) {
-                Log.d(TAG, "down dpad pressed");
-                directionLock = 180;
-            } else if (myGamepad1.dpad_left) {
-                Log.d(TAG, "Left dpad pressed");
-                directionLock = 270;
-            }
-        }
+        double drivingRotation;
+        drivingRotation = scaleRotationAxis(myGamepad1.right_stick_x, highPrecisionMode);
         // compute speed. Old behaviour: set minPower and zeroZone to 0.0
         // compute for x & y
-        double drivingX =   valWithThresholdAndPower3Scaling(myGamepad1.left_stick_x, minPowerXY, highPrecisionMode);
-        double drivingY = - valWithThresholdAndPower3Scaling(myGamepad1.left_stick_y, minPowerXY, highPrecisionMode);
-        Log.d(TAG, "driving X is " + drivingX);
+        double drivingX =   scaleXYAxes(myGamepad1.left_stick_x, highPrecisionMode);
+        double drivingY = - scaleXYAxes(myGamepad1.left_stick_y, highPrecisionMode);
+/*        Log.d(TAG, "driving X is " + drivingX);
         Log.d(TAG, "driving Y is " + drivingY);
         Log.d(TAG, "driving rot is " + drivingRotation);
-
+*/
         //double drivingX =   Math.pow(myGamepad1.left_stick_x, 3);
         //double drivingY = - Math.pow(myGamepad1.left_stick_y, 3);
         //if (highPrecisionMode) {
@@ -152,7 +169,7 @@ public class FTCrobot {
         //    drivingRotation *= 0.5;
         //}
 
-        mySwerveController.steerSwerve(true, drivingX, drivingY, drivingRotation, directionLock);
+        mySwerveController.steerSwerve(true, drivingX, drivingY, drivingRotation, -1);
         mySwerveController.moveRobot(highPrecisionMode);
 // */
 
@@ -226,6 +243,7 @@ public class FTCrobot {
         if (gamepad1RightTrigger.isJustOn()) {
             myGyro.setZeroPosition();
         }
+        myTelemetry.update();
     }
 
     // homes cube tray lift to top. takes cube tray position object

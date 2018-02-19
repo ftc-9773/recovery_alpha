@@ -57,13 +57,17 @@ import org.firstinspires.ftc.teamcode.infrastructure.SafeJsonReader;
 
 
 public class CubeTray {
-    public enum TrayPositions {STOWED, LOADING, CARRYING, DUMP_A}
-    public enum OverallStates {LOADING, CARRY, STOWED, TO_LOADING, FROM_STOWED, TO_CARRY}
-    public enum LiftFinalStates {STOWED, LOADING, LOW, MID, HIGH}
+    // setup enum valeus for state machine
+    public enum TrayPositions {STOWED, LOADING, CARRYING, DUMP_A, JEWEL}
+    public enum OverallStates {LOADING, CARRY, STOWED, TO_LOADING, FROM_STOWED, TO_CARRY, TO_JEWEL}
+    public enum LiftFinalStates {STOWED, LOADING, LOW, MID, HIGH, JEWELC, JEWELR, JEWELL, JEWELE}
     public boolean homing = false;
+    public boolean grabbing = true;
+    public boolean AutonomousMode = false;
 
     // Json setup
     private SafeJsonReader myCubeTrayPositions;
+    private static final boolean useBlockerServo = true;
 
     // create state machines
     // TODO: make this initialised or automated for start
@@ -76,11 +80,12 @@ public class CubeTray {
     // define limit switch
     private AnalogInput limitSwitch;
     // define servos & motor for the tray
-    private Servo leftFlap  ;
-    private Servo rightFlap ;
+    private Servo grabber  ;
+    private Servo jewelServo ;
     private Servo leftAngle ;
     private Servo rightAngle ;
     public DcMotor liftMotor ;
+    public JewelServoController myJewelServo;
     // define gamepad value
     private Gamepad gamepad1;
 
@@ -88,12 +93,11 @@ public class CubeTray {
     public int liftTargetPosition = 0;  // change to private
 
     //DEBUGING
-    private static final boolean DEBUG = true;
+    private static final boolean DEBUG = false;
     private static final String TAG = "ftc9773_CubeTray" ;
 
     // servo position variables for testing
-    public double leftFlapPos ;
-    public double rightFlapPos;
+    public double grabberPos;
     public double leftAnglePos;
     public double rightAnglePos;
 
@@ -110,19 +114,20 @@ public class CubeTray {
     static final boolean RestartOn = true;
 
     // Safety ABORT variables
-   //  private static int safteyAbortTime = 50;
-  //   private static double safteyAbortMinSpeed = 0.5;
- //    private int lastTickPos = -1;
+    //  private static int safteyAbortTime = 50;
+    //   private static double safteyAbortMinSpeed = 0.5;
+    //    private int lastTickPos = -1;
 //     private long timeAtLastPoll = -1;
 
 
     // setup variables for positioning    // default values are hardcoded in case of issue
-    private static int sensorPosTicks = 3615;
-    private static int topPosTicks = 3260;
-    private static int middlePosTicks = 1850;
+    private static int sensorPosTicks = 3355;
+    private static int topPosTicks = 3360;
+    private static int middlePosTicks = 1950;
     private static int bottomPosTicks = 450;
-    private static int loadPosTicks = 190;
-    private int toLoadingThreshold  = 500;
+    private static int loadPosTicks = 250;
+    private int toLoadingThreshold  = 250;
+    private static int jewelPosTicks = 1000;
 
     private static final int positionTolerance = 40;
 
@@ -132,21 +137,23 @@ public class CubeTray {
 
     //define servo positions - each array of postitons go in the following order:
     // stowed, loading, carrying, dumpingFlap, dumpingAngleAndFlap
-    private static double[] leftFlapPositions = {0.532, 0.5328, 0.35, 0.73, 0.73 } ;
-    private static double[] rightFlapPostions = {.581, 0.6, 0.78, 0.4,1,1 } ;
+    private static double[] grabberPositions = {0.55, 0.62, 0.77, 0.4,.4,.4 } ;
     private static double[] leftAnglePostions = {0.885, 0.554, 0.169, 0.169, 0.039} ;  // dump used to be .039
     private static double[] rightAnglePostions = {0.07, 0.350, 0.754, 0.754,0.901 } ;   // dump used to be .901
 
 
     public CubeTray(HardwareMap hwMap, Gamepad gamepad1, Gamepad gamepad2){  // constructor takes hardware map
         // attach all the servos to their hardware map components
-        leftFlap = hwMap.servo.get("ctlfServo");
-        rightFlap = hwMap.servo.get("ctrfServo");
+        //jewelServo = hwMap.servo.get("ctjServo");
+        grabber = hwMap.servo.get("ctgServo");
         leftAngle = hwMap.servo.get("ctlaServo");
         rightAngle = hwMap.servo.get("ctraServo");
         // passes gamepad, instead of gamepad values for ease of use
         this.gamepad1 = gamepad1;
         this.gamepad2 = gamepad2;
+
+        // setup JewelBlockerServo
+        myJewelServo = new JewelServoController(hwMap);
 
         // attach DC lift motor
         liftMotor = hwMap.dcMotor.get("ctlMotor");
@@ -163,34 +170,35 @@ public class CubeTray {
         loadPosTicks = myCubeTrayPositions.getInt("loadPosTicks");
         toLoadingThreshold = myCubeTrayPositions.getInt("toLoadingThreshold");
 
-        Log.i(TAG, "sensor position set to: " + sensorPosTicks);
-        Log.i(TAG, "TopPosTicks set to: " + topPosTicks);
-        Log.i(TAG, "middle position ticks set to: " + middlePosTicks);
-        Log.i(TAG, "bottom position set to: " + bottomPosTicks);
-        Log.i(TAG, "load position set to: " + loadPosTicks);
+        /*
+        if (DEBUG) Log.i(TAG, "sensor position set to: " + sensorPosTicks);
+        if (DEBUG) Log.i(TAG, "TopPosTicks set to: " + topPosTicks);
+        if (DEBUG) Log.i(TAG, "middle position ticks set to: " + middlePosTicks);
+        if (DEBUG) Log.i(TAG, "bottom position set to: " + bottomPosTicks);
+        if (DEBUG) Log.i(TAG, "load position set to: " + loadPosTicks);
+*/
 
         // set up servos
         boolean usingJsonServoPositons = myCubeTrayPositions.getBoolean("usingJsonServoPositions");
 
         String logging = "Positions are: ";
-        for (double i: leftFlapPositions) {
+        for (double i: grabberPositions) {
             logging += ", " + i;
         }
-        Log.i(TAG, logging);
+        //if (DEBUG) Log.v(TAG, logging);
 
 
         if (usingJsonServoPositons) {
             leftAnglePostions = buildServoPosArrayFromJson("leftAngle", leftAnglePostions);
             rightAnglePostions = buildServoPosArrayFromJson("rightAngle", rightAnglePostions);
-            leftFlapPositions = buildServoPosArrayFromJson("leftFlap", leftFlapPositions);
-            rightFlapPostions = buildServoPosArrayFromJson("rightFlap", rightFlapPostions);
+            grabberPositions = buildServoPosArrayFromJson("grabber", grabberPositions);
 
         }
         logging = "Positions are: ";
-        for (double i: leftFlapPositions) {
+        for (double i: grabberPositions) {
             logging += ", " + i;
         }
-        Log.i(TAG, logging);
+        if (DEBUG) Log.v(TAG, logging);
 
 
         //todo: finish tuning PID
@@ -201,9 +209,9 @@ public class CubeTray {
         Double kd = myCubeTrayPositions.getDouble("liftHeightD");
         liftHeightPidController = new PIDController(kp, ki, kd);
 
-        Log.i(TAG,"liftHeightP = " + kp);
-        Log.i(TAG,"liftHeight I = " + ki);
-        Log.i(TAG,"liftHeight D = " + kd);
+        //if (DEBUG) Log.i(TAG,"liftHeightP = " + kp);
+        //if (DEBUG) Log.i(TAG,"liftHeight I = " + ki);
+        //if (DEBUG) Log.i(TAG,"liftHeight D = " + kd);
 
         // abort stuff
         // afteyAbortTime = myCubeTrayPositions.getInt("safteyAbortTime");
@@ -234,6 +242,8 @@ public class CubeTray {
         if(gamepad1.right_bumper){
             dump();
         }
+        grabbing  = gamepad1.right_trigger > .5;
+
         updatePosition();
 
     }
@@ -257,6 +267,10 @@ public class CubeTray {
 
                 switch (liftFinalState){
                     // when in carry position, can set directly to target position
+                    case STOWED:
+                        break;
+                    case LOADING:
+                        break;
                     case LOW:
                         liftTargetPosition = bottomPosTicks;
                         break;
@@ -266,16 +280,31 @@ public class CubeTray {
                     case HIGH:
                         liftTargetPosition = topPosTicks;
                         break;
+                    case JEWELC:
+                        liftTargetPosition = jewelPosTicks;
+                        dump();
+                        myJewelServo.setToCenterPos();
+                        break;
+                    case JEWELR:
+                        liftTargetPosition = jewelPosTicks;
+                        dump();
+                        myJewelServo.setToRightPos();
+                        break;
+                    case JEWELL:
+                        liftTargetPosition = jewelPosTicks;
+                        dump();
+                        myJewelServo.setToLeftPos();
+                        break;
                     default:
                         // otherwise do nothing
                         break;
                 }
                 break;
             case STOWED:  // as of now no instructions to go to stowed position
-                    liftTargetPosition = loadPosTicks ;
-                    setServoPos(TrayPositions.LOADING);
+                liftTargetPosition = loadPosTicks ;
+                setServoPos(TrayPositions.LOADING);
                 break;
-                        //
+            //
             case TO_LOADING:
                 // if the lift is above the threshold, set target to be threshold
                 if (getliftPos() >= toLoadingThreshold) {
@@ -296,6 +325,16 @@ public class CubeTray {
                     overallState = OverallStates.CARRY;
                     updatePosition();    // idk if I should do this
                 }
+                break;
+            case TO_JEWEL:
+                liftTargetPosition = bottomPosTicks;
+                setServoPos(TrayPositions.JEWEL);
+                long curTime = System.currentTimeMillis();
+                if(curTime - transitionTimer>trayUpTime){
+                    overallState = OverallStates.CARRY;
+                    updatePosition();    // idk if I should do this
+                }
+
                 break;
             case FROM_STOWED:
                 setServoPos(TrayPositions.LOADING);
@@ -322,12 +361,17 @@ public class CubeTray {
 
             myCubeTrayPositions.updateFile();
 
-            Log.i(TAG,"Wrote the following vals to file: (cubeTrayLogging)");
-            Log.i(TAG + "Height", String.valueOf(getliftPos()));
-            Log.i(TAG + "Pos", overallState.toString());
+            //if (DEBUG) Log.i(TAG,"Wrote the following vals to file: (cubeTrayLogging)");
+            //if (DEBUG) Log.i(TAG + "Height", String.valueOf(getliftPos()));
+            //if (DEBUG) Log.i(TAG + "Pos", overallState.toString());
 
         }
         iterNum++;
+        if (DEBUG) Log.v (TAG, "Ser o position leftAngle = " + leftAngle.getPosition() );
+        if (DEBUG) Log.v (TAG, "Ser o position rightAngle = " + rightAngle.getPosition() );
+        if (DEBUG) Log.v (TAG, "Ser o position grabber = " + grabber.getPosition() );
+
+
 
     }
 
@@ -370,6 +414,13 @@ public class CubeTray {
                     overallState = OverallStates.TO_LOADING;
                 }
                 break;
+            case JEWELC:
+                if(overallState == OverallStates.STOWED) {
+                    overallState = OverallStates.FROM_STOWED;
+                } else if (!overallState.equals(OverallStates.CARRY)&&!overallState.equals(OverallStates.TO_JEWEL)) {
+                    overallState = OverallStates.TO_JEWEL;
+                    transitionTimer = System.currentTimeMillis();
+                }
 
             default:
                 break;
@@ -413,7 +464,7 @@ public class CubeTray {
         }
         double correction = liftHeightPidController.getPIDCorrection(targetPos, getliftPos());
 
-        Log.d(TAG,"lift position correction =" + correction);
+        //if (DEBUG) if (DEBUG) Log.d(TAG,"lift position correction =" + correction);
 
         liftMotor.setPower(correction);
     }
@@ -421,8 +472,13 @@ public class CubeTray {
     /// servo util functions
 
     public void updateServos() {
-        leftFlap.setPosition(leftFlapPos);
-        rightFlap.setPosition(rightFlapPos);
+        if (grabbing){
+            grabber.setPosition(grabberPositions[2]);
+            if (DEBUG) Log.e("Nicky", "" + grabberPositions[2]);
+        } else {
+            grabber.setPosition(grabberPos);
+            if (DEBUG) Log.e("Nicky", "" + grabberPos);
+        }
         leftAngle.setPosition(leftAnglePos);
         rightAngle.setPosition(rightAnglePos);
     }
@@ -432,34 +488,51 @@ public class CubeTray {
         switch (trayPos) {
             case STOWED:
                 posNum = 0;
+                myJewelServo.setToRetractPos();
                 break;
             case LOADING:
                 posNum = 1;
+                if(useBlockerServo){
+                    myJewelServo.setToBlockPos();
+                }else myJewelServo.setToRetractPos();
                 break;
             case CARRYING:
                 posNum = 2;
+                if(AutonomousMode && liftFinalState.equals(LiftFinalStates.LOADING)){
+                    myJewelServo.setToCenterPos();
+                } else
+                myJewelServo.setToRetractPos();
                 break;
             case DUMP_A:
                 posNum = 3;
+                break;
+
+            case JEWEL:
+                posNum = 3;
+                myJewelServo.setToCenterPos();
                 break;
             default:
                 break;
         }
         if (posNum == -1) return;
         setToPosNum(posNum);
+
     }
     private void setToPosNum(int posNum){
         // set the servos to their positions using the positions array
-        leftFlapPos = leftFlapPositions[posNum];
-        rightFlapPos = rightFlapPostions[posNum];
+        grabberPos = grabberPositions[posNum];
         leftAnglePos = leftAnglePostions[posNum];
         rightAnglePos = rightAnglePostions[posNum];
 
+        if (DEBUG) Log.d(TAG, "Thought I wrote grabber to" + grabberPos);
+
+        if (DEBUG) Log.d(TAG, "wrote grabber servo to " + grabber.getPosition());
+
         String logging = " setting servo positions:Positions are: ";
-        for (double i: leftFlapPositions) {
+        for (double i: grabberPositions) {
             logging += ", " + i;
         }
-        Log.i(TAG, logging);
+        if (DEBUG) Log.i(TAG,"wrote the following Grabber positions" + logging);
     }
 
 
@@ -487,6 +560,7 @@ public class CubeTray {
     }
 
 
+/*
     private void RunServoAdjustmentPotocol(){
         if (gamepad2.a) {
             leftFlapPos -= increment;
@@ -503,16 +577,17 @@ public class CubeTray {
             rightAnglePos -= increment;
         }
     }
+*/
 
     private void printInfo(){
         if(DEBUG){
-            Log.d(TAG, "overall state: " + overallState);
-            Log.d(TAG,"Final State: " + liftFinalState);
-            Log.d(TAG, "cubeTray state: "+ trayState);
-            Log.d(TAG, "lift cur target pos: " + liftTargetPosition);
-            Log.d(TAG, "lift current dPosition :  " + liftMotor.getCurrentPosition());
-            Log.d(TAG, "lift motor current mode " + liftMotor.getMode());
-            Log.d(TAG,"power written to lift" + liftMotor.getPower());
+            if (DEBUG) Log.d(TAG, "overall state: " + overallState);
+            if (DEBUG) Log.d(TAG,"Final State: " + liftFinalState);
+            if (DEBUG) Log.d(TAG, "cubeTray state: "+ trayState);
+            if (DEBUG) Log.d(TAG, "lift cur target pos: " + liftTargetPosition);
+            if (DEBUG) Log.d(TAG, "lift current dPosition :  " + liftMotor.getCurrentPosition());
+            if (DEBUG) Log.d(TAG, "lift motor current mode " + liftMotor.getMode());
+            if (DEBUG) Log.d(TAG,"power written to lift" + liftMotor.getPower());
 
 
         }
@@ -544,43 +619,43 @@ public class CubeTray {
         if (!state.equals(LiftFinalStates.STOWED)) {
             liftFinalState = state;
         } else{
-            Log.w(TAG, "SetToPos is unnable to set to STOWED position as of now. Sorry.");
+            if (DEBUG) Log.w(TAG, "SetToPos is unnable to set to STOWED position as of now. Sorry.");
         }
     }
 
 
     private double[] buildServoPosArrayFromJson(String servoName, double[] positions){
-            boolean success = true;
-            Log.i(TAG, "building servo: " + servoName);
+        boolean success = true;
+        if (DEBUG) Log.i(TAG, "building servo: " + servoName);
 
         // build stowed pos setting
         double stowedTempVal = myCubeTrayPositions.getDouble(servoName + "Stowed");
         if(stowedTempVal != 0.0) {
             positions[0] = stowedTempVal;
-            Log.i(TAG, "built servo " +servoName + " stowed pos to" +stowedTempVal);
+            //if (DEBUG) Log.i(TAG, "built servo " +servoName + " stowed pos to" +stowedTempVal);
         }   else {
             success = false;
-            Log.w(TAG, "unnable to build servo " +servoName + " stowed pos; set to hardcoded default");
+            //if (DEBUG) Log.w(TAG, "unnable to build servo " +servoName + " stowed pos; set to hardcoded default");
         }
 
         // build loading pos setting
         double loadingTempVal = myCubeTrayPositions.getDouble(servoName + "Loading");
         if(loadingTempVal != 0.0) {
             positions[1] = loadingTempVal;
-            Log.i(TAG, "built servo " +servoName + " loading pos to" +loadingTempVal);
+            //if (DEBUG) Log.i(TAG, "built servo " +servoName + " loading pos to" +loadingTempVal);
 
         }   else {
             success = false;
-            Log.w(TAG, "unnable to build servo " +servoName + " laoding pos; set to hardcoded default");
+            //if (DEBUG) Log.w(TAG, "unnable to build servo " +servoName + " laoding pos; set to hardcoded default");
         }
 
         // build carrying pos setting
         double carryingTempVal = myCubeTrayPositions.getDouble(servoName + "Carrying");
         if(carryingTempVal != 0.0) {
             positions[2] = carryingTempVal;
-            Log.i(TAG, "built servo " +servoName + " carrying pos to" +carryingTempVal);
+            //if (DEBUG) Log.i(TAG, "built servo " +servoName + " carrying pos to" +carryingTempVal);
         }   else {
-            Log.w(TAG, "unnable to build servo " +servoName + " carrying pos; set to hardcoded default");
+            //if (DEBUG) Log.w(TAG, "unnable to build servo " +servoName + " carrying pos; set to hardcoded default");
             success = false;
         }
 
@@ -588,9 +663,9 @@ public class CubeTray {
         double dumpingFlapTempVal = myCubeTrayPositions.getDouble(servoName + "DumpingFlap");
         if(dumpingFlapTempVal != 0.0) {
             positions[3] = dumpingFlapTempVal;
-            Log.i(TAG, "built servo " +servoName + " dumpA pos to" +dumpingFlapTempVal);
+            //if (DEBUG) Log.i(TAG, "built servo " +servoName + " dumpA pos to" +dumpingFlapTempVal);
         }   else {
-            Log.w(TAG, "unnable to build servo " +servoName + " DumpA pos; set to hardcoded default");
+            //if (DEBUG) Log.w(TAG, "unnable to build servo " +servoName + " DumpA pos; set to hardcoded default");
             success = false;
         }
 
@@ -598,10 +673,10 @@ public class CubeTray {
         double dumpingAngleTempVal = myCubeTrayPositions.getDouble(servoName + "DumpingAngle");
         if(dumpingAngleTempVal != 0.0) {
             positions[4] = dumpingAngleTempVal;
-            Log.i(TAG, "built servo " +servoName + " dumpB pos to" +dumpingAngleTempVal);
+            //if (DEBUG) Log.i(TAG, "built servo " +servoName + " dumpB pos to" +dumpingAngleTempVal);
         }   else{
             success = false;
-            Log.w(TAG, "unnable to build servo " +servoName + " dumpingB pos; set to hardcoded default");
+            //if (DEBUG) Log.w(TAG, "unnable to build servo " +servoName + " dumpingB pos; set to hardcoded default");
 
         }
         return positions;
@@ -644,11 +719,11 @@ public class CubeTray {
         int lastPos = myCubeTrayPositions.getInt("LastLiftHeight");
         OverallStates lastState = readTrayPositions();
         if (lastPos == 0|| lastPos== -1){
-            Log.e (TAG, "unnable to read Lift Height");
+            if (DEBUG) Log.e (TAG, "unnable to read Lift Height");
             return;
         }
         if (lastState.equals (null)){
-            Log.e (TAG, "unnabe to read Lift state");
+            if (DEBUG) Log.e (TAG, "unnabe to read Lift state");
             return;
         }
         zeroPos = liftMotor.getCurrentPosition() - lastPos;

@@ -3,96 +3,64 @@ package org.firstinspires.ftc.teamcode.RASI;
 import org.firstinspires.ftc.teamcode.infrastructure.FileRW;
 import org.firstinspires.ftc.teamcode.infrastructure.RasiParser;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.Scanner;
+
 /**
  * Created by vikesh on 12/26/17.
  */
 
 public class RasiParserV2 {
+    private File rasiFile;                  //File object for the rasi file
+    private Scanner fileScanner;            //Scanner object to read the file line by line
+    private StringBuilder commandBuilder;   //StringBuilder object for miscellaneous manipulation
 
-    private FileRW rasiRW;
-    private StringBuilder rasiBuilder;
-    private String rasiFileString;
-
-    private int index2 = 0;
-    private boolean rasiIsComplete = false;
-
-    private String[] commands;
-    private String[] singleCommand;
-    private String[] action;
-    private String[] condition;
+    private String currentCommand;          //The String that will contain the current command
+    private String[] parameters;            //The String array that contains the parameters
+    private String returnString;            //The String which contains the index to be
+    private String Tag;
+    private String[] TAGS;
+    private String[] reservedCommands;
+    private boolean shouldExecute = false;
 
     public RasiParserV2(String filepath, String filename){
-        rasiRW = new FileRW(filepath + filename, false);
-        rasiFileString = rasiRW.getNextLine();
-        rasiBuilder = new StringBuilder(rasiFileString);
+
+        //Make sure file extension is rasi
+        if(filename.split(".")[1].toLowerCase() == "rasi"){
+            rasiFile = new File(filepath + filename);
+            try {
+                fileScanner = new Scanner(rasiFile);
+            }
+            catch(FileNotFoundException e){
+                e.printStackTrace();
+            }
+        }
     }
 
-    public void initRasi(){
-        int index = 0;
+    public void getNextCommand(){
+        currentCommand = fileScanner.nextLine();
+        commandBuilder = new StringBuilder(currentCommand);
 
-        while(index<rasiBuilder.length()){
-            if (rasiBuilder.charAt(index) == ' '){
-                rasiBuilder.deleteCharAt(index);
+        int index = 0;
+        while(index < commandBuilder.length()){
+            if(commandBuilder.charAt(index) == ' '){
+                commandBuilder.deleteCharAt(index);
             }
             else{
                 index++;
             }
         }
-        index = 0;
-        rasiFileString = rasiBuilder.toString();
 
-        commands = rasiFileString.split(";");
-    }
-
-    public void loadNextCommand(){
-        if(index2 >= commands.length) {
-            rasiIsComplete = true;
-        }
-        if (!rasiIsComplete) {
-            singleCommand = commands[index2].split("/");
-
-            if (singleCommand.length == 2) {
-                action = singleCommand[0].split(",");
-                condition = singleCommand[1].split(",");
-            } else if (singleCommand.length == 1) {
-                action = singleCommand[1].split(",");
-                condition = new String[1];
-                condition[0] = "nocondition";
-            } else if (singleCommand.length == 0) {
-                action = new String[1];
-                action[0] = "noaction";
-                condition = new String[1];
-                condition[0] = "nocondition";
-            } else {
-                action = new String[1];
-                action[0] = "error";
-                condition = new String[1];
-                condition[0] = "error";
-            }
-            index2++;
+        Tag = currentCommand.split(":")[0];
+        parameters = currentCommand.split(":")[1].split(",");
+        if ((Arrays.asList(TAGS).contains(Tag) || Tag.length() == 0) && !Arrays.asList(reservedCommands).contains(parameters[0])){
+            shouldExecute = true;
         }
         else{
-            action = new String[1];
-            action[0] = "end";
-            condition = new String[1];
-            condition[0] = "end";
-        }
-    }
-    public String getActionParameter(int parameter){
-
-        if (parameter < action.length) {
-            return action[parameter];
-        }
-        else{
-            return "error";
-        }
-    }
-    public String getConditionParameter(int parameter){
-        if (parameter < condition.length) {
-            return condition[parameter];
-        }
-        else{
-            return "error";
+            shouldExecute = false;
         }
     }
 }

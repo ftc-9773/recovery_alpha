@@ -79,10 +79,10 @@ public class FTCrobot {
     private static final boolean DEBUG = false;
 
     private boolean disableDriving = false;
-    private boolean disableLift  = false;
+    private boolean disableLift  = true;
     private boolean disableDriverIntake = false;
     private boolean disableAutoIntake = true;
-    private boolean disableRelicArm = false ;
+    private boolean disableRelicArm = true ;
 
     // INIT
     public FTCrobot(HardwareMap hwmap, Telemetry telemetry, Gamepad gamepad1, Gamepad gamepad2, LinearOpModeCamera myLinearOpModeCamera){

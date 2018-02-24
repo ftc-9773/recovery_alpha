@@ -125,6 +125,12 @@ public class RasiActions {
                 case "gyrolg":
                     myGyro.recordHeading();
                     break;
+                case "jwlarmd":
+                    ftcRobot.jewelKnocker.ArmInitialLower();
+                    break;
+                case "jwlarmu":
+                    ftcRobot.jewelKnocker.ArmReturn();
+                    break;
                 case "end":
                     linearOpModeCamera.requestOpModeStop();
                     while(linearOpModeCamera.opModeIsActive()){}

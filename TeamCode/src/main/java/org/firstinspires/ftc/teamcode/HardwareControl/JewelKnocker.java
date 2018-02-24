@@ -27,11 +27,11 @@ public class JewelKnocker {
 
 
     }
-    private void ArmInitialLower() { armServo.setPosition(armOutPos);}
-    private void ArmReturn(){ armServo.setPosition(armStoredPos);}
-    private void KnockerStartMove(){knockerServo.setPosition(knockerOutPos);}
-    private void KnockerLeftStowed(){knockerServo.setPosition(knockerLeftSideStowedPos);}
-    private void KnockerRight(){knockerServo.setPosition(knockerRightSidePos);}
+    public void ArmInitialLower() { armServo.setPosition(armOutPos);}
+    public void ArmReturn(){ armServo.setPosition(armStoredPos);}
+    public void KnockerStartMove(){knockerServo.setPosition(knockerOutPos);}
+    public void KnockerLeftStowed(){knockerServo.setPosition(knockerLeftSideStowedPos);}
+    public void KnockerRight(){knockerServo.setPosition(knockerRightSidePos);}
 
 
 

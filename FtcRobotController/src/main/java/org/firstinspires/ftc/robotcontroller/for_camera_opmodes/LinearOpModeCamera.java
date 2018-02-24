@@ -4,12 +4,14 @@ import android.graphics.Bitmap;
 import android.graphics.ImageFormat;
 import android.graphics.YuvImage;
 import android.hardware.Camera;
+import android.hardware.Camera.Parameters;
 import android.util.Log;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.robotcontroller.internal.FtcRobotControllerActivity;
 
+import java.security.Policy;
 import java.util.List;
 
 /**
@@ -21,6 +23,7 @@ public class LinearOpModeCamera extends LinearOpMode {
 
   public Camera camera;
   public CameraPreview preview;
+
 
   protected static final String TAG = "ftc9773 linopmod camera";
   protected static final boolean DEBUG = true; // enable debugging info
@@ -35,7 +38,7 @@ public class LinearOpModeCamera extends LinearOpMode {
   private int looped = 0;
   private String data;
   private int ds = 1; // downsampling parameter
-
+  private Parameters parameters;
   @Override
   // should be overwritten by extension class
   public void runOpMode() throws InterruptedException {
@@ -45,7 +48,6 @@ public class LinearOpModeCamera extends LinearOpMode {
   public Camera.PreviewCallback previewCallback = new Camera.PreviewCallback() {
     public void onPreviewFrame(byte[] data, Camera camera) {
       try {
-        Camera.Parameters parameters = camera.getParameters();
         width = parameters.getPreviewSize().width;
         height = parameters.getPreviewSize().height;
         yuvImage = new YuvImage(data, ImageFormat.NV21, width, height, null);
@@ -112,6 +114,7 @@ public class LinearOpModeCamera extends LinearOpMode {
 
     // Camera.CameraInfo.CAMERA_FACING_FRONT
     camera = openCamera(dir);
+    parameters = camera.getParameters();
     camera.setPreviewCallback(previewCallback);
 
 
@@ -181,6 +184,14 @@ public class LinearOpModeCamera extends LinearOpMode {
       }
       camera = null;
     }
+  }
+  public void onFlashLight(){
+    parameters.setFlashMode(Parameters.FLASH_MODE_TORCH);
+    camera.setParameters(parameters);
+  }
+  public void offFlashLight(){
+    parameters.setFlashMode(Parameters.FLASH_MODE_OFF);
+    camera.setParameters(parameters);
   }
 
   static public int red(int pixel) {

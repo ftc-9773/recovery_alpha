@@ -74,18 +74,20 @@ public class FTCrobot {
     private double highPrecisionScalingFactor;
     private double highPrecisionRotationFactor;
 
+    public JewelKnocker jewelKnocker;
 
     private static final String TAG = "9773_FTCrobot";
     private static final boolean DEBUG = false;
 
     private boolean disableDriving = false;
-    private boolean disableLift  = true;
+    private boolean disableLift  = false;
     private boolean disableDriverIntake = false;
-    private boolean disableAutoIntake = true;
-    private boolean disableRelicArm = true ;
+    private boolean disableAutoIntake = false;
+    private boolean disableRelicArm = false;
 
     // INIT
     public FTCrobot(HardwareMap hwmap, Telemetry telemetry, Gamepad gamepad1, Gamepad gamepad2, LinearOpModeCamera myLinearOpModeCamera){
+        jewelKnocker = new JewelKnocker(hwmap);
         this.gp1y = new ButtonStatus();
         this.hwMap = hwmap;
         this.myTelemetry = telemetry;
@@ -113,7 +115,6 @@ public class FTCrobot {
         xyCoefficient = (1 - minPowerXY) / Math.pow(1 - zeroRange, 3);
         rotCoefficient = (1 - minPowerRot) / Math.pow(1 - zeroRange, 3);
     }
-
     private double scaleXYAxes (double value, boolean highPrecisionMode) {
         if (value > zeroRange) {
             if (highPrecisionMode) return (value + minPowerXY) * highPrecisionScalingFactor;
@@ -169,7 +170,7 @@ public class FTCrobot {
         //    drivingRotation *= 0.5;
         //}
 
-        mySwerveController.steerSwerve(true, drivingX, drivingY, drivingRotation, -1);
+        mySwerveController.steerSwerve(true, myGamepad1.left_stick_x, -1 * myGamepad1.left_stick_y,drivingRotation, -1);
         mySwerveController.moveRobot(highPrecisionMode);
 // */
 

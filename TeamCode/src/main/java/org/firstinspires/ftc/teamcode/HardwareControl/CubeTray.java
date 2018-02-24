@@ -82,8 +82,8 @@ public class CubeTray {
     // define servos & motor for the tray
     private Servo grabber  ;
     private Servo jewelServo ;
-    private Servo leftAngle ;
-    private Servo rightAngle ;
+    //private Servo leftAngle ;
+    //private Servo rightAngle ;
     public DcMotor liftMotor ;
     public JewelServoController myJewelServo;
     // define gamepad value
@@ -146,8 +146,8 @@ public class CubeTray {
         // attach all the servos to their hardware map components
         //jewelServo = hwMap.servo.get("ctjServo");
         grabber = hwMap.servo.get("ctgServo");
-        leftAngle = hwMap.servo.get("ctlaServo");
-        rightAngle = hwMap.servo.get("ctraServo");
+        //leftAngle = hwMap.servo.get("ctlaServo");
+        //rightAngle = hwMap.servo.get("ctraServo");
         // passes gamepad, instead of gamepad values for ease of use
         this.gamepad1 = gamepad1;
         this.gamepad2 = gamepad2;
@@ -367,8 +367,8 @@ public class CubeTray {
 
         }
         iterNum++;
-        if (DEBUG) Log.v (TAG, "Ser o position leftAngle = " + leftAngle.getPosition() );
-        if (DEBUG) Log.v (TAG, "Ser o position rightAngle = " + rightAngle.getPosition() );
+        //if (DEBUG) Log.v (TAG, "Ser o position leftAngle = " + leftAngle.getPosition() );
+        //if (DEBUG) Log.v (TAG, "Ser o position rightAngle = " + rightAngle.getPosition() );
         if (DEBUG) Log.v (TAG, "Ser o position grabber = " + grabber.getPosition() );
 
 
@@ -479,8 +479,8 @@ public class CubeTray {
             grabber.setPosition(grabberPos);
             if (DEBUG) Log.e("Nicky", "" + grabberPos);
         }
-        leftAngle.setPosition(leftAnglePos);
-        rightAngle.setPosition(rightAnglePos);
+        //leftAngle.setPosition(leftAnglePos);
+        //rightAngle.setPosition(rightAnglePos);
     }
     public void setServoPos(TrayPositions trayPos){
         int posNum = -1;

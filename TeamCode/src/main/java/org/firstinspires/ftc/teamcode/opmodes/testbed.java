@@ -21,30 +21,22 @@ import org.firstinspires.ftc.teamcode.HardwareControl.DriveWithPID;
 import org.firstinspires.ftc.teamcode.HardwareControl.FTCrobot;
 import org.firstinspires.ftc.teamcode.HardwareControl.SwerveController;
 import org.firstinspires.ftc.teamcode.PositionTracking.Gyro;
+import org.firstinspires.ftc.teamcode.infrastructure.RasiActions;
 import org.firstinspires.ftc.teamcode.resources.ButtonStatus;
 
 /**
  * Created by Vikesh on 11/19/2017.
  */
 @Autonomous(name = "testbed")
-
 public class testbed extends LinearOpModeCamera {
 
-    //private ModernRoboticsI2cRangeSensor ultrasonicSensor;
-    private FTCrobot ftcRobot;
 
     @Override
-    public void runOpMode() throws InterruptedException {
-        ftcRobot = new FTCrobot(hardwareMap, telemetry, gamepad1, gamepad2, this);
-        /*ultrasonicSensor = hardwareMap.get(ModernRoboticsI2cRangeSensor.class, "ultrasonicSensor");
+    public void runOpMode() throws InterruptedException{
+        String[] RasiTags ={""};
         waitForStart();
-        while(opModeIsActive()){
-            telemetry.addData("distance: ", ultrasonicSensor.cmUltrasonic());
-            telemetry.update();
-        }*/
-        waitForStart();
-        while(opModeIsActive()) {
-            ftcRobot.jewelServoController.setToCenterPos();
-        }
+        RasiActions rasiActions = new RasiActions("AutoBlueCloseMulti",RasiTags, this, gamepad1, gamepad2, telemetry, hardwareMap);
+        rasiActions.runRasi();
     }
 }
+

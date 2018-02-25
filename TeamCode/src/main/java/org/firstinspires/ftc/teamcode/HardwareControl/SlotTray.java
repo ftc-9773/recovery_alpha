@@ -71,7 +71,7 @@ public class SlotTray implements CubeTrays {
     public SlotTray(HardwareMap hwMap , Gamepad gamepad1){
 
         // read values from json
-        myCubeTrayPositions = new SafeJsonReader("");
+        myCubeTrayPositions = new SafeJsonReader("SlotTrayPositions");
 
         loadingPosTicks = myCubeTrayPositions.getInt("loadPosTicks");
         lowPosTicks = myCubeTrayPositions.getInt("bottomPosTicks");

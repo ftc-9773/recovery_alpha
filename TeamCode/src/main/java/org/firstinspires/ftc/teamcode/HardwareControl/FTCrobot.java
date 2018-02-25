@@ -43,9 +43,10 @@ public class FTCrobot {
     public DriveWithPID myDriveWithPID;                      // <--
 
     public CubeTrays myCubeTray;
+
     private HardwareMap hwMap;
     public RelicSystem myRelicSystem;
-    private JewelServoController myJewelServo;
+
     private Telemetry myTelemetry;
     private Gamepad myGamepad1;
     private Gamepad myGamepad2;
@@ -103,7 +104,7 @@ public class FTCrobot {
         this.myManualIntakeController = new IntakeControllerManual(hwMap);
         this.myDriveWithPID = new DriveWithPID(mySwerveController, myGyro, myLinearOpModeCamera);
         this.myRelicSystem = new RelicSystem(myTelemetry, hwMap, myLinearOpModeCamera);
-        this.myJewelServo = new JewelServoController(hwmap);
+
         this.myGamepad1 = gamepad1;
         this.myGamepad2 = gamepad2;
         this.jewelServoController = new JewelServoController(hwmap);

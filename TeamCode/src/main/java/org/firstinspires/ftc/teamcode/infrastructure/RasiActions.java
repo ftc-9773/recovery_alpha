@@ -12,8 +12,9 @@ import org.firstinspires.ftc.teamcode.HardwareControl.CubeTray;
 import org.firstinspires.ftc.teamcode.HardwareControl.FTCrobot;
 import org.firstinspires.ftc.teamcode.HardwareControl.SwerveController;
 import org.firstinspires.ftc.teamcode.PositionTracking.Gyro;
-import org.firstinspires.ftc.teamcode.opmodes.Swerve;
+
 import org.firstinspires.ftc.teamcode.resources.Timer;
+import org.firstinspires.ftc.teamcode.HardwareControl.LiftFinalStates;
 
 /**
  * Created by vikesh on 1/5/18.
@@ -32,7 +33,7 @@ public class RasiActions {
         this.linearOpModeCamera = myLinearOpModeCamera;
         rasiParser = new RasiParser(rasiFilename, rasiTag);
         ftcRobot = new FTCrobot(hwMap, telemetry, gamepad1, gamepad2, myLinearOpModeCamera);
-        ftcRobot.myCubeTray.AutonomousMode = true;
+        ftcRobot.myCubeTray.setAutonomousMode(true) ;
     }
 
     // Run the rasi commands
@@ -72,48 +73,48 @@ public class RasiActions {
                 case "ctload":
                     timer2 = new Timer(1);
                     while(!linearOpModeCamera.isStopRequested()&&!timer2.isDone()) {
-                        ftcRobot.myCubeTray.setToPos(CubeTray.LiftFinalStates.LOADING);
+                        ftcRobot.myCubeTray.setToPos(LiftFinalStates.LOADING);
                         ftcRobot.myCubeTray.updatePosition();
                     }
                     break;
                 case "ctlow":
                     timer2 = new Timer(2.0);
                     while(!linearOpModeCamera.isStopRequested()&&!timer2.isDone()) {
-                        ftcRobot.myCubeTray.setToPos(CubeTray.LiftFinalStates.LOW);
+                        ftcRobot.myCubeTray.setToPos(LiftFinalStates.LOW);
                         ftcRobot.myCubeTray.updatePosition();
                     }
                     break;
                 case "cthigh":
                     timer2 = new Timer(1.0);
                     while(!linearOpModeCamera.isStopRequested()&&!timer2.isDone()) {
-                        ftcRobot.myCubeTray.setToPos(CubeTray.LiftFinalStates.HIGH);
+                        ftcRobot.myCubeTray.setToPos(LiftFinalStates.HIGH);
                         ftcRobot.myCubeTray.updatePosition();
                     }
                     break;
                 case "ctmid":
                     timer2 = new Timer(1.0);
                     while(!linearOpModeCamera.isStopRequested()&&!timer2.isDone()) {
-                        ftcRobot.myCubeTray.setToPos(CubeTray.LiftFinalStates.MID);
+                        ftcRobot.myCubeTray.setToPos(LiftFinalStates.MID);
                         ftcRobot.myCubeTray.updatePosition();
                     }
                     break;
                 case "ctjwlc":
                     timer2 = new Timer(1.0);
                     while(!linearOpModeCamera.isStopRequested()&&!timer2.isDone()) {
-                        ftcRobot.myCubeTray.setToPos(CubeTray.LiftFinalStates.JEWELC);
+                        ftcRobot.myCubeTray.setToPos(LiftFinalStates.JEWELC);
                         ftcRobot.myCubeTray.updatePosition();
                     }
                     break;
                 case "ctjwlr":
                     timer2 = new Timer(1);
-                    ftcRobot.myCubeTray.setToPos(CubeTray.LiftFinalStates.JEWELR);
+                    ftcRobot.myCubeTray.setToPos(LiftFinalStates.JEWELR);
                     while(!linearOpModeCamera.isStopRequested()&&!timer2.isDone()) {
                         ftcRobot.myCubeTray.updatePosition();
                     }
                     break;
                 case "ctjwll":
                     timer2 = new Timer(1);
-                    ftcRobot.myCubeTray.setToPos(CubeTray.LiftFinalStates.JEWELL);
+                    ftcRobot.myCubeTray.setToPos(LiftFinalStates.JEWELL);
                     while(!linearOpModeCamera.isStopRequested()&&!timer2.isDone()) {
                         ftcRobot.myCubeTray.updatePosition();
                     }

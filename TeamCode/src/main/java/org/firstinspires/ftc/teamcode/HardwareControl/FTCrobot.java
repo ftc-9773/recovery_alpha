@@ -13,7 +13,6 @@ import org.firstinspires.ftc.teamcode.PositionTracking.Gyro;
 import org.firstinspires.ftc.teamcode.infrastructure.ButtonStatus;
 import org.firstinspires.ftc.teamcode.infrastructure.RasiParser;
 import org.firstinspires.ftc.teamcode.infrastructure.SafeJsonReader;
-import org.firstinspires.ftc.teamcode.opmodes.Swerve;
 import android.util.Log;
 
 /**
@@ -42,7 +41,8 @@ public class FTCrobot {
 //    private IntakeController myIntakeController;
     public IntakeControllerManual myManualIntakeController;
     public DriveWithPID myDriveWithPID;                      // <--
-    public CubeTray myCubeTray;
+
+    public CubeTrays myCubeTray;
     private HardwareMap hwMap;
     public RelicSystem myRelicSystem;
     private JewelServoController myJewelServo;
@@ -85,6 +85,9 @@ public class FTCrobot {
     private boolean disableAutoIntake = false;
     private boolean disableRelicArm = false;
 
+    private static final boolean usingSlotTray = true;
+
+
     // INIT
     public FTCrobot(HardwareMap hwmap, Telemetry telemetry, Gamepad gamepad1, Gamepad gamepad2, LinearOpModeCamera myLinearOpModeCamera){
         jewelKnocker = new JewelKnocker(hwmap);
@@ -100,7 +103,6 @@ public class FTCrobot {
         this.myManualIntakeController = new IntakeControllerManual(hwMap);
         this.myDriveWithPID = new DriveWithPID(mySwerveController, myGyro, myLinearOpModeCamera);
         this.myRelicSystem = new RelicSystem(myTelemetry, hwMap, myLinearOpModeCamera);
-        this.myCubeTray = new CubeTray(hwmap,gamepad2,null);
         this.myJewelServo = new JewelServoController(hwmap);
         this.myGamepad1 = gamepad1;
         this.myGamepad2 = gamepad2;
@@ -114,6 +116,15 @@ public class FTCrobot {
         highPrecisionRotationFactor = jsonReader.getDouble("highPrecisionRotationFactor");
         xyCoefficient = (1 - minPowerXY) / Math.pow(1 - zeroRange, 3);
         rotCoefficient = (1 - minPowerRot) / Math.pow(1 - zeroRange, 3);
+
+        if(usingSlotTray){
+            this.myCubeTray = new SlotTray(hwmap, gamepad2);
+
+        } else {
+            this.myCubeTray = new CubeTray(hwmap, gamepad2, null);
+        }
+
+
     }
     private double scaleXYAxes (double value, boolean highPrecisionMode) {
         if (value > zeroRange) {
@@ -248,14 +259,6 @@ public class FTCrobot {
     }
 
     // homes cube tray lift to top. takes cube tray position object
-    public void homeLift(CubeTray.LiftFinalStates pos ){
-        myCubeTray.setStartPosition(pos);
-        try {
-            myCubeTray.homeLiftVersA();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-    }
 
     public void doTelemetry() {
 

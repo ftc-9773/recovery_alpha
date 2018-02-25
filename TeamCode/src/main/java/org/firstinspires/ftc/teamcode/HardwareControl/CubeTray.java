@@ -56,11 +56,10 @@ import org.firstinspires.ftc.teamcode.infrastructure.SafeJsonReader;
  */
 
 
-public class CubeTray {
+public class CubeTray implements CubeTrays {
     // setup enum valeus for state machine
     public enum TrayPositions {STOWED, LOADING, CARRYING, DUMP_A, JEWEL}
     public enum OverallStates {LOADING, CARRY, STOWED, TO_LOADING, FROM_STOWED, TO_CARRY, TO_JEWEL}
-    public enum LiftFinalStates {STOWED, LOADING, LOW, MID, HIGH, JEWELC, JEWELR, JEWELL, JEWELE}
     public boolean homing = false;
     public boolean grabbing = true;
     public boolean AutonomousMode = false;
@@ -103,7 +102,6 @@ public class CubeTray {
 
     //TESTING variables
     private boolean TESTING = false;
-    private Gamepad gamepad2 ;
     private static final double increment =.001;
     //HOMING variables
     private int zeroPos = 0;
@@ -150,7 +148,6 @@ public class CubeTray {
         //rightAngle = hwMap.servo.get("ctraServo");
         // passes gamepad, instead of gamepad values for ease of use
         this.gamepad1 = gamepad1;
-        this.gamepad2 = gamepad2;
 
         // setup JewelBlockerServo
         myJewelServo = new JewelServoController(hwMap);
@@ -220,9 +217,6 @@ public class CubeTray {
 
 
         //TESTING
-        if (gamepad2!= null ){
-            TESTING = true;
-        }
     }
 
     /// DEAFAULT INTERFACE
@@ -440,7 +434,7 @@ public class CubeTray {
         return zeroPos - input;
     }
     // resets the zero position of the lift
-    public void setLiftZeroPos(){
+    private void setLiftZeroPos(){
         zeroPos = liftMotor.getCurrentPosition() - sensorPosTicks;
     }
     // returns the adjusted lift position
@@ -471,7 +465,7 @@ public class CubeTray {
 
     /// servo util functions
 
-    public void updateServos() {
+    private void updateServos() {
         if (grabbing){
             grabber.setPosition(grabberPositions[2]);
             if (DEBUG) Log.e("Nicky", "" + grabberPositions[2]);
@@ -536,7 +530,7 @@ public class CubeTray {
     }
 
 
-    public void homeLiftVersA () throws InterruptedException { // might help use
+    public void homeLiftVersA ()  { // might help use
         if (trayState == TrayPositions.LOADING){ // lift cannot be in loading pos to start
             setServoPos(TrayPositions.CARRYING);                      // moves tray out of load to carry position
         }
@@ -594,27 +588,6 @@ public class CubeTray {
     }
 
     // non-joystick update functions
-    public void setStartPosition(LiftFinalStates state){
-        liftFinalState  = state;
-        switch (state){
-            case STOWED:
-                trayState = TrayPositions.STOWED;
-                overallState = OverallStates.STOWED;
-                break;
-            case LOW:
-            case MID:
-            case HIGH:
-                trayState = TrayPositions.STOWED;
-                overallState = OverallStates.STOWED;
-                break;
-            case LOADING:
-                trayState = TrayPositions.LOADING;
-                overallState = OverallStates.LOADING;
-                break;
-            default:
-                break;
-        }
-    }
     public void setToPos(LiftFinalStates state){
         if (!state.equals(LiftFinalStates.STOWED)) {
             liftFinalState = state;
@@ -730,7 +703,7 @@ public class CubeTray {
         overallState = lastState;
     }
 
-
-
-
+    public void setAutonomousMode(boolean val) {
+        AutonomousMode = val;
+    }
 }

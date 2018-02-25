@@ -8,6 +8,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import org.firstinspires.ftc.robotcontroller.for_camera_opmodes.LinearOpModeCamera;
 import org.firstinspires.ftc.teamcode.HardwareControl.CubeTray;
 import org.firstinspires.ftc.teamcode.HardwareControl.FTCrobot;
+import org.firstinspires.ftc.teamcode.HardwareControl.LiftFinalStates;
 
 
 /**
@@ -35,7 +36,6 @@ import org.firstinspires.ftc.teamcode.HardwareControl.FTCrobot;
 
             // init the lift
             myRobot.myCubeTray.setZeroFromLastOpmode();
-            myRobot.myCubeTray.setStartPosition(CubeTray.LiftFinalStates.STOWED);
 
 
             while (!opModeIsActive() && !isStopRequested()) {
@@ -45,7 +45,7 @@ import org.firstinspires.ftc.teamcode.HardwareControl.FTCrobot;
 
             waitForStart();
             myRobot.myCubeTray.setServoPos(CubeTray.TrayPositions.LOADING);
-            myRobot.myCubeTray.setToPos(CubeTray.LiftFinalStates.LOADING);
+            myRobot.myCubeTray.setToPos(LiftFinalStates.LOADING);
 
 
             while (opModeIsActive()) {

@@ -37,6 +37,12 @@ public class SlotTray implements CubeTrays {
     double leftStowBlockerPos;
     double rightBlockerPos;
 
+    double grabberPos = 0;
+    double blockerPos = 0;
+
+
+
+
     public boolean AutonomousMode = false;
 
     // create motor and servo objects
@@ -99,6 +105,8 @@ public class SlotTray implements CubeTrays {
         Log.i(TAG,"liftHeightP = " + kp);
         Log.i(TAG,"liftHeight I = " + ki);
         Log.i(TAG,"liftHeight D = " + kd);
+
+        setServoPos(TrayPositions.LOADING);
     }
     /// DEAFAULT INTERFACE
     public void updateFromGamepad(){
@@ -172,8 +180,6 @@ public class SlotTray implements CubeTrays {
         liftMotor.setPower(correction);
     }
     private void setServoPos(TrayPositions position){
-        double grabberPos;
-        double blockerPos;
         switch (position){
             case GRABBED:
                 grabberPos = closedGrabberPos;
@@ -202,7 +208,13 @@ public class SlotTray implements CubeTrays {
                 grabberPos = openGrabberPos;
                 blockerPos = rightBlockerPos;
                 break;
+            default:
+                break;
         }
+
+        grabServo.setPosition(grabberPos);
+        blockServo.setPosition(blockerPos);
+
     }
     public int getliftPos(){
         return liftMotor.getCurrentPosition() - zeroPos;

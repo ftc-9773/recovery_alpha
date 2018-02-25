@@ -66,7 +66,7 @@ public class CubeTray implements CubeTrays {
 
     // Json setup
     private SafeJsonReader myCubeTrayPositions;
-    private static final boolean useBlockerServo = true;
+    private static final boolean useBlockerServo = false;
 
     // create state machines
     // TODO: make this initialised or automated for start
@@ -150,6 +150,8 @@ public class CubeTray implements CubeTrays {
         this.gamepad1 = gamepad1;
 
         // setup JewelBlockerServo
+
+
         myJewelServo = new JewelServoController(hwMap);
 
         // attach DC lift motor

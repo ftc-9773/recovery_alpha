@@ -15,6 +15,46 @@ import org.firstinspires.ftc.teamcode.infrastructure.SafeJsonReader;
  * Created by zacharye on 2/4/18.
  */
 
+
+/**
+ ---------------------------------------------------------------------------------------------------
+ *                             ::: How to use this class properly :::
+ ---------------------------------------------------------------------------------------------------
+ *
+ * this class uses state logic, and is made to work iteratively, to accomplish tasks without needing
+ * to 'steal' time from the rest of the robot.
+ *
+ * HOWEVER, it must be called regularly in a loop to ensure it
+ * functions correctly
+ *
+ * for deafault Tele-op operation, use the updateFromGamepad(); command in the loop. it preforms all necessary actions
+ *
+ * if, for some reason, you need to avoid the deafault operation mode, (say in autonomous) use:
+ *          the SetToPos() function in order to write a position
+ *          This NEEDS to be followed by the updatePosition(); method
+ *
+ * Miscilanious methods:
+ *
+ *  homeLift();   // homes the lift: NOTE: as of now, the lift must not be in the loading position for this to work
+ *
+ *  defineStartPosition(); // sets the start position of the lift as of yet, the program cannot tell what the starting
+ *                         // position of the lift is, so it is necessary to set this when transitioning between opmodes
+ *                         // put at the
+ *
+ *
+ * ----------------------------------------------------------------------------------------------------
+ *
+ * To go to the dirrectory:
+ * cd TeamCode/src/main/java/org/firstinspires/ftc/teamcode/JSON/
+ *
+ * To push the file:
+ * ~/Library/Android/sdk/platform-tools/adb push SlotTrayPositions.json /sdcard/FIRST/team9773/json18
+ *
+ * To pull the file
+ * ~/Library/Android/sdk/platform-tools/adb pull /sdcard/FIRST/team9773/json18/CubeTrayServoPositions.json
+ *
+ */
+
 public class SlotTray implements CubeTrays {
     public enum TrayPositions{GRABBED, OPEN,LOADING, START_POS,JEWEL_LEFT,JEWEL_CENTER,JEWEL_RIGHT}
 
@@ -74,19 +114,37 @@ public class SlotTray implements CubeTrays {
         myCubeTrayPositions = new SafeJsonReader("SlotTrayPositions");
 
         loadingPosTicks = myCubeTrayPositions.getInt("loadPosTicks");
+        Log.i(TAG, "set Loading Pos to" + loadingPosTicks);
         lowPosTicks = myCubeTrayPositions.getInt("bottomPosTicks");
+        Log.i(TAG, "set low Pos to" + lowPosTicks);
+
         midPosTicks = myCubeTrayPositions.getInt("middlePosTicks");
+        Log.i(TAG, "set mid Pos to" + midPosTicks);
+
         highPosTicks = myCubeTrayPositions.getInt("topPosTicks");
+        Log.i(TAG, "set high Pos to" + highPosTicks);
         compStartPos = myCubeTrayPositions.getInt("compStartPos");
+        Log.i(TAG, "set start Pos to" + compStartPos);
 
+
+        // set grabber position values
         openGrabberPos = myCubeTrayPositions.getDouble("openGrabberPos");
+        Log.i(TAG, "set open grabber Pos to" + openGrabberPos);
         closedGrabberPos = myCubeTrayPositions.getDouble("grabbedGrabberPos");
+        Log.i(TAG, "set closed grabber Pos to" + closedGrabberPos);
         loadGrabberPos = myCubeTrayPositions.getDouble("loadGrabberPos");
+        Log.i(TAG, "set laod grabber Pos to" + loadGrabberPos);
         startGrabberPos = myCubeTrayPositions.getDouble("startGrabberPos");
+        Log.i(TAG, "set start grabber Pos to" + startGrabberPos);
 
+        // setBlockerPositiobns
         blockBlockerPos = myCubeTrayPositions.getDouble("blockBlockerPos");
+        Log.i(TAG, "set blocked blocker Pos to" + blockBlockerPos);
         leftStowBlockerPos = myCubeTrayPositions.getDouble("stowLeftBlockerPos");
+        Log.i(TAG, "set stow blocker Pos to" + leftStowBlockerPos);
         rightBlockerPos = myCubeTrayPositions.getDouble("rightBlockerPos");
+        Log.i(TAG, "set right blocker Pos to" + rightBlockerPos);
+
 
 
         // initialize the motor and servos
@@ -175,6 +233,7 @@ public class SlotTray implements CubeTrays {
         }
         double correction = liftHeightPidController.getPIDCorrection(targetPos, getliftPos());
 
+        Log.d(TAG,"lift Target position"+ targetPos );
         Log.d(TAG,"lift position correction =" + correction);
 
         liftMotor.setPower(correction);

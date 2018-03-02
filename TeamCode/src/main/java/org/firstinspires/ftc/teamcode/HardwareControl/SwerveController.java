@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.HardwareControl;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import android.util.Log;
 
+import org.firstinspires.ftc.teamcode.PositionTracking.EncoderTracking;
 import org.firstinspires.ftc.teamcode.PositionTracking.Gyro;
 import org.firstinspires.ftc.teamcode.infrastructure.PIDController;
 import org.firstinspires.ftc.teamcode.infrastructure.SafeJsonReader;
@@ -41,6 +42,9 @@ public class SwerveController {
     private SafeJsonReader myPIDCoefficients;
     private PIDController turningPID;
 
+    // Position Tracking
+    public EncoderTracking myEncoderTracker;
+
     // Variables
     private boolean motorsAreForward = true;
 
@@ -73,6 +77,7 @@ public class SwerveController {
         if (DEBUG)  Log.e(TAG, "Coefficients: " + Kp + " " + Ki + " " + Kd);
         turningPID = new PIDController(Kp, Ke, Ki, Kd);
 
+        myEncoderTracker = new EncoderTracking(flwModule, frwModule, blwModule, brwModule, myGyro);
     }
 
 
@@ -190,6 +195,8 @@ public class SwerveController {
             blwModule.driveModule();
             brwModule.driveModule();
         }
+
+        myEncoderTracker.updatePosition();
     }
 
     public void toggleFieldCentric () {

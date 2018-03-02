@@ -51,7 +51,7 @@ public class OrientLockPid {
         telemetry = linearOpModeCamera.telemetry;
         gyro = new Gyro(hardwareMap);
         swerveController = new SwerveController(hardwareMap, gyro, telemetry);
-        safeJsonReader = new SafeJsonReader("drive-pid-coefficients");
+        safeJsonReader = new SafeJsonReader("OrientPidParameters");
         kP = safeJsonReader.getDouble("kP");
         kI = safeJsonReader.getDouble("kI");
         kD = safeJsonReader.getDouble("kD");

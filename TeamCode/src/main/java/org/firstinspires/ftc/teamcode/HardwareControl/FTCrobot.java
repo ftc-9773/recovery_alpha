@@ -51,7 +51,6 @@ public class FTCrobot {
     private Gamepad myGamepad1;
     private Gamepad myGamepad2;
     private ButtonStatus gp1y;
-    private boolean dpadlast = false;
     private char state = 0;
     private boolean armState = true;
     private boolean grabState = true;
@@ -254,7 +253,6 @@ public class FTCrobot {
         if (gamepad1RightTrigger.isJustOn()) {
             myGyro.setZeroPosition();
         }
-        myTelemetry.update();
     }
 
     // homes cube tray lift to top. takes cube tray position object
@@ -271,6 +269,9 @@ public class FTCrobot {
         } else {
             myTelemetry.addData("Field Centric", "Off");
         }
+
+        myTelemetry.addData("X Cord", mySwerveController.myEncoderTracker.getXinInches());
+        myTelemetry.addData("Y Cord", mySwerveController.myEncoderTracker.getYinInches());
 
         myTelemetry.update();
     }

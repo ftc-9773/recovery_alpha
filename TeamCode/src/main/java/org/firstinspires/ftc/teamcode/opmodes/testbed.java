@@ -19,6 +19,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.HardwareControl.DistanceColorSensor;
 import org.firstinspires.ftc.teamcode.HardwareControl.DriveWithPID;
 import org.firstinspires.ftc.teamcode.HardwareControl.FTCrobot;
+import org.firstinspires.ftc.teamcode.HardwareControl.OrientLockPid;
 import org.firstinspires.ftc.teamcode.HardwareControl.SwerveController;
 import org.firstinspires.ftc.teamcode.PositionTracking.Gyro;
 import org.firstinspires.ftc.teamcode.infrastructure.RasiActions;
@@ -33,10 +34,7 @@ public class testbed extends LinearOpModeCamera {
 
     @Override
     public void runOpMode() throws InterruptedException{
-        String[] RasiTags ={""};
-        waitForStart();
-        RasiActions rasiActions = new RasiActions("AutoBlueCloseMulti",RasiTags, this, gamepad1, gamepad2, telemetry, hardwareMap);
-        rasiActions.runRasi();
+        OrientLockPid orientLockPid = new OrientLockPid(this);
+        orientLockPid.driveStraightDist(0, 0.5,36, 15);
     }
 }
-

@@ -61,7 +61,7 @@ public class FTCrobot {
     private ButtonStatus gamepad1RightTrigger = new ButtonStatus();
     private ButtonStatus leftBumperStatus = new ButtonStatus();
     private ButtonStatus rightBumperStatus = new ButtonStatus();
-    private double rotation;
+    private double directionLock = -1;
 
     private SafeJsonReader jsonReader;
 
@@ -124,6 +124,9 @@ public class FTCrobot {
 
 
     }
+
+    // Joystick Scaling
+
     private double scaleXYAxes (double value, boolean highPrecisionMode) {
         if (value > zeroRange) {
             if (highPrecisionMode) return (value + minPowerXY) * highPrecisionScalingFactor;
@@ -150,6 +153,7 @@ public class FTCrobot {
 
     }
 
+    // Basically all of teleop :)
     public void runGamepadCommands(){
 
         dpaddownStatus.recordNewValue(myGamepad2.dpad_down);
@@ -160,9 +164,11 @@ public class FTCrobot {
         // Get current direction
         boolean highPrecisionMode = myGamepad1.left_bumper;
 
-        // Direction Lock
+
+        // Rotation Axis
         double drivingRotation;
         drivingRotation = scaleRotationAxis(myGamepad1.right_stick_x, highPrecisionMode);
+
         // compute speed. Old behaviour: set minPower and zeroZone to 0.0
         // compute for x & y
         double drivingX =   scaleXYAxes(myGamepad1.left_stick_x, highPrecisionMode);
@@ -179,7 +185,30 @@ public class FTCrobot {
         //    drivingRotation *= 0.5;
         //}
 
-        mySwerveController.steerSwerve(true, myGamepad1.left_stick_x, -1 * myGamepad1.left_stick_y,drivingRotation, -1);
+        // Scale rotation speed if the robot is translating (moving in the x or y directions)
+        if (drivingX != 0 || drivingY != 0) {
+            drivingRotation /= 2;
+        }
+
+        // Direction Lock
+
+        // Read the Dpad
+        if (myGamepad1.dpad_up) {
+            directionLock = 0;
+        } else if (myGamepad1.dpad_left) {
+            directionLock = 270;
+        } else if (myGamepad1.dpad_down) {
+            directionLock = 180;
+        } else if (myGamepad1.dpad_right) {
+            directionLock = 90;
+        }
+
+        // Disable if robot is rotated
+        if (drivingRotation != 0) {
+            directionLock = -1;
+        }
+
+        mySwerveController.steerSwerve(true, myGamepad1.left_stick_x, -1 * myGamepad1.left_stick_y,drivingRotation, directionLock);
         mySwerveController.moveRobot(highPrecisionMode);
 // */
 

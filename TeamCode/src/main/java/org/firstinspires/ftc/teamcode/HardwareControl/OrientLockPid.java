@@ -71,6 +71,7 @@ public class OrientLockPid {
             error = initGyroHeading-gyro.getHeading();
             rotation = pidController.getPIDCorrection(error);
             swerveController.steerSwerve(false, power, angleDegrees, rotation, -1);
+            swerveController.moveRobot(false);
         }
     }
     public double averageEncoderPos(){

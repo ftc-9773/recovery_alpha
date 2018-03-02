@@ -89,15 +89,15 @@ public class SwerveController {
     public double steerSwerve(boolean isCartesian, double xMag, double yAng, double rotation, double directionLock) {
         // direction lock  - in Degrees
 
-        // Check to make sure rotation is off before doing directionLock
 
         if (DEBUG) Log.d(TAG, "Rotation: " + rotation + "  DirectionLock: " + directionLock);
 
+        // Check to make sure rotation is off before doing directionLock
         if (directionLock != -1 && useFieldCentricOrientation) {
             // Calculate Error
             double error = negToPosPi(Math.toRadians(directionLock) - myGyro.getHeading());
-            //rotation = turningPID.getPIDCorrection(error);
-            //Log.e(TAG, "true error: " + error + "  rotation: " + rotation);
+            rotation = turningPID.getPIDCorrection(error);
+            if (DEBUG) Log.e(TAG, "true error: " + error + "  rotation: " + rotation);
         }
 
         //Have pointModules do the brunt work

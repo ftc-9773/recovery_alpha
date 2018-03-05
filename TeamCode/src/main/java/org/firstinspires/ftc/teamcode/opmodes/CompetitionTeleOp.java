@@ -10,6 +10,7 @@ import org.firstinspires.ftc.robotcontroller.for_camera_opmodes.LinearOpModeCame
 import org.firstinspires.ftc.teamcode.HardwareControl.CubeTray;
 import org.firstinspires.ftc.teamcode.HardwareControl.FTCrobot;
 import org.firstinspires.ftc.teamcode.HardwareControl.IntakeController;
+import org.firstinspires.ftc.teamcode.HardwareControl.LiftFinalStates;
 import org.firstinspires.ftc.teamcode.HardwareControl.SwerveController;
 import org.firstinspires.ftc.teamcode.PositionTracking.Gyro;
 
@@ -39,7 +40,6 @@ import org.firstinspires.ftc.teamcode.PositionTracking.Gyro;
 
             // init the lift
             myRobot.myCubeTray.setZeroFromCompStart();
-            myRobot.myCubeTray.setStartPosition(CubeTray.LiftFinalStates.STOWED);
 
 
             while (!opModeIsActive() && !isStopRequested()) {
@@ -49,7 +49,7 @@ import org.firstinspires.ftc.teamcode.PositionTracking.Gyro;
 
             waitForStart();
             myRobot.myCubeTray.setServoPos(CubeTray.TrayPositions.LOADING);
-            myRobot.myCubeTray.setToPos(CubeTray.LiftFinalStates.LOADING);
+            myRobot.myCubeTray.setToPos(LiftFinalStates.LOADING);
 
 
             while (opModeIsActive()) {

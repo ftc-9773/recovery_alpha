@@ -19,32 +19,22 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.HardwareControl.DistanceColorSensor;
 import org.firstinspires.ftc.teamcode.HardwareControl.DriveWithPID;
 import org.firstinspires.ftc.teamcode.HardwareControl.FTCrobot;
+import org.firstinspires.ftc.teamcode.HardwareControl.OrientLockPid;
 import org.firstinspires.ftc.teamcode.HardwareControl.SwerveController;
 import org.firstinspires.ftc.teamcode.PositionTracking.Gyro;
+import org.firstinspires.ftc.teamcode.infrastructure.RasiActions;
 import org.firstinspires.ftc.teamcode.resources.ButtonStatus;
 
 /**
  * Created by Vikesh on 11/19/2017.
  */
 @Autonomous(name = "testbed")
-
 public class testbed extends LinearOpModeCamera {
 
-    //private ModernRoboticsI2cRangeSensor ultrasonicSensor;
-    private FTCrobot ftcRobot;
 
     @Override
-    public void runOpMode() throws InterruptedException {
-        ftcRobot = new FTCrobot(hardwareMap, telemetry, gamepad1, gamepad2, this);
-        /*ultrasonicSensor = hardwareMap.get(ModernRoboticsI2cRangeSensor.class, "ultrasonicSensor");
-        waitForStart();
-        while(opModeIsActive()){
-            telemetry.addData("distance: ", ultrasonicSensor.cmUltrasonic());
-            telemetry.update();
-        }*/
-        waitForStart();
-        while(opModeIsActive()) {
-            ftcRobot.jewelServoController.setToCenterPos();
-        }
+    public void runOpMode() throws InterruptedException{
+        OrientLockPid orientLockPid = new OrientLockPid(this);
+        orientLockPid.driveStraightDist(0, 0.5,36, 15);
     }
 }

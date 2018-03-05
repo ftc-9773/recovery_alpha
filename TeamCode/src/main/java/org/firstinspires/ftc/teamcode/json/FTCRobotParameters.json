@@ -5,8 +5,9 @@
   "highPrecisionScalingFactor"  : 0.25,
   "highPrecisionRotationFactor" : 0.45,
 
+  "***** All following variables are not used *****": true,
   "DisableDriving"        : false,
-  "DisableLift"           : true,
+  "DisableLift"           : false,
   "DisableDriverIntake"   : false,
   "DisableAutoIntake"     : true,
   "DisableRelicArm"       : false

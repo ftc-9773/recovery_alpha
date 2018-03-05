@@ -59,6 +59,7 @@ public class SwerveModule {
 
     private long lastTime = -1;
     private double lastError;
+    private long dt = 1;
 
     private double Kp;
     private double Ke;
@@ -81,7 +82,6 @@ public class SwerveModule {
 
     // For outside access
     private boolean isTurning = false;
-    private double lastPosition;
     private double currentPosition = 0;
 
 
@@ -99,6 +99,8 @@ public class SwerveModule {
         swerveMotor = hwMap.dcMotor.get(hardwareMapTag + "Motor");
 
         //Set up motor parameters
+        swerveMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        swerveMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         swerveMotor.setDirection(DcMotor.Direction.FORWARD);
 
 
@@ -128,7 +130,6 @@ public class SwerveModule {
         myJsonZeroPosition = new SafeJsonReader("SwerveModuleZeroPositions");
         zeroPosition = myJsonZeroPosition.getDouble(hardwareMapTag + "StraightPosition");
 
-        lastPosition = setOnTwoPI(2*Math.PI * (1 - swerveAbsEncoder.getVoltage()/3.23) - zeroPosition);
     }
 
 
@@ -167,7 +168,8 @@ public class SwerveModule {
 
         //Differential
         if (lastTime > 0) {
-            differentialCorrection = Kd * (input - lastError) / (System.currentTimeMillis() - lastTime);
+            dt = System.currentTimeMillis() - lastTime;
+            differentialCorrection = Kd * (input - lastError) / dt;
         } else {
             differentialCorrection = 0;
         }
@@ -253,20 +255,23 @@ public class SwerveModule {
         }
         //Log.i(TAG, "Desired Position: " + velocityVector.getAngle()/Math.PI + "pi,   Error Amt: " + errorAmt + ",   Tell servo is: " + tellServo);
         swerveServo.setPower(tellServo);
-
+/*
         if (setOnTwoPI(currentPosition - lastPosition) > isTurningThreshold) {
             isTurning = true;
         } else {
             isTurning = false;
         }
+*/
 
-/*
-        if (Math.abs(errorAmt) > isTurningThreshold) {
+        if (Math.abs(errorAmt) / dt > isTurningThreshold) {
             isTurning = true;
+            swerveMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
         } else {
             isTurning = false;
+            swerveMotor.setZeroPowerBehavior((DcMotor.ZeroPowerBehavior.BRAKE));
         }
-*/
+
+
         //Log.i(TAG, "AbsEncoder positional difference: " + setOnTwoPI(currentPosition - lastPosition));
     }
 
@@ -290,4 +295,5 @@ public class SwerveModule {
         return swerveMotor.getCurrentPosition();
     }
     public double getErrorAmt (){return errorAmt;}
+    public boolean isPivoting() { return isTurning && velocityVector.getMagnitude() == 0;}
 }

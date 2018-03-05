@@ -9,6 +9,7 @@ import org.firstinspires.ftc.teamcode.HardwareControl.CubeTray;
 import org.firstinspires.ftc.teamcode.HardwareControl.DriveWithPID;
 import org.firstinspires.ftc.teamcode.HardwareControl.SwerveController;
 import org.firstinspires.ftc.teamcode.PositionTracking.Gyro;
+import org.firstinspires.ftc.teamcode.HardwareControl.LiftFinalStates;
 import org.firstinspires.ftc.teamcode.Vision.VumarkGlyphPattern;
 @Disabled
 @Autonomous(name = "Cryptobox Navigation", group="Navigation")
@@ -37,8 +38,7 @@ public class CryptoboxNavigationTest extends LinearOpMode{
         while (opModeIsActive()){
 //            driver.driveStraight(true, 1, 0, dist);
 
-            cubeTrayController.setToPos(CubeTray.LiftFinalStates.LOW);
-            cubeTrayController.updateServos();
+            cubeTrayController.setToPos(LiftFinalStates.LOW);
         }
     }
 }

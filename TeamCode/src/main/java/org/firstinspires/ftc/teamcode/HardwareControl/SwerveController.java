@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.HardwareControl;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import android.util.Log;
 
+import org.firstinspires.ftc.teamcode.PositionTracking.EncoderTracking;
 import org.firstinspires.ftc.teamcode.PositionTracking.Gyro;
 import org.firstinspires.ftc.teamcode.infrastructure.PIDController;
 import org.firstinspires.ftc.teamcode.infrastructure.SafeJsonReader;
@@ -41,6 +42,9 @@ public class SwerveController {
     private SafeJsonReader myPIDCoefficients;
     private PIDController turningPID;
 
+    // Position Tracking
+    public EncoderTracking myEncoderTracker;
+
     // Variables
     private boolean motorsAreForward = true;
 
@@ -73,6 +77,7 @@ public class SwerveController {
         if (DEBUG)  Log.e(TAG, "Coefficients: " + Kp + " " + Ki + " " + Kd);
         turningPID = new PIDController(Kp, Ke, Ki, Kd);
 
+        myEncoderTracker = new EncoderTracking(flwModule, frwModule, blwModule, brwModule, myGyro);
     }
 
 
@@ -84,15 +89,15 @@ public class SwerveController {
     public double steerSwerve(boolean isCartesian, double xMag, double yAng, double rotation, double directionLock) {
         // direction lock  - in Degrees
 
-        // Check to make sure rotation is off before doing directionLock
 
         if (DEBUG) Log.d(TAG, "Rotation: " + rotation + "  DirectionLock: " + directionLock);
 
+        // Check to make sure rotation is off before doing directionLock
         if (directionLock != -1 && useFieldCentricOrientation) {
             // Calculate Error
             double error = negToPosPi(Math.toRadians(directionLock) - myGyro.getHeading());
-            //rotation = turningPID.getPIDCorrection(error);
-            //Log.e(TAG, "true error: " + error + "  rotation: " + rotation);
+            rotation = turningPID.getPIDCorrection(error);
+            if (DEBUG) Log.e(TAG, "true error: " + error + "  rotation: " + rotation);
         }
 
         //Have pointModules do the brunt work
@@ -190,6 +195,8 @@ public class SwerveController {
             blwModule.driveModule();
             brwModule.driveModule();
         }
+
+        myEncoderTracker.updatePosition();
     }
 
     public void toggleFieldCentric () {

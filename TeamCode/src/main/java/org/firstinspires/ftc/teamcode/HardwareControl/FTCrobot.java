@@ -13,7 +13,6 @@ import org.firstinspires.ftc.teamcode.PositionTracking.Gyro;
 import org.firstinspires.ftc.teamcode.infrastructure.ButtonStatus;
 import org.firstinspires.ftc.teamcode.infrastructure.RasiParser;
 import org.firstinspires.ftc.teamcode.infrastructure.SafeJsonReader;
-import org.firstinspires.ftc.teamcode.opmodes.Swerve;
 import android.util.Log;
 
 /**
@@ -42,15 +41,16 @@ public class FTCrobot {
 //    private IntakeController myIntakeController;
     public IntakeControllerManual myManualIntakeController;
     public DriveWithPID myDriveWithPID;                      // <--
-    public CubeTray myCubeTray;
+
+    public CubeTrays myCubeTray;
+
     private HardwareMap hwMap;
     public RelicSystem myRelicSystem;
-    private JewelServoController myJewelServo;
+
     private Telemetry myTelemetry;
     private Gamepad myGamepad1;
     private Gamepad myGamepad2;
     private ButtonStatus gp1y;
-    private boolean dpadlast = false;
     private char state = 0;
     private boolean armState = true;
     private boolean grabState = true;
@@ -61,8 +61,7 @@ public class FTCrobot {
     private ButtonStatus gamepad1RightTrigger = new ButtonStatus();
     private ButtonStatus leftBumperStatus = new ButtonStatus();
     private ButtonStatus rightBumperStatus = new ButtonStatus();
-    public JewelServoController jewelServoController;
-    private double rotation;
+    private double directionLock = -1;
 
     private SafeJsonReader jsonReader;
 
@@ -74,18 +73,23 @@ public class FTCrobot {
     private double highPrecisionScalingFactor;
     private double highPrecisionRotationFactor;
 
+    public JewelKnocker jewelKnocker;
 
     private static final String TAG = "9773_FTCrobot";
     private static final boolean DEBUG = false;
 
     private boolean disableDriving = false;
-    private boolean disableLift  = true;
+    private boolean disableLift  = false;
     private boolean disableDriverIntake = false;
-    private boolean disableAutoIntake = true;
-    private boolean disableRelicArm = true ;
+    private boolean disableAutoIntake = false;
+    private boolean disableRelicArm = false;
+
+    private static final boolean usingSlotTray = true;
+
 
     // INIT
     public FTCrobot(HardwareMap hwmap, Telemetry telemetry, Gamepad gamepad1, Gamepad gamepad2, LinearOpModeCamera myLinearOpModeCamera){
+        jewelKnocker = new JewelKnocker(hwmap);
         this.gp1y = new ButtonStatus();
         this.hwMap = hwmap;
         this.myTelemetry = telemetry;
@@ -98,11 +102,9 @@ public class FTCrobot {
         this.myManualIntakeController = new IntakeControllerManual(hwMap);
         this.myDriveWithPID = new DriveWithPID(mySwerveController, myGyro, myLinearOpModeCamera);
         this.myRelicSystem = new RelicSystem(myTelemetry, hwMap, myLinearOpModeCamera);
-        this.myCubeTray = new CubeTray(hwmap,gamepad2,null);
-        this.myJewelServo = new JewelServoController(hwmap);
+
         this.myGamepad1 = gamepad1;
         this.myGamepad2 = gamepad2;
-        this.jewelServoController = new JewelServoController(hwmap);
 
         jsonReader = new SafeJsonReader("FTCRobotParameters");
         minPowerXY = jsonReader.getDouble("MinPowerXY");
@@ -112,7 +114,18 @@ public class FTCrobot {
         highPrecisionRotationFactor = jsonReader.getDouble("highPrecisionRotationFactor");
         xyCoefficient = (1 - minPowerXY) / Math.pow(1 - zeroRange, 3);
         rotCoefficient = (1 - minPowerRot) / Math.pow(1 - zeroRange, 3);
+
+        if(usingSlotTray){
+            this.myCubeTray = new SlotTray(hwmap, gamepad2);
+
+        } else {
+            this.myCubeTray = new CubeTray(hwmap, gamepad2, null);
+        }
+
+
     }
+
+    // Joystick Scaling
 
     private double scaleXYAxes (double value, boolean highPrecisionMode) {
         if (value > zeroRange) {
@@ -140,6 +153,7 @@ public class FTCrobot {
 
     }
 
+    // Basically all of teleop :)
     public void runGamepadCommands(){
 
         dpaddownStatus.recordNewValue(myGamepad2.dpad_down);
@@ -150,9 +164,11 @@ public class FTCrobot {
         // Get current direction
         boolean highPrecisionMode = myGamepad1.left_bumper;
 
-        // Direction Lock
+
+        // Rotation Axis
         double drivingRotation;
         drivingRotation = scaleRotationAxis(myGamepad1.right_stick_x, highPrecisionMode);
+
         // compute speed. Old behaviour: set minPower and zeroZone to 0.0
         // compute for x & y
         double drivingX =   scaleXYAxes(myGamepad1.left_stick_x, highPrecisionMode);
@@ -169,7 +185,30 @@ public class FTCrobot {
         //    drivingRotation *= 0.5;
         //}
 
-        mySwerveController.steerSwerve(true, drivingX, drivingY, drivingRotation, -1);
+        // Scale rotation speed if the robot is translating (moving in the x or y directions)
+        if (drivingX != 0 || drivingY != 0) {
+            drivingRotation /= 2;
+        }
+
+        // Direction Lock
+
+        // Read the Dpad
+        if (myGamepad1.dpad_up) {
+            directionLock = 0;
+        } else if (myGamepad1.dpad_left) {
+            directionLock = 270;
+        } else if (myGamepad1.dpad_down) {
+            directionLock = 180;
+        } else if (myGamepad1.dpad_right) {
+            directionLock = 90;
+        }
+
+        // Disable if robot is rotated
+        if (drivingRotation != 0) {
+            directionLock = -1;
+        }
+
+        mySwerveController.steerSwerve(true, myGamepad1.left_stick_x, -1 * myGamepad1.left_stick_y,drivingRotation, directionLock);
         mySwerveController.moveRobot(highPrecisionMode);
 // */
 
@@ -243,18 +282,9 @@ public class FTCrobot {
         if (gamepad1RightTrigger.isJustOn()) {
             myGyro.setZeroPosition();
         }
-        myTelemetry.update();
     }
 
     // homes cube tray lift to top. takes cube tray position object
-    public void homeLift(CubeTray.LiftFinalStates pos ){
-        myCubeTray.setStartPosition(pos);
-        try {
-            myCubeTray.homeLiftVersA();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-    }
 
     public void doTelemetry() {
 
@@ -268,6 +298,9 @@ public class FTCrobot {
         } else {
             myTelemetry.addData("Field Centric", "Off");
         }
+
+        myTelemetry.addData("X Cord", mySwerveController.myEncoderTracker.getXinInches());
+        myTelemetry.addData("Y Cord", mySwerveController.myEncoderTracker.getYinInches());
 
         myTelemetry.update();
     }

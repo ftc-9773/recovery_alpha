@@ -1,0 +1,28 @@
+{
+  "sensorPosTicks" : 3355, "__COMMENT__" : "need to finish putting values for Sensor and Top PosTicks",
+  "topPosTicks"    : 3360,
+  "middlePosTicks" : 1350,
+  "bottomPosTicks" : 450,
+  "loadPosTicks"    : 0,
+  "CompStartPos" : 0,
+
+  "liftHeightP" : 0.0025,
+  "liftHeightI" : 0.0009,
+  "liftHeightD" : 0.002,
+
+  "openGrabberPos"    : 0.1,
+  "grabbedGrabberPos" : 0.6,
+  "loadGrabberPos"    : 0.2,
+  "startGrabberPos"   : 0.3,
+
+  "blockBlockerPos"  : 0.5,
+  "stowLeftBlockerPos": 0.2,
+  "rightBlockerPos" : 0.8,
+
+  "LastLiftHeight" : 0
+
+
+
+
+
+}

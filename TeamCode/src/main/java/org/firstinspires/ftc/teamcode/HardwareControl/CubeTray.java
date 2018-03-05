@@ -84,7 +84,6 @@ public class CubeTray implements CubeTrays {
     //private Servo leftAngle ;
     //private Servo rightAngle ;
     public DcMotor liftMotor ;
-    public JewelServoController myJewelServo;
     // define gamepad value
     private Gamepad gamepad1;
 
@@ -142,8 +141,7 @@ public class CubeTray implements CubeTrays {
 
     public CubeTray(HardwareMap hwMap, Gamepad gamepad1, Gamepad gamepad2){  // constructor takes hardware map
         // attach all the servos to their hardware map components
-        //jewelServo = hwMap.servo.get("ctjServo");
-        grabber = hwMap.servo.get("ctgServo");
+         grabber = hwMap.servo.get("ctgServo");
         //leftAngle = hwMap.servo.get("ctlaServo");
         //rightAngle = hwMap.servo.get("ctraServo");
         // passes gamepad, instead of gamepad values for ease of use
@@ -152,7 +150,6 @@ public class CubeTray implements CubeTrays {
         // setup JewelBlockerServo
 
 
-        myJewelServo = new JewelServoController(hwMap);
 
         // attach DC lift motor
         liftMotor = hwMap.dcMotor.get("ctlMotor");
@@ -279,17 +276,14 @@ public class CubeTray implements CubeTrays {
                     case JEWELC:
                         liftTargetPosition = jewelPosTicks;
                         dump();
-                        myJewelServo.setToCenterPos();
                         break;
                     case JEWELR:
                         liftTargetPosition = jewelPosTicks;
                         dump();
-                        myJewelServo.setToRightPos();
                         break;
                     case JEWELL:
                         liftTargetPosition = jewelPosTicks;
                         dump();
-                        myJewelServo.setToLeftPos();
                         break;
                     default:
                         // otherwise do nothing
@@ -484,20 +478,16 @@ public class CubeTray implements CubeTrays {
         switch (trayPos) {
             case STOWED:
                 posNum = 0;
-                myJewelServo.setToRetractPos();
                 break;
             case LOADING:
                 posNum = 1;
                 if(useBlockerServo){
-                    myJewelServo.setToBlockPos();
-                }else myJewelServo.setToRetractPos();
+                }else
                 break;
             case CARRYING:
                 posNum = 2;
                 if(AutonomousMode && liftFinalState.equals(LiftFinalStates.LOADING)){
-                    myJewelServo.setToCenterPos();
                 } else
-                myJewelServo.setToRetractPos();
                 break;
             case DUMP_A:
                 posNum = 3;
@@ -505,7 +495,6 @@ public class CubeTray implements CubeTrays {
 
             case JEWEL:
                 posNum = 3;
-                myJewelServo.setToCenterPos();
                 break;
             default:
                 break;

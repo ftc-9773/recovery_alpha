@@ -6,7 +6,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
-import org.firstinspires.ftc.teamcode.HardwareControl.JewelServoController;
+import org.firstinspires.ftc.teamcode.HardwareControl.JewelKnocker;
 
 /**
  * Created by nicky on 1/2/18.
@@ -16,10 +16,10 @@ import org.firstinspires.ftc.teamcode.HardwareControl.JewelServoController;
 @Disabled
 public class MiscTests extends LinearOpMode {
 
-    JewelServoController jewel;
+    JewelKnocker jewel;
     @Override
     public void runOpMode() throws InterruptedException {
-        jewel = new JewelServoController(hardwareMap);
+        jewel = new JewelKnocker(hardwareMap);
         waitForStart();
 
      //   jewel.lowerArm();

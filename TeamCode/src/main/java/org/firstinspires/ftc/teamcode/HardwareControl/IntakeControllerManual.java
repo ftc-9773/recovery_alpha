@@ -11,7 +11,6 @@ import com.qualcomm.robotcore.hardware.Servo;
 public class IntakeControllerManual {
     private DcMotor leftMotor;
     private DcMotor rightMotor;
-    private Servo intakeServo;
 
     private static double LEFT_MOTOR_POWER = 1;
     private static double RIGHT_MOTOR_POWER = 1;
@@ -19,7 +18,7 @@ public class IntakeControllerManual {
     public IntakeControllerManual(HardwareMap hardwareMap) {
         leftMotor = hardwareMap.dcMotor.get("liMotor");
         rightMotor = hardwareMap.dcMotor.get("riMotor");
-        intakeServo = hardwareMap.servo.get("iServo");
+
 
         leftMotor.setDirection(DcMotor.Direction.FORWARD);
         rightMotor.setDirection(DcMotor.Direction.REVERSE);
@@ -48,10 +47,9 @@ public class IntakeControllerManual {
 
     public void lowerIntake(boolean stopOrStart){
         if (stopOrStart) {
-            intakeServo.setPosition(0);
+
         }
         else{
-            intakeServo.setPosition(0.5);
         }
     }
 

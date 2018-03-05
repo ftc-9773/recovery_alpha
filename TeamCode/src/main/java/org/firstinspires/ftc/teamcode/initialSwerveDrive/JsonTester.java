@@ -23,7 +23,6 @@ where are the file on the phone?
   get a file from there
   adb pull  /sdcard/FIRST/team9773/json18/myfile.json
 
-
 */
 
 /**

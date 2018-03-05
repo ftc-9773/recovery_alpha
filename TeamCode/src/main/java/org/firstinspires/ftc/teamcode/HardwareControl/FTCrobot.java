@@ -32,7 +32,7 @@ public class FTCrobot {
     public DistanceColorSensor leftColorSensor;
     public DistanceColorSensor rightColorSensor;
     private SwerveController mySwerveController;
-    private double directionLock = -1;
+   // private double directionLock = -1;
     private double stickl1x;
     private double stickl1y;
     private Gyro myGyro;

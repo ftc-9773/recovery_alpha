@@ -48,7 +48,7 @@ import org.firstinspires.ftc.teamcode.infrastructure.SafeJsonReader;
  * cd TeamCode/src/main/java/org/firstinspires/ftc/teamcode/JSON/
  *
  * To push the file:
- * ~/Library/Android/sdk/platform-tools/adb push SlotTrayPositions.json /sdcard/FIRST/team9773/json18
+ ~/Library/Android/sdk/platform-tools/adb push SlotTrayPositions.json /sdcard/FIRST/team9773/json18
  *
  * To pull the file
  * ~/Library/Android/sdk/platform-tools/adb pull /sdcard/FIRST/team9773/json18/CubeTrayServoPositions.json
@@ -77,8 +77,13 @@ public class SlotTray implements CubeTrays {
     double leftStowBlockerPos;
     double rightBlockerPos;
 
-    double grabberPos = 0;
-    double blockerPos = 0;
+    private double grabberPos = 0;
+    private double blockerPos = 0;
+
+    private double leftRollerOutVal =  0.89;
+    private double rightRollerOutVal = 0.11;
+
+    private boolean ejecting = false;
 
 
 
@@ -91,6 +96,11 @@ public class SlotTray implements CubeTrays {
     private Servo grabServo;
     private Servo blockServo;
     AnalogInput limitSwitch;
+
+    // for roller ejection
+    private boolean usingRollerEjection= true;
+    private Servo leftEjectRoller;
+    private Servo rightEjectRoller;
 
     PIDController liftHeightPidController;
 
@@ -145,6 +155,16 @@ public class SlotTray implements CubeTrays {
         rightBlockerPos = myCubeTrayPositions.getDouble("rightBlockerPos");
         Log.i(TAG, "set right blocker Pos to" + rightBlockerPos);
 
+        // init roller ejection stuff
+        usingRollerEjection = myCubeTrayPositions.getBoolean("usingRollerEjection");
+        Log.i(TAG, "set usingRollerEjection to" + usingRollerEjection);
+
+
+        rightRollerOutVal = myCubeTrayPositions.getDouble("rightRollerOutVal");
+        Log.i(TAG, "set rightRollerOutVal to" + rightRollerOutVal);
+        leftRollerOutVal = myCubeTrayPositions.getDouble("leftRollerOutVal");
+        Log.i(TAG, "set leftRollerOutVal to" + leftRollerOutVal);
+
 
 
         // initialize the motor and servos
@@ -152,7 +172,13 @@ public class SlotTray implements CubeTrays {
         liftMotor = hwMap.dcMotor.get("ctlMotor");
         limitSwitch = hwMap.analogInput.get("ctlLimitSwitch");
         grabServo = hwMap.servo.get("ctgServo");
-        blockServo = hwMap.servo.get("ctbServo");
+        blockServo = hwMap.servo.get("csServo");
+        // initialize roller ejection
+        if(usingRollerEjection) {
+            leftEjectRoller = hwMap.servo.get("ctleServo");
+            rightEjectRoller = hwMap.servo.get("ctreServo");
+        }
+
 
 
         Double kp = myCubeTrayPositions.getDouble("liftHeightP");
@@ -184,7 +210,13 @@ public class SlotTray implements CubeTrays {
 
     }
     public void dump(){
+        if(!usingRollerEjection)
         setServoPos(TrayPositions.OPEN);
+        else{
+            leftEjectRoller.setPosition(leftRollerOutVal);
+            rightEjectRoller.setPosition(rightRollerOutVal);
+            ejecting = true;
+        }
     }
 
     public void setToPos(LiftFinalStates state){
@@ -220,10 +252,21 @@ public class SlotTray implements CubeTrays {
                 break;
         }
         updatePosition();
-    }
+    }//
 
     public void updatePosition(){
         setToPoitionPID(liftTargetPosition);
+
+        // update the ejection rollers based off of wether or not they are ejecting
+        // if they are, set to ejection position
+        // otherwise stop the rollers
+        if(ejecting){
+            leftEjectRoller.setPosition(leftRollerOutVal);
+            rightEjectRoller.setPosition(rightRollerOutVal);
+        }  else {
+            leftEjectRoller.setPosition(0.5);
+            rightEjectRoller.setPosition(0.5);
+        }
 
     }
 

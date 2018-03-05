@@ -1,23 +1,32 @@
 {
   "sensorPosTicks" : 3355, "__COMMENT__" : "need to finish putting values for Sensor and Top PosTicks",
-  "topPosTicks"    : 3360,
+  "topPosTicks"    : 3560,
   "middlePosTicks" : 1350,
   "bottomPosTicks" : 450,
   "loadPosTicks"    : 0,
   "CompStartPos" : 0,
 
+
+  "usingRollerEjection": true,
+
   "liftHeightP" : 0.0025,
   "liftHeightI" : 0.0009,
   "liftHeightD" : 0.002,
 
-  "openGrabberPos"    : 0.1,
-  "grabbedGrabberPos" : 0.6,
-  "loadGrabberPos"    : 0.2,
-  "startGrabberPos"   : 0.3,
+  "openGrabberPos"    : 0.7,
+  "grabbedGrabberPos" : 0.49,
+  "loadGrabberPos"    : 0.58,
+  "startGrabberPos"   : 0.58,
 
   "blockBlockerPos"  : 0.5,
   "stowLeftBlockerPos": 0.2,
   "rightBlockerPos" : 0.8,
+
+  "leftRollerOutVal" : 0.88,
+  "leftRollerHoldVal" : 0.5,
+
+  "rightRollerOutVal" : 0.15,
+  "rightRollerHoldVal" :  0.5,
 
   "LastLiftHeight" : 0
 

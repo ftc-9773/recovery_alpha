@@ -1,19 +1,16 @@
 package org.firstinspires.ftc.teamcode.HardwareControl;
 
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cRangeSensor;
-import com.qualcomm.robotcore.hardware.ColorSensor;
-import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcontroller.for_camera_opmodes.LinearOpModeCamera;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.PositionTracking.Gyro;
 import org.firstinspires.ftc.teamcode.infrastructure.ButtonStatus;
 import org.firstinspires.ftc.teamcode.infrastructure.RasiParser;
 import org.firstinspires.ftc.teamcode.infrastructure.SafeJsonReader;
-import android.util.Log;
+import org.firstinspires.ftc.teamcode.resources.Vector;
 
 /**
  * Created by Vikesh on 11/22/2017.
@@ -32,7 +29,6 @@ public class FTCrobot {
     public DistanceColorSensor leftColorSensor;
     public DistanceColorSensor rightColorSensor;
     private SwerveController mySwerveController;
-    private double directionLock = -1;
     private double stickl1x;
     private double stickl1y;
     private Gyro myGyro;
@@ -78,13 +74,12 @@ public class FTCrobot {
     private static final String TAG = "9773_FTCrobot";
     private static final boolean DEBUG = false;
 
-    private boolean disableDriving = false;
-    private boolean disableLift  = false;
-    private boolean disableDriverIntake = false;
-    private boolean disableAutoIntake = false;
-    private boolean disableRelicArm = false;
+    private static boolean DISABLE_LIFT = false;
+    private static boolean DISABLE_RELIC_ARM = false;
+    private static boolean USE_FIELD_CENTRIC_ROTATION = true;
+    private static boolean DISABLE_DRIVER_INTAKE = false;
 
-    private static final boolean usingSlotTray = true;
+    private static final boolean USING_SLOT_TRAY = true;
 
 
     // INIT
@@ -115,7 +110,7 @@ public class FTCrobot {
         xyCoefficient = (1 - minPowerXY) / Math.pow(1 - zeroRange, 3);
         rotCoefficient = (1 - minPowerRot) / Math.pow(1 - zeroRange, 3);
 
-        if(usingSlotTray){
+        if(USING_SLOT_TRAY){
             this.myCubeTray = new SlotTray(hwmap, gamepad2);
 
         } else {
@@ -127,6 +122,7 @@ public class FTCrobot {
 
     // Joystick Scaling
 
+    // This scales the XY axes from joystick inputs to create an easier driver experience
     private double scaleXYAxes (double value, boolean highPrecisionMode) {
         if (value > zeroRange) {
             if (highPrecisionMode) return (value + minPowerXY) * highPrecisionScalingFactor;
@@ -140,6 +136,7 @@ public class FTCrobot {
 
     }
 
+    // This scales the rotation axis from joystick inputs to create an easier driver experience
     private double scaleRotationAxis (double value, boolean highPrecisionMode) {
         if (value > zeroRange) {
             if (highPrecisionMode) return (value + minPowerRot) * highPrecisionRotationFactor;
@@ -159,40 +156,18 @@ public class FTCrobot {
         dpaddownStatus.recordNewValue(myGamepad2.dpad_down);
         dpadupStatus.recordNewValue(myGamepad2.dpad_up);
 
+
         /////// Driving - gamepad 1 left and right joysticks & Dpad /////
 
         // Get current direction
         boolean highPrecisionMode = myGamepad1.left_bumper;
 
-
-        // Rotation Axis
-        double drivingRotation;
-        drivingRotation = scaleRotationAxis(myGamepad1.right_stick_x, highPrecisionMode);
-
-        // compute speed. Old behaviour: set minPower and zeroZone to 0.0
+        // compute speed. To return to old behaviour: set minPower and zeroZone to 0.0
         // compute for x & y
         double drivingX =   scaleXYAxes(myGamepad1.left_stick_x, highPrecisionMode);
         double drivingY = - scaleXYAxes(myGamepad1.left_stick_y, highPrecisionMode);
-/*        Log.d(TAG, "driving X is " + drivingX);
-        Log.d(TAG, "driving Y is " + drivingY);
-        Log.d(TAG, "driving rot is " + drivingRotation);
-*/
-        //double drivingX =   Math.pow(myGamepad1.left_stick_x, 3);
-        //double drivingY = - Math.pow(myGamepad1.left_stick_y, 3);
-        //if (highPrecisionMode) {
-        //    drivingX *= 0.5;
-        //    drivingY *= 0.5;
-        //    drivingRotation *= 0.5;
-        //}
 
-        // Scale rotation speed if the robot is translating (moving in the x or y directions)
-        if (drivingX != 0 || drivingY != 0) {
-            drivingRotation /= 2;
-        }
-
-        // Direction Lock
-
-        // Read the Dpad
+        // Read the Dpad for Direction Lock
         if (myGamepad1.dpad_up) {
             directionLock = 0;
         } else if (myGamepad1.dpad_left) {
@@ -203,13 +178,37 @@ public class FTCrobot {
             directionLock = 90;
         }
 
-        // Disable if robot is rotated
-        if (drivingRotation != 0) {
-            directionLock = -1;
-        }
+        // Check to see if the robot is using field centric rotation
+        if (USE_FIELD_CENTRIC_ROTATION && mySwerveController.getFieldCentric()) {
 
-        mySwerveController.steerSwerve(true, myGamepad1.left_stick_x, -1 * myGamepad1.left_stick_y,drivingRotation, directionLock);
-        mySwerveController.moveRobot(highPrecisionMode);
+            // If so, turn the rotation joystick into a vector, and get its angle to use for driving direction
+            Vector rotationVector = new Vector(true, myGamepad1.right_stick_x, -myGamepad1.right_stick_y);
+
+            // Change the direction lock if the joystick is sufficiently moved
+            if (rotationVector.getMagnitude() > 0.8) directionLock = Math.toDegrees(rotationVector.getAngle());
+
+            // Actually move the robot
+            mySwerveController.steerSwerve(true, drivingX, drivingY, 0, directionLock);
+            mySwerveController.moveRobot(highPrecisionMode);
+
+        } else { // Otherwise use non-field centric rotation mode
+
+            // Rotation Axis
+            double drivingRotation = scaleRotationAxis(myGamepad1.right_stick_x, highPrecisionMode);
+
+            // Scale rotation speed if the robot is translating (moving in the x or y directions)
+            if (drivingX != 0 || drivingY != 0) {
+                drivingRotation /= 2;
+            }
+
+            // Disable Directon Lock if robot is rotated
+            if (drivingRotation != 0) {
+                directionLock = -1;
+            }
+
+            mySwerveController.steerSwerve(true, drivingX, drivingY, drivingRotation, directionLock);
+            mySwerveController.moveRobot(highPrecisionMode);
+        }
 // */
 
             /////// Intake - Gamepad 1 right trigger and bumper ////////
@@ -235,7 +234,7 @@ public class FTCrobot {
     // */
 
         // Manual Intake Controller - Gamepad 2 Right Joystick
-        if(!disableDriverIntake) {
+        if(!DISABLE_DRIVER_INTAKE) {
             myManualIntakeController.RunIntake(myGamepad2.right_stick_x, -1*myGamepad2.right_stick_y);
 
             // Lowering Intake - Gamepad 2 Left Bumper
@@ -251,13 +250,13 @@ public class FTCrobot {
 
 
         // cube tray
-        if(!disableLift) {
+        if(!DISABLE_LIFT) {
             myCubeTray.updateFromGamepad();
         }
 
 
         // relic arm
-        if(!disableRelicArm) {
+        if(!DISABLE_RELIC_ARM) {
             rightBumperStatus.recordNewValue(myGamepad1.right_bumper);
             if (dpadupStatus.isJustOn()) {
                 armState = !armState  ;
@@ -286,7 +285,7 @@ public class FTCrobot {
 
     // homes cube tray lift to top. takes cube tray position object
 
-    public void doTelemetry() {
+    public void  doTelemetry() {
 
         myTelemetry.addData("Gamepad x", myGamepad1.left_stick_x);
         myTelemetry.addData("Gamepad y", myGamepad1.left_stick_y);

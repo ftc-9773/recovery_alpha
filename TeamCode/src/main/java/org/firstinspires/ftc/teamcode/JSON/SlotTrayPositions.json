@@ -1,8 +1,8 @@
 {
-  "sensorPosTicks" : 3355, "__COMMENT__" : "need to finish putting values for Sensor and Top PosTicks",
-  "topPosTicks"    : 3560,
-  "middlePosTicks" : 1350,
-  "bottomPosTicks" : 450,
+  "sensorPosTicks" : 3155, "__COMMENT__" : "need to finish putting values for Sensor and Top PosTicks",
+  "topPosTicks"    : 3600,
+  "middlePosTicks" : 1850,
+  "bottomPosTicks" : 550,
   "loadPosTicks"    : 0,
   "CompStartPos" : 0,
 
@@ -11,22 +11,22 @@
 
   "liftHeightP" : 0.0025,
   "liftHeightI" : 0.0009,
-  "liftHeightD" : 0.002,
+  "liftHeightD" : 0.0002,
 
   "openGrabberPos"    : 0.7,
-  "grabbedGrabberPos" : 0.49,
-  "loadGrabberPos"    : 0.58,
+  "grabbedGrabberPos" : 0.51,
+  "loadGrabberPos"    : 0.6,
   "startGrabberPos"   : 0.58,
 
-  "blockBlockerPos"  : 0.5,
-  "stowLeftBlockerPos": 0.2,
-  "rightBlockerPos" : 0.8,
+  "blockBlockerPos"  : 0.2,
+  "stowLeftBlockerPos": 0.64,
+  "rightBlockerPos" : 0.64,
 
-  "leftRollerOutVal" : 0.88,
+  "leftRollerOutVal" : 0.8,
   "leftRollerHoldVal" : 0.5,
 
-  "rightRollerOutVal" : 0.15,
-  "rightRollerHoldVal" :  0.5,
+  "rightRollerOutVal" : 0.2,
+  "rightRollerHoldVal" : 0.5,
 
   "LastLiftHeight" : 0
 

@@ -85,6 +85,14 @@ public class SlotTray implements CubeTrays {
 
     private boolean ejecting = false;
 
+    private static int liftPosTol = 50;
+
+    // stuff for state machine
+    private LiftFinalStates targetPos = LiftFinalStates.LOADING;
+    private boolean waitingForLiftUp = false;
+    private long timer = -1;
+    private long servoUpTime = 250;
+
 
 
 
@@ -165,6 +173,13 @@ public class SlotTray implements CubeTrays {
         leftRollerOutVal = myCubeTrayPositions.getDouble("leftRollerOutVal");
         Log.i(TAG, "set leftRollerOutVal to" + leftRollerOutVal);
 
+        //state machine stuff
+        //servoUpTime = (long)myCubeTrayPositions.getInt("servoUpTime");
+        Log.i(TAG, "set servoUpTIme to" + servoUpTime);
+        //liftPosTol = myCubeTrayPositions.getInt("liftPosTol");
+        Log.i(TAG, "set liftPosTol to" + liftPosTol);
+
+
 
 
         // initialize the motor and servos
@@ -210,51 +225,63 @@ public class SlotTray implements CubeTrays {
 
     }
     public void dump(){
+        int i;
         if(!usingRollerEjection)
-        setServoPos(TrayPositions.OPEN);
+             i = 1;
+        //setServoPos(TrayPositions.OPEN);
         else{
             leftEjectRoller.setPosition(leftRollerOutVal);
             rightEjectRoller.setPosition(rightRollerOutVal);
             ejecting = true;
+
+            Log.d(TAG, "set leftRoller to " + leftEjectRoller.getPosition());
+            Log.d(TAG, "set leftRoller to " + rightEjectRoller.getPosition());
+
+
         }
     }
 
     public void setToPos(LiftFinalStates state){
-        switch (state){
-            case LOADING:
-                liftTargetPosition = loadingPosTicks;
-                setServoPos(TrayPositions.LOADING);
-                break;
-            case LOW:
-                liftTargetPosition = lowPosTicks;
-                setServoPos(TrayPositions.GRABBED);
-                break;
-            case MID:
-                liftTargetPosition = midPosTicks;
-                setServoPos(TrayPositions.GRABBED);
-                break;
-            case HIGH:
-                liftTargetPosition = highPosTicks;
-                setServoPos(TrayPositions.GRABBED);
-                break;
-            case JEWELC:
-                liftTargetPosition = lowPosTicks;
-                setServoPos(TrayPositions.JEWEL_CENTER);
-                break;
-            case JEWELL:
-                liftTargetPosition = lowPosTicks;
-                setServoPos(TrayPositions.JEWEL_LEFT);
-                break;
-            case JEWELR:
-                liftTargetPosition = lowPosTicks;
-                setServoPos(TrayPositions.JEWEL_RIGHT);
-            default:
-                break;
-        }
+        targetPos = state;
         updatePosition();
     }//
 
     public void updatePosition(){
+        // mini state machine to allow the blocker servo time to turn
+        switch (targetPos) {
+            case LOADING:
+                if(isInLoadingPocket()) {
+                    liftTargetPosition = loadingPosTicks;
+                    setServoPos(TrayPositions.LOADING);
+                    blockServo.setPosition(blockBlockerPos);
+                } else {
+                    liftTargetPosition = loadingPosTicks;
+                    setServoPos(TrayPositions.LOADING);
+                }
+                break;
+            case LOW:
+            case MID:
+            case HIGH:
+                setServoPos(TrayPositions.GRABBED);
+                if (isInLoadingPocket() && !waitingForLiftUp){
+                    timer = System.currentTimeMillis();
+                    waitingForLiftUp = true;
+                    blockServo.setPosition(leftStowBlockerPos);
+                } else if ( isInLoadingPocket() && waitingForLiftUp){
+                    if((System.currentTimeMillis()- timer)>= servoUpTime){
+                        setLiftPos(targetPos);
+                    }
+                } else {
+                    waitingForLiftUp = false;
+                    timer = -1;
+                    setLiftPos(targetPos);
+                }
+            default:
+                break;
+        }
+
+
+
         setToPoitionPID(liftTargetPosition);
 
         // update the ejection rollers based off of wether or not they are ejecting
@@ -267,7 +294,34 @@ public class SlotTray implements CubeTrays {
             leftEjectRoller.setPosition(0.5);
             rightEjectRoller.setPosition(0.5);
         }
+        ejecting = false;
 
+    }
+   private void setLiftPos(LiftFinalStates state) {
+        switch (state) {
+            case LOADING:
+                liftTargetPosition = loadingPosTicks;
+                break;
+            case LOW:
+                liftTargetPosition = lowPosTicks;
+                break;
+            case MID:
+                liftTargetPosition = midPosTicks;
+                break;
+            case HIGH:
+                liftTargetPosition = highPosTicks;
+                break;
+            case JEWELC:
+                liftTargetPosition = lowPosTicks;
+                break;
+            case JEWELL:
+                liftTargetPosition = lowPosTicks;
+                break;
+            case JEWELR:
+                liftTargetPosition = lowPosTicks;
+            default:
+                break;
+        }
     }
 
     public void setToPoitionPID(int targetPos){
@@ -285,37 +339,32 @@ public class SlotTray implements CubeTrays {
         switch (position){
             case GRABBED:
                 grabberPos = closedGrabberPos;
-                blockerPos = leftStowBlockerPos;
                 break;
             case OPEN:
                 grabberPos = openGrabberPos;
-                blockerPos = leftStowBlockerPos;
                 break ;
             case LOADING:
                 grabberPos = loadGrabberPos;
-                blockerPos = blockBlockerPos;
                 break;
             case START_POS:
                 blockerPos = startGrabberPos;
-                blockerPos = leftStowBlockerPos;
             case JEWEL_CENTER:
                 grabberPos = openGrabberPos;
-                blockerPos = blockBlockerPos;
                 break;
             case JEWEL_LEFT:
                 grabberPos = openGrabberPos;
-                blockerPos = leftStowBlockerPos;
                 break;
             case JEWEL_RIGHT:
                 grabberPos = openGrabberPos;
-                blockerPos = rightBlockerPos;
                 break;
             default:
                 break;
         }
 
         grabServo.setPosition(grabberPos);
-        blockServo.setPosition(blockerPos);
+
+        Log.i(TAG, "set grabber position to: "+  grabberPos);
+        Log.i(TAG, "set blocker Position to : " + blockerPos);
 
     }
     public int getliftPos(){
@@ -354,6 +403,11 @@ public class SlotTray implements CubeTrays {
     public void setAutonomousMode(boolean val) {
         AutonomousMode = val;
     }
+
+    private boolean isInLoadingPocket(){
+        return (Math.abs(loadingPosTicks - liftMotor.getCurrentPosition())< liftPosTol);
+    }
+
 
 
 

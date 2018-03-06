@@ -34,8 +34,8 @@ public class IntakeControllerManual {
             rightMotor.setPower(0);
             return; }
         double right = stickX;
-        double motorLeftPower = -(forward + right);
-        double motorRightPower = -(forward - right);
+        double motorLeftPower = (forward + right);
+        double motorRightPower = (forward - right);
         double max = Math.max(Math.abs(motorLeftPower), Math.abs(motorRightPower));
         if (max>1) {
             motorLeftPower = motorLeftPower / max;

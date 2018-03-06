@@ -1,11 +1,11 @@
 {
   "MinPowerXY"            : 0.3,
-  "MinPowerRotation"      : 0.5,
+  "MinPowerRotation"      : 0.4,
   "ZeroRange"             : 0.1,
   "highPrecisionScalingFactor"  : 0.25,
   "highPrecisionRotationFactor" : 0.45,
 
-  "***** All following variables are not used *****": true,
+  "***** All following variables are not used *****": 0,
   "DisableDriving"        : false,
   "DisableLift"           : false,
   "DisableDriverIntake"   : false,

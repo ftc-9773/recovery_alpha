@@ -117,7 +117,7 @@ public class SlotTray implements CubeTrays {
     public int liftTargetPosition = 0;  // change to private
 
     //DEBUGING
-    private static final boolean DEBUG = true;
+    private static final boolean DEBUG = false;
     private static final String TAG = "ftc9773_CubeTray" ;
 
 
@@ -132,36 +132,36 @@ public class SlotTray implements CubeTrays {
         myCubeTrayPositions = new SafeJsonReader("SlotTrayPositions");
 
         loadingPosTicks = myCubeTrayPositions.getInt("loadPosTicks");
-        Log.i(TAG, "set Loading Pos to" + loadingPosTicks);
+        if (DEBUG) if (DEBUG) Log.i(TAG, "set Loading Pos to" + loadingPosTicks);
         lowPosTicks = myCubeTrayPositions.getInt("bottomPosTicks");
-        Log.i(TAG, "set low Pos to" + lowPosTicks);
+        if (DEBUG) Log.i(TAG, "set low Pos to" + lowPosTicks);
 
         midPosTicks = myCubeTrayPositions.getInt("middlePosTicks");
-        Log.i(TAG, "set mid Pos to" + midPosTicks);
+        if (DEBUG) Log.i(TAG, "set mid Pos to" + midPosTicks);
 
         highPosTicks = myCubeTrayPositions.getInt("topPosTicks");
-        Log.i(TAG, "set high Pos to" + highPosTicks);
+        if (DEBUG) Log.i(TAG, "set high Pos to" + highPosTicks);
         compStartPos = myCubeTrayPositions.getInt("compStartPos");
-        Log.i(TAG, "set start Pos to" + compStartPos);
+        if (DEBUG) Log.i(TAG, "set start Pos to" + compStartPos);
 
 
         // set grabber position values
         openGrabberPos = myCubeTrayPositions.getDouble("openGrabberPos");
-        Log.i(TAG, "set open grabber Pos to" + openGrabberPos);
+        if (DEBUG) Log.i(TAG, "set open grabber Pos to" + openGrabberPos);
         closedGrabberPos = myCubeTrayPositions.getDouble("grabbedGrabberPos");
-        Log.i(TAG, "set closed grabber Pos to" + closedGrabberPos);
+        if (DEBUG) Log.i(TAG, "set closed grabber Pos to" + closedGrabberPos);
         loadGrabberPos = myCubeTrayPositions.getDouble("loadGrabberPos");
-        Log.i(TAG, "set laod grabber Pos to" + loadGrabberPos);
+        if (DEBUG) Log.i(TAG, "set laod grabber Pos to" + loadGrabberPos);
         startGrabberPos = myCubeTrayPositions.getDouble("startGrabberPos");
-        Log.i(TAG, "set start grabber Pos to" + startGrabberPos);
+        if (DEBUG) Log.i(TAG, "set start grabber Pos to" + startGrabberPos);
 
         // setBlockerPositiobns
         blockBlockerPos = myCubeTrayPositions.getDouble("blockBlockerPos");
-        Log.i(TAG, "set blocked blocker Pos to" + blockBlockerPos);
+        if (DEBUG) Log.i(TAG, "set blocked blocker Pos to" + blockBlockerPos);
         leftStowBlockerPos = myCubeTrayPositions.getDouble("stowLeftBlockerPos");
-        Log.i(TAG, "set stow blocker Pos to" + leftStowBlockerPos);
+        if (DEBUG) Log.i(TAG, "set stow blocker Pos to" + leftStowBlockerPos);
         rightBlockerPos = myCubeTrayPositions.getDouble("rightBlockerPos");
-        Log.i(TAG, "set right blocker Pos to" + rightBlockerPos);
+        if (DEBUG) Log.i(TAG, "set right blocker Pos to" + rightBlockerPos);
 
         // init roller ejection stuff
         usingRollerEjection = myCubeTrayPositions.getBoolean("usingRollerEjection");
@@ -201,9 +201,9 @@ public class SlotTray implements CubeTrays {
         Double kd = myCubeTrayPositions.getDouble("liftHeightD");
         liftHeightPidController = new PIDController(kp, ki, kd);
 
-        Log.i(TAG,"liftHeightP = " + kp);
-        Log.i(TAG,"liftHeight I = " + ki);
-        Log.i(TAG,"liftHeight D = " + kd);
+        if (DEBUG) Log.i(TAG,"liftHeightP = " + kp);
+        if (DEBUG) Log.i(TAG,"liftHeight I = " + ki);
+        if (DEBUG) Log.i(TAG,"liftHeight D = " + kd);
 
         setServoPos(TrayPositions.LOADING);
     }
@@ -330,8 +330,8 @@ public class SlotTray implements CubeTrays {
         }
         double correction = liftHeightPidController.getPIDCorrection(targetPos, getliftPos());
 
-        Log.d(TAG,"lift Target position"+ targetPos );
-        Log.d(TAG,"lift position correction =" + correction);
+        if (DEBUG) Log.d(TAG,"lift Target position"+ targetPos );
+        if (DEBUG) Log.d(TAG,"lift position correction =" + correction);
 
         liftMotor.setPower(correction);
     }
@@ -395,7 +395,7 @@ public class SlotTray implements CubeTrays {
     public void setZeroFromLastOpmode(){
         int lastPos = myCubeTrayPositions.getInt("LastLiftHeight");
         if (lastPos == 0|| lastPos== -1){
-            Log.e (TAG, "unnable to read Lift Height");
+            if (DEBUG) Log.e (TAG, "unnable to read Lift Height");
             return;
         }
     }

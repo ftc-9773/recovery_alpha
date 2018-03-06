@@ -6,6 +6,7 @@ import android.util.Log;
 import org.firstinspires.ftc.teamcode.PositionTracking.EncoderTracking;
 import org.firstinspires.ftc.teamcode.PositionTracking.Gyro;
 import org.firstinspires.ftc.teamcode.infrastructure.PIDController;
+import org.firstinspires.ftc.teamcode.infrastructure.PIDWithBaseValue;
 import org.firstinspires.ftc.teamcode.infrastructure.SafeJsonReader;
 import org.firstinspires.ftc.teamcode.resources.Vector;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
@@ -40,7 +41,7 @@ public class SwerveController {
     //Orientation tracking variables
     public boolean useFieldCentricOrientation = true;
     private SafeJsonReader myPIDCoefficients;
-    private PIDController turningPID;
+    private PIDWithBaseValue turningPID;
 
     // Position Tracking
     public EncoderTracking myEncoderTracker;
@@ -73,9 +74,10 @@ public class SwerveController {
         double Ki = myPIDCoefficients.getDouble("Ki");
         double Kd = myPIDCoefficients.getDouble("Kd");
         double Ke = myPIDCoefficients.getDouble("Ke");
+        double baseValue = myPIDCoefficients.getDouble("baseValue");
 
         if (DEBUG)  Log.e(TAG, "Coefficients: " + Kp + " " + Ki + " " + Kd);
-        turningPID = new PIDController(Kp, Ke, Ki, Kd);
+        turningPID = new PIDWithBaseValue(Kp, Ke, Ki, Kd, baseValue);
 
         myEncoderTracker = new EncoderTracking(flwModule, frwModule, blwModule, brwModule, myGyro);
     }
@@ -89,6 +91,7 @@ public class SwerveController {
     public double steerSwerve(boolean isCartesian, double xMag, double yAng, double rotation, double directionLock) {
         // direction lock  - in Degrees
 
+        Vector movementVector = new Vector(isCartesian, xMag, yAng);
 
         if (DEBUG) Log.d(TAG, "Rotation: " + rotation + "  DirectionLock: " + directionLock);
 
@@ -98,7 +101,13 @@ public class SwerveController {
             double error = negToPosPi(Math.toRadians(directionLock) - myGyro.getHeading());
             rotation = turningPID.getPIDCorrection(error);
             if (DEBUG) Log.e(TAG, "true error: " + error + "  rotation: " + rotation);
+
+            // Get rid of direction lock rotation if the rotation is too small and x/y axes are 0
+            if (movementVector.getMagnitude() == 0 && Math.abs(rotation) < 0.15) {
+                rotation = 0;
+            }
         }
+
 
         //Have pointModules do the brunt work
         pointModules(isCartesian, xMag, yAng, rotation);

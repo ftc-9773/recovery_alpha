@@ -1,14 +1,18 @@
 package org.firstinspires.ftc.teamcode.infrastructure;
 
 /**
- * Created by Vikesh on 11/20/2017.
+ * Created by Nicky Eichenberger on 3/2/2018.
  */
 
-public class PIDController {
+public class PIDWithBaseValue {
+
     private double KP;
     private double KI;
     private double KD;
     private double KE;
+
+    private double BASE_VALUE;
+
     private double integral;
     private double derivative;
     private double prevError;
@@ -22,18 +26,20 @@ public class PIDController {
     private static int maxDeltaTime = 800;
     private static boolean DEBUG = true;
 
-    public PIDController (double KP, double KE, double KI, double KD) {
+    public PIDWithBaseValue (double KP, double KE, double KI, double KD, double baseValue) {
         this.KP = KP;
         this.KI = KI;
         this.KD = KD;
         this.KE = KE;
+        this.BASE_VALUE = baseValue;
         useExponential = true;
     }
 
-    public PIDController( double KP, double KI, double KD) {
+    public PIDWithBaseValue (double KP, double KI, double KD, double baseValue) {
         this.KP = KP;
         this.KI = KI;
         this.KD = KD;
+        this.BASE_VALUE = baseValue;
         useExponential = false;
     }
 
@@ -60,10 +66,18 @@ public class PIDController {
         prevError = error;
         lastTime = System.currentTimeMillis();
 
+        // add on the base value (min) and cap to max value
+        if (output > 0) {
+            output += BASE_VALUE;
+        } else {
+            output -= BASE_VALUE;
+        }
+
         return output;
     }
 
     public double getPIDCorrection(double target, double actual) {
         return getPIDCorrection(target - actual);
     }
+
 }

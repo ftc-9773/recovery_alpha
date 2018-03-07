@@ -1,8 +1,8 @@
 {
-  "sensorPosTicks" : 3155, "__COMMENT__" : "need to finish putting values for Sensor and Top PosTicks",
-  "topPosTicks"    : 3600,
-  "middlePosTicks" : 1850,
-  "bottomPosTicks" : 550,
+  "sensorPosTicks" : -3155, "__COMMENT__" : "need to finish putting values for Sensor and Top PosTicks",
+  "topPosTicks"    : -3600,
+  "middlePosTicks" : -1850,
+  "bottomPosTicks" : -550,
   "loadPosTicks"    : 0,
   "CompStartPos" : 0,
 

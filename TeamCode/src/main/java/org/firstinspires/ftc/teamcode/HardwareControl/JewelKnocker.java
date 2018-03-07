@@ -19,6 +19,8 @@ public class JewelKnocker {
     private static final double knockerLeftSideStowedPos= 0;
 
 
+
+
     public JewelKnocker(HardwareMap hwMap) {
 
         armServo = hwMap.servo.get("jaServo");

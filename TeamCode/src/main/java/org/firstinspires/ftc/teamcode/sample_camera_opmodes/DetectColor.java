@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.sample_camera_opmodes;
 
 import android.graphics.Bitmap;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.robotcontroller.for_camera_opmodes.OpModeCamera;
@@ -11,9 +12,8 @@ import org.firstinspires.ftc.robotcontroller.for_camera_opmodes.OpModeCamera;
  * <p/>
  * Enables control of the robot via the gamepad
  */
-
+@Disabled
 @TeleOp(name = "DetectColor", group = "ZZOpModeCameraPackage")
-//@Disabled
 public class DetectColor extends OpModeCamera {
 
   int ds2 = 2;  // additional downsampling of the image

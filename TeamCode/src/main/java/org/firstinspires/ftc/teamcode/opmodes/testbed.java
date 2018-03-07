@@ -22,6 +22,7 @@ import org.firstinspires.ftc.teamcode.HardwareControl.FTCrobot;
 import org.firstinspires.ftc.teamcode.HardwareControl.OrientLockPid;
 import org.firstinspires.ftc.teamcode.HardwareControl.SwerveController;
 import org.firstinspires.ftc.teamcode.PositionTracking.Gyro;
+import org.firstinspires.ftc.teamcode.RASI.RasiExecutor;
 import org.firstinspires.ftc.teamcode.infrastructure.RasiActions;
 import org.firstinspires.ftc.teamcode.resources.ButtonStatus;
 
@@ -34,7 +35,7 @@ public class testbed extends LinearOpModeCamera {
 
     @Override
     public void runOpMode() throws InterruptedException{
-        OrientLockPid orientLockPid = new OrientLockPid(this);
-        orientLockPid.driveStraightDist(0, 0.5,36, 15);
+        RasiExecutor rasiExecutor = new RasiExecutor(this, "/sdcard/FIRST/team9773/rasi18/", "opmodetest.rasi");
+        rasiExecutor.runRasi();
     }
 }

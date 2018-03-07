@@ -22,7 +22,7 @@ public class RasiParserV2 {
     private StringBuilder commandBuilder;   //StringBuilder object for miscellaneous manipulation
 
     private String currentCommand;          //The String that will contain the current command
-    private String[] parameters;            //The String array that contains the parameters
+    public String[] parameters;            //The String array that contains the parameters
     private String returnString;            //The String which contains the index to be
     private String Tag;
     private String[] TAGS;

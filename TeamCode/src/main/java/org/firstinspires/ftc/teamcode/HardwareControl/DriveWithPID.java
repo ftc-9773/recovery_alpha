@@ -63,17 +63,6 @@ public class DriveWithPID {
 
         //////// Drive until it has gone the right distance ////////
 
-        // Point modules
-        final double time1 = System.currentTimeMillis();
-        while (myOpMode.opModeIsActive() && System.currentTimeMillis() - time1 < 500) {
-            mySwerveController.steerSwerve(false, speed, Math.toRadians(angleDegrees), 0, -1);
-
-            if (!mySwerveController.getIsTurning() && System.currentTimeMillis() - time1 > 200) {
-                //break;
-            }
-        }
-
-
         // Zero the encoders
         zeroEncoders();
 
@@ -85,7 +74,7 @@ public class DriveWithPID {
         while (!myOpMode.isStopRequested() && averageEncoderDist() < targetTicks) {
             // While the robot has not driven far enough
             mySwerveController.steerSwerve(false , speed, Math.toRadians(angleDegrees), 0, -1);
-            mySwerveController.moveRobot(false);
+            mySwerveController.moveRobot(true);
             if (DEBUG) { Log.i(TAG, "Distance so far: " + averageEncoderDist()); }
         }
 
@@ -100,33 +89,24 @@ public class DriveWithPID {
 
         // Point modules
         double zeroTime = System.currentTimeMillis();
-        while (System.currentTimeMillis() - zeroTime < 600) {
-            mySwerveController.steerSwerve(false, 1, Math.toRadians(angleDegrees), 0, -1);
-        }
 
         // Drive
-        zeroTime = System.currentTimeMillis();
         while (System.currentTimeMillis() - zeroTime < timeSeconds * 1000) {
             mySwerveController.steerSwerve(false, speed, Math.toRadians(angleDegrees), 0, -1);
-            mySwerveController.moveRobot(false);
+            mySwerveController.moveRobot(true);
         }
 
     }
 
     public void driveUltrasonic(double speed, double angleDegrees, ModernRoboticsI2cRangeSensor distanceSensor, double minDist, double maxDist) {
 
-        // Point modules
         boolean inThres = false;
-        double zeroTime = System.currentTimeMillis();
-        while (System.currentTimeMillis() - zeroTime < 600) {
-            mySwerveController.steerSwerve(false, 1, Math.toRadians(angleDegrees), 0, -1);
-        }
 
         // Drive
         while (myOpMode.opModeIsActive() && !inThres) {
             inThres = distanceSensor.cmUltrasonic() < maxDist && distanceSensor.cmUltrasonic() > minDist;
             mySwerveController.steerSwerve(false, speed, Math.toRadians(angleDegrees), 0, -1);
-            mySwerveController.moveRobot(false);
+            mySwerveController.moveRobot(true);
         }
 
     }

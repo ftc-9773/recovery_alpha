@@ -31,23 +31,16 @@ public class TestOpmode extends LinearOpModeCamera {
         telemetry.update();
         ftcRobot = new FTCrobot(hardwareMap, telemetry, gamepad1, gamepad2, this);
 
-        Log.i("Start", "Is starting");
 
-        while (!opModeIsActive()) {
-            telemetry.addData("Init", "Successful!!");
-            telemetry.update();
-        }
+        telemetry.addData("Init", "Successful!!");
+        telemetry.update();
+
         waitForStart();
         Log.i("Starting auton", "Is starging");
-        for (int i = 0; i < 10; i++) {
-            telemetry.addData("Cycle", i);
-            telemetry.update();
-
-            ftcRobot.myDriveWithPID.driveDist(0.6, 00, 12);
-            ftcRobot.myDriveWithPID.driveDist(0.6, 90, 12);
-            ftcRobot.myDriveWithPID.driveDist(0.6, 180, 12);
-            ftcRobot.myDriveWithPID.driveDist(0.6, 270, 12);
-        }
+        ftcRobot.myDriveWithPID.turn2(90);
+        Thread.sleep(1000);
+        ftcRobot.myDriveWithPID.turn2(0);
+        Thread.sleep(500);
     }
 
 }

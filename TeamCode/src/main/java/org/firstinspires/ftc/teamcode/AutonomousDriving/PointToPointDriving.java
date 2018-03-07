@@ -57,11 +57,13 @@ public class PointToPointDriving {
                 // Set the current time
                 currentTime = System.currentTimeMillis();
 
+                // Acceleration and deceleration
+
                 // Check to see if it has driven the distance
                 if (distanceVector.getMagnitude() < 0.05) break;
 
                 // Drive
-                mySwerveController.steerSwerve(false, minSpeed, distanceVector.getAngle(), 0, headingDegrees);
+                mySwerveController.steerSwerve(false, currentSpeed, distanceVector.getAngle(), 0, headingDegrees);
                 mySwerveController.moveRobot(true);
 
             }

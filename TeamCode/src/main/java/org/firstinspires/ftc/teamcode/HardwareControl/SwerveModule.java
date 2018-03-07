@@ -303,6 +303,7 @@ public class SwerveModule {
                 swerveMotor.setPower(velocityVector.getMagnitude() * -1);
             }
         }
+
     }
 
     public boolean getIsTurning() {

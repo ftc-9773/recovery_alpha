@@ -141,6 +141,7 @@ public class SwerveController {
         frwVector.addVector(false, rotationSpeed, 0.75 * Math.PI);
         blwVector.addVector(false, rotationSpeed, 1.75 * Math.PI);
         brwVector.addVector(false, rotationSpeed, 1.25 * Math.PI);
+
 /*
         Log.i("flwErrorAmt", Double.toString(flwModule.getErrorAmt()));
         Log.i("frwErrorAmt", Double.toString(frwModule.getErrorAmt()));
@@ -162,7 +163,6 @@ public class SwerveController {
         // Find the largest motor speed
         double max = Math.max( Math.max(flwVector.getMagnitude(), frwVector.getMagnitude()),
                 Math.max(blwVector.getMagnitude(), brwVector.getMagnitude()));
-
 
         // if greater than 1, divide by largest
         if (max > 1) {
@@ -189,12 +189,13 @@ public class SwerveController {
     }
 
     // Part Two of Movement
-    public void moveRobot(boolean highPrecisionMode) {
+    public boolean moveRobot(boolean highPrecisionMode) {
 
         if (highPrecisionMode) {
             boolean allModulesStopped = (flwVector.getMagnitude() == 0) && (frwVector.getMagnitude() == 0) && (blwVector.getMagnitude() == 0) && (brwVector.getMagnitude() == 0);
             if (getIsTurning() && !allModulesStopped) {
-                return;
+                myEncoderTracker.updatePosition();
+                return false;
             }
         }
 
@@ -206,6 +207,7 @@ public class SwerveController {
         }
 
         myEncoderTracker.updatePosition();
+        return true;
     }
 
     public void stopRobot() {

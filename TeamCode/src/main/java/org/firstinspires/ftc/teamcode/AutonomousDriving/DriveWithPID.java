@@ -12,6 +12,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.HardwareControl.SwerveController;
 import org.firstinspires.ftc.teamcode.PositionTracking.Gyro;
 import org.firstinspires.ftc.teamcode.infrastructure.PIDController;
+import org.firstinspires.ftc.teamcode.infrastructure.PIDWithBaseValue;
 import org.firstinspires.ftc.teamcode.infrastructure.SafeJsonReader;
 
 /**
@@ -44,12 +45,29 @@ public class DriveWithPID {
     private static final double encoderTicksPerInch = (19.8 * 28) / (wheelDiameter * Math.PI);
     private double targetTicks;
 
+
+    // Turning PID
+    PIDController turningPID;
+    private double baseSpeed;
+    private double errorThreshold;
+    private double speedThreshold;
+
     // INIT
     public DriveWithPID (SwerveController mySwerveController, Gyro myGyro, LinearOpModeCamera myOpMode) {
         this.myOpMode = myOpMode;
         this.mySwerveController = mySwerveController;
         this.mySwerveController.useFieldCentricOrientation = true;
         this.myGyro = myGyro;
+
+        // Make the turning pid
+        SafeJsonReader turningPIDCoefficients = new SafeJsonReader("TurningPIDCoefficients");
+        double Kp = turningPIDCoefficients.getDouble("Kp");
+        double Ki = turningPIDCoefficients.getDouble("Ki");
+        double Kd = turningPIDCoefficients.getDouble("Kd");
+        baseSpeed = turningPIDCoefficients.getDouble("min");
+        turningPID = new PIDController(Kp, Ki, Kd);
+        errorThreshold = turningPIDCoefficients.getDouble("errorThreshold");
+        speedThreshold = turningPIDCoefficients.getDouble("speedThreshold");
     }
 
     // Actual driving funftions
@@ -175,6 +193,66 @@ public class DriveWithPID {
         mySwerveController.moveRobot(false);
     }
 
+
+    public void turn2 (double targetAngleDegrees) {
+        final double targetAngleRad = Math.toRadians(targetAngleDegrees);
+
+        // For calculating rotational speed:
+        double lastHeading;
+        double currentHeading = myGyro.getHeading();
+
+        double lastTime;
+        double currentTime = System.currentTimeMillis();
+
+        // For turning PID
+        double error;
+
+        boolean firstTime = true;
+        while (!myOpMode.isStopRequested()) {
+
+            // update time and headings:
+            lastHeading = currentHeading;
+            currentHeading = myGyro.getHeading();
+
+            lastTime = currentTime;
+            currentTime = System.currentTimeMillis();
+
+            error = setOnNegToPosPi(targetAngleRad - currentHeading);
+
+            double rotation = turningPID.getPIDCorrection(error);
+            Log.e("Error: ", "" + error);
+
+            Log.e("First Rotation: ", "" + rotation);
+
+            if (rotation > 0) {
+                rotation += baseSpeed;
+            } else if (rotation < 0) {
+                rotation -= baseSpeed;
+            }
+            Log.e("Second Rotation: ", "" + rotation);
+
+            mySwerveController.steerSwerve(true,0,0, rotation, -1);
+            boolean log = mySwerveController.moveRobot(true);
+
+
+
+            // Check to see if it's time to exit
+            // Calculate speed
+            double speed;
+            if (currentTime == lastTime || firstTime) {
+                speed = 0.003;
+            } else {
+                speed = Math.abs(error) / (currentTime - lastTime);
+            }
+
+            if (speed < speedThreshold && error < errorThreshold) {
+                break;
+            }
+
+            firstTime = false;
+        }
+        mySwerveController.stopRobot();
+    }
 
     // Helper functions
     private double averageEncoderDist() {

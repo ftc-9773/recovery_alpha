@@ -8,6 +8,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.teamcode.infrastructure.SafeJsonReader;
+import org.firstinspires.ftc.teamcode.resources.ButtonStatus;
 import org.firstinspires.ftc.teamcode.resources.Vector;
 
 /**
@@ -50,6 +51,8 @@ public class SwerveModule {
     private boolean debugHere = true;
     private final boolean DEBUG = false;
 
+    // Motor freeze!
+    private ButtonStatus freezeMotors = new ButtonStatus();
 
     //    PID / Error scaling STUFF   //
 
@@ -265,10 +268,10 @@ public class SwerveModule {
 
         if (Math.abs(errorAmt) / dt > isTurningThreshold) {
             isTurning = true;
-            swerveMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+            //swerveMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
         } else {
             isTurning = false;
-            swerveMotor.setZeroPowerBehavior((DcMotor.ZeroPowerBehavior.BRAKE));
+            //swerveMotor.setZeroPowerBehavior((DcMotor.ZeroPowerBehavior.BRAKE));
         }
 
 
@@ -278,11 +281,29 @@ public class SwerveModule {
 
     // Drives the wheel
     public void driveModule() {
-        if (motorIsForward) {
-            swerveMotor.setPower(velocityVector.getMagnitude());
-        } else {
-            swerveMotor.setPower(velocityVector.getMagnitude() * -1);
+
+        // Check to see if we can freeze the motors
+        freezeMotors.recordNewValue(velocityVector.getMagnitude() == 0 && !isTurning);
+
+        // If it can, switch motors to RUN_TO_POSITION and set it to the current position
+        if (freezeMotors.isJustOn()) {
+            swerveMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            swerveMotor.setTargetPosition(swerveMotor.getCurrentPosition());
+
+        // If it just switched to off, switch to run using  encoder
+        } else if (freezeMotors.isJustOff()) {
+            swerveMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         }
+
+        // If the motors aren't frozen, just run normally
+        if (freezeMotors.isOff()) {
+            if (motorIsForward) {
+                swerveMotor.setPower(velocityVector.getMagnitude());
+            } else {
+                swerveMotor.setPower(velocityVector.getMagnitude() * -1);
+            }
+        }
+
     }
 
     public boolean getIsTurning() {

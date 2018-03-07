@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.HardwareControl;
+package org.firstinspires.ftc.teamcode.AutonomousDriving;
 
 import android.util.Log;
 
@@ -9,8 +9,10 @@ import com.qualcomm.robotcore.hardware.ColorSensor;
 import org.firstinspires.ftc.robotcontroller.for_camera_opmodes.LinearOpModeCamera;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.teamcode.HardwareControl.SwerveController;
 import org.firstinspires.ftc.teamcode.PositionTracking.Gyro;
 import org.firstinspires.ftc.teamcode.infrastructure.PIDController;
+import org.firstinspires.ftc.teamcode.infrastructure.PIDWithBaseValue;
 import org.firstinspires.ftc.teamcode.infrastructure.SafeJsonReader;
 
 /**
@@ -43,18 +45,35 @@ public class DriveWithPID {
     private static final double encoderTicksPerInch = (19.8 * 28) / (wheelDiameter * Math.PI);
     private double targetTicks;
 
+
+    // Turning PID
+    PIDController turningPID;
+    private double baseSpeed;
+    private double errorThreshold;
+    private double speedThreshold;
+
     // INIT
     public DriveWithPID (SwerveController mySwerveController, Gyro myGyro, LinearOpModeCamera myOpMode) {
         this.myOpMode = myOpMode;
         this.mySwerveController = mySwerveController;
         this.mySwerveController.useFieldCentricOrientation = true;
         this.myGyro = myGyro;
+
+        // Make the turning pid
+        SafeJsonReader turningPIDCoefficients = new SafeJsonReader("TurningPIDCoefficients");
+        double Kp = turningPIDCoefficients.getDouble("Kp");
+        double Ki = turningPIDCoefficients.getDouble("Ki");
+        double Kd = turningPIDCoefficients.getDouble("Kd");
+        baseSpeed = turningPIDCoefficients.getDouble("min");
+        turningPID = new PIDController(Kp, Ki, Kd);
+        errorThreshold = turningPIDCoefficients.getDouble("errorThreshold");
+        speedThreshold = turningPIDCoefficients.getDouble("speedThreshold");
     }
 
     // Actual driving funftions
 
     // Driving
-    public void driveDist( double speed, double angleDegrees, double distInches) throws InterruptedException {
+    public void driveDist(double speed, double angleDegrees, double distInches, double headingDegrees) throws InterruptedException {
 
         // Orient Robot
 //        turnRobot(robotOrientationDegrees);
@@ -62,17 +81,6 @@ public class DriveWithPID {
 
 
         //////// Drive until it has gone the right distance ////////
-
-        // Point modules
-        final double time1 = System.currentTimeMillis();
-        while (myOpMode.opModeIsActive() && System.currentTimeMillis() - time1 < 500) {
-            mySwerveController.steerSwerve(false, speed, Math.toRadians(angleDegrees), 0, -1);
-
-            if (!mySwerveController.getIsTurning() && System.currentTimeMillis() - time1 > 200) {
-                //break;
-            }
-        }
-
 
         // Zero the encoders
         zeroEncoders();
@@ -84,8 +92,8 @@ public class DriveWithPID {
         // Drive
         while (!myOpMode.isStopRequested() && averageEncoderDist() < targetTicks) {
             // While the robot has not driven far enough
-            mySwerveController.steerSwerve(false , speed, Math.toRadians(angleDegrees), 0, -1);
-            mySwerveController.moveRobot(false);
+            mySwerveController.steerSwerve(false , speed, Math.toRadians(angleDegrees), 0, headingDegrees);
+            mySwerveController.moveRobot(true);
             if (DEBUG) { Log.i(TAG, "Distance so far: " + averageEncoderDist()); }
         }
 
@@ -95,100 +103,98 @@ public class DriveWithPID {
         if (DEBUG) { Log.i(TAG, "Extra Distance: " + (Math.abs(averageEncoderDist()) - targetTicks)); }
     }
 
+    //Alais
+    public void driveDist(double speed, double angleDegrees, double distInches) throws InterruptedException {
+        driveDist(speed, angleDegrees, distInches, -1);
+    }
+
     // Drive for time
     public void driveTime(double speed, double angleDegrees, double timeSeconds) {
 
         // Point modules
         double zeroTime = System.currentTimeMillis();
-        while (System.currentTimeMillis() - zeroTime < 600) {
-            mySwerveController.steerSwerve(false, 1, Math.toRadians(angleDegrees), 0, -1);
-        }
 
         // Drive
-        zeroTime = System.currentTimeMillis();
         while (System.currentTimeMillis() - zeroTime < timeSeconds * 1000) {
             mySwerveController.steerSwerve(false, speed, Math.toRadians(angleDegrees), 0, -1);
-            mySwerveController.moveRobot(false);
+            mySwerveController.moveRobot(true);
         }
 
     }
 
     public void driveUltrasonic(double speed, double angleDegrees, ModernRoboticsI2cRangeSensor distanceSensor, double minDist, double maxDist) {
 
-        // Point modules
         boolean inThres = false;
-        double zeroTime = System.currentTimeMillis();
-        while (System.currentTimeMillis() - zeroTime < 600) {
-            mySwerveController.steerSwerve(false, 1, Math.toRadians(angleDegrees), 0, -1);
-        }
 
         // Drive
         while (myOpMode.opModeIsActive() && !inThres) {
             inThres = distanceSensor.cmUltrasonic() < maxDist && distanceSensor.cmUltrasonic() > minDist;
             mySwerveController.steerSwerve(false, speed, Math.toRadians(angleDegrees), 0, -1);
-            mySwerveController.moveRobot(false);
+            mySwerveController.moveRobot(true);
         }
 
     }
 
     // Turn the Robot
-    public void turnRobot (double targetAngleDegrees) throws InterruptedException {
+    public void turnRobot (double targetAngleDegrees) {
+        final double targetAngleRad = Math.toRadians(targetAngleDegrees);
 
-//        Log.i(TAG, "Starting turn");
+        // For calculating rotational speed:
+        double lastHeading;
+        double currentHeading = myGyro.getHeading();
 
-        final double time1 = System.currentTimeMillis();
-        while (System.currentTimeMillis() - time1 < 500) {
-            mySwerveController.steerSwerve(false, 0, 0, 1, -1);
-
-            if (!mySwerveController.getIsTurning() && System.currentTimeMillis() - time1 > 200) {
-                //break;
-            }
-        }
-
-
-        final double targetAngleRadians = Math.toRadians(targetAngleDegrees);
-
-        // Target turning speed is 90 degrees per second - 0.0015 radians per millisecond
-        double rotationSpeed = 0.6;
-        double rotationSpeedStep = 0.01;
-        final double MIN_TURN_SPEED = 0.0018;
-
-        double currentAngle;
-        double lastAngle = myGyro.getHeading();
+        double lastTime;
         double currentTime = System.currentTimeMillis();
-        double lastTime = currentTime - 1000;
 
-        while (Math.abs(setOnNegToPosPi((myGyro.getHeading()) - targetAngleRadians)) > 0.04) {
+        // For turning PID
+        double error;
 
-            // Calculate rotation speed
-//            currentTime = System.currentTimeMillis();
-            currentAngle = myGyro.getHeading();
+        boolean firstTime = true;
+        while (!myOpMode.isStopRequested()) {
 
-//            Log.i(TAG, "Heading: " + currentAngle + "  Target Angle: " + targetAngleRadians + "  Difference: " + Math.abs(setOnNegToPosPi((myGyro.getHeading()) - targetAngleRadians)));
+            // update time and headings:
+            lastHeading = currentHeading;
+            currentHeading = myGyro.getHeading();
 
-//            final double speed = Math.abs(setOnNegToPosPi(currentAngle - lastAngle)) / (currentTime - lastTime);
-//            Log.i(TAG, " Curent Angle: " + currentAngle + "  Last angle: " + lastAngle + "  Difference: " + setOnNegToPosPi(currentAngle - lastAngle) );
-//            if (speed < 0.0015 && rotationSpeed < 0.9) {
-//                rotationSpeed += rotationSpeedStep;
-//            }
-
-
-            if (setOnNegToPosPi(targetAngleRadians - currentAngle) > 0) {
-                mySwerveController.steerSwerve(true, 0, 0, rotationSpeed, -1);
-            } else {
-                mySwerveController.steerSwerve(true, 0, 0, -rotationSpeed, -1);
-            }
-            mySwerveController.moveRobot(false);
-
-//            Log.i(TAG, "speed: " + speed + "  Rotation speed: " + rotationSpeed);
-            lastAngle = currentAngle;
             lastTime = currentTime;
+            currentTime = System.currentTimeMillis();
+
+            error = setOnNegToPosPi(targetAngleRad - currentHeading);
+
+            double rotation = turningPID.getPIDCorrection(error);
+            Log.e("Error: ", "" + error);
+
+            Log.e("First Rotation: ", "" + rotation);
+
+            if (rotation > 0) {
+                rotation += baseSpeed;
+            } else if (rotation < 0) {
+                rotation -= baseSpeed;
+            }
+            Log.e("Second Rotation: ", "" + rotation);
+
+            mySwerveController.steerSwerve(true,0,0, rotation, -1);
+            boolean log = mySwerveController.moveRobot(true);
+
+
+
+            // Check to see if it's time to exit
+            // Calculate speed
+            double speed;
+            if (currentTime == lastTime || firstTime) {
+                speed = 0.003;
+            } else {
+                speed = Math.abs(error) / (currentTime - lastTime);
+            }
+
+            if (speed < speedThreshold && error < errorThreshold) {
+                break;
+            }
+
+            firstTime = false;
         }
-
-        mySwerveController.steerSwerve(true, 0, 0, 0, -1);
-        mySwerveController.moveRobot(false);
+        mySwerveController.stopRobot();
     }
-
 
     // Helper functions
     private double averageEncoderDist() {

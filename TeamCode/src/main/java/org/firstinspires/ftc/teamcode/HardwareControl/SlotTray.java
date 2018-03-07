@@ -224,6 +224,7 @@ public class SlotTray implements CubeTrays {
         updatePosition();
 
     }
+    // command to eject the cubes
     public void dump(){
         int i;
         if(!usingRollerEjection)

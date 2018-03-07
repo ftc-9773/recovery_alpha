@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.HardwareControl;
+package org.firstinspires.ftc.teamcode.AutonomousDriving;
 
 import android.util.Log;
 
@@ -9,6 +9,7 @@ import com.qualcomm.robotcore.hardware.ColorSensor;
 import org.firstinspires.ftc.robotcontroller.for_camera_opmodes.LinearOpModeCamera;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.teamcode.HardwareControl.SwerveController;
 import org.firstinspires.ftc.teamcode.PositionTracking.Gyro;
 import org.firstinspires.ftc.teamcode.infrastructure.PIDController;
 import org.firstinspires.ftc.teamcode.infrastructure.SafeJsonReader;
@@ -54,7 +55,7 @@ public class DriveWithPID {
     // Actual driving funftions
 
     // Driving
-    public void driveDist( double speed, double angleDegrees, double distInches) throws InterruptedException {
+    public void driveDist(double speed, double angleDegrees, double distInches, double headingDegrees) throws InterruptedException {
 
         // Orient Robot
 //        turnRobot(robotOrientationDegrees);
@@ -73,7 +74,7 @@ public class DriveWithPID {
         // Drive
         while (!myOpMode.isStopRequested() && averageEncoderDist() < targetTicks) {
             // While the robot has not driven far enough
-            mySwerveController.steerSwerve(false , speed, Math.toRadians(angleDegrees), 0, -1);
+            mySwerveController.steerSwerve(false , speed, Math.toRadians(angleDegrees), 0, headingDegrees);
             mySwerveController.moveRobot(true);
             if (DEBUG) { Log.i(TAG, "Distance so far: " + averageEncoderDist()); }
         }
@@ -82,6 +83,11 @@ public class DriveWithPID {
         mySwerveController.pointModules(true, 0, 0, 0);
         mySwerveController.moveRobot(false);
         if (DEBUG) { Log.i(TAG, "Extra Distance: " + (Math.abs(averageEncoderDist()) - targetTicks)); }
+    }
+
+    //Alais
+    public void driveDist(double speed, double angleDegrees, double distInches) throws InterruptedException {
+        driveDist(speed, angleDegrees, distInches, -1);
     }
 
     // Drive for time

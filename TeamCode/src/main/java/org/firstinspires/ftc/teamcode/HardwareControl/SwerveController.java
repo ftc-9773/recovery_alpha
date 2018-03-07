@@ -208,6 +208,12 @@ public class SwerveController {
         myEncoderTracker.updatePosition();
     }
 
+    public void stopRobot() {
+        steerSwerve(true,0,0,0,-1);
+        moveRobot(false);
+    }
+
+
     public void toggleFieldCentric () {
         useFieldCentricOrientation = ! useFieldCentricOrientation;
     }

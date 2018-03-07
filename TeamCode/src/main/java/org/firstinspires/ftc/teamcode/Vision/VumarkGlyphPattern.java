@@ -77,43 +77,7 @@ public class VumarkGlyphPattern {
 ////  }
 //    }
 
-    public Image getImageFromFrame(VuforiaLocalizer.CloseableFrame frame, int format) {
 
-        if (frame != null) {
-            long numImgs = frame.getNumImages();
-            for (int i = 0; i < numImgs; i++) {
-                if (frame.getImage(i).getFormat() == format) {
-                    Log.i(TAG, "successfully got Frame from vuforia");
-                    return frame.getImage(i);
-                }//if
-                Thread.yield();
-            }//for
-
-        }
-        Log.e(TAG, "issue getting Image Frame from vuforia");
-        return null;
-    }
-
-    /**
-     * @param downsampling How much we should reduce the image by
-     * @return The Bitmap from last Vuforia Frame
-     */
-    // Get Bitmap from vuforia
-    public Bitmap getBm(int downsampling) {
-
-        try {
-            img = getImageFromFrame(vuforia.getFrameQueue().take(), PIXEL_FORMAT.RGB565);
-            Bitmap bm = Bitmap.createBitmap(img.getWidth(), img.getHeight(), Bitmap.Config.RGB_565);
-            bm.copyPixelsFromBuffer(img.getPixels());
-            Bitmap scaled = Bitmap.createScaledBitmap(bm, bm.getWidth() / downsampling, bm.getHeight() / downsampling, true);
-            bm.recycle();
-            return scaled;
-        } catch (Exception e) {
-            RobotLog.a("Problem with getBm");
-            Log.e(TAG, "problen with Getbm");
-            return null;
-        }
-    }
     public Bitmap getBitMap (){
         Log.i(TAG,"current number of frames in the queue"+  vuforia.getFrameQueueCapacity());
 
@@ -150,48 +114,5 @@ public class VumarkGlyphPattern {
         return bm ;
     }
 
-    // attempt 3
-    public Bitmap readFrame() {
-        VuforiaLocalizer.CloseableFrame frame;
-        Image rgb = null;
 
-        try {
-            // grab the last frame pushed onto the queue
-            frame = vuforia.getFrameQueue().take();
-        } catch (InterruptedException e) {
-            Log.d(TAG, "Problem taking frame off Vuforia queue");
-            e.printStackTrace();
-            return null;
-        }
-
-        // basically get the number of formats for this frame
-        long numImages = frame.getNumImages();
-
-        // set rgb object if one of the formats is RGB565
-        for(int i = 0; i < numImages; i++) {
-            if(frame.getImage(i).getFormat() == PIXEL_FORMAT.RGB565) {
-                rgb = frame.getImage(i);
-                break;
-            }
-        }
-
-        if(rgb == null) {
-            Log.d(TAG, "Image format not found");
-            return null;
-        }
-
-        // create a new bitmap and copy the byte buffer returned by rgb.getPixels() to it
-        Bitmap bm = Bitmap.createBitmap(rgb.getWidth(), rgb.getHeight(), Bitmap.Config.RGB_565);
-        bm.copyPixelsFromBuffer(rgb.getPixels());
-
-        frame.close();
-
-        Log.d(TAG, "Frame closed");
-
-        return bm;
-    }
-
-    public RelicRecoveryVuMark getColumn(){
-        return RelicRecoveryVuMark.from(template);
-    }
 }

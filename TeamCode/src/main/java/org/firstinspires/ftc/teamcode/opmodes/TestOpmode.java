@@ -36,11 +36,6 @@ public class TestOpmode extends LinearOpModeCamera {
         telemetry.update();
 
         waitForStart();
-        Log.i("Starting auton", "Is starging");
-        ftcRobot.myDriveWithPID.turn2(90);
-        Thread.sleep(1000);
-        ftcRobot.myDriveWithPID.turn2(0);
-        Thread.sleep(500);
     }
 
 }

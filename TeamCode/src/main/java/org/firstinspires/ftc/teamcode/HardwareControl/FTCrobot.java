@@ -74,7 +74,7 @@ public class FTCrobot {
 
     private static boolean DISABLE_LIFT = false;
     private static boolean DISABLE_RELIC_ARM = false;
-    private static boolean USE_FIELD_CENTRIC_ROTATION = true;
+    private static boolean USE_FIELD_CENTRIC_ROTATION = false;
     private static boolean DISABLE_DRIVER_INTAKE = false;
 
     private static final boolean USING_SLOT_TRAY = true;
@@ -90,7 +90,7 @@ public class FTCrobot {
         this.myGyro = new Gyro(hwMap);
         this.mySwerveController = new SwerveController(hwMap, myGyro, telemetry);
         this.myManualIntakeController = new IntakeControllerManual(hwMap);
-        this.myDriveWithPID = new DriveWithPID(mySwerveController, myGyro, myManualIntakeController, myLinearOpModeCamera, hwmap);
+        this.myDriveWithPID = new DriveWithPID(mySwerveController, myGyro, myManualIntakeController, myLinearOpModeCamera, myCubeTray, hwmap);
         this.myRelicSystem = new RelicSystem(myTelemetry, hwMap, myLinearOpModeCamera);
 
         this.myGamepad1 = gamepad1;

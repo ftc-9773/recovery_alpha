@@ -18,7 +18,7 @@ public class DistanceColorSensor {
     private long lastTime = 0;
 
     public DistanceColorSensor(HardwareMap hwMap, String DeviceName){
-        distanceSensor = hwMap.get(DistanceSensor.class, "sensor");
+        distanceSensor = hwMap.get(DistanceSensor.class, DeviceName);
     }
 
     public double getDistance(DistanceUnit unit){

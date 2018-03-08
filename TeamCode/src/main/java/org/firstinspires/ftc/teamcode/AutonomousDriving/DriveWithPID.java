@@ -93,7 +93,7 @@ public class DriveWithPID {
         backColorSensor = new DistanceColorSensor(hwMap, "backColorSensor");
         frontColorSensor = new DistanceColorSensor(hwMap, "frontColorSensor");
 
-        ultrasonicSensor = hwMap.get(ModernRoboticsI2cRangeSensor.class, "leftUltrasonic");
+        ultrasonicSensor = hwMap.get(ModernRoboticsI2cRangeSensor.class, "ultrasonicSensor");
     }
 
     // Actual driving funftions

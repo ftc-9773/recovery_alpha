@@ -20,10 +20,9 @@ import org.firstinspires.ftc.teamcode.infrastructure.SafeJsonReader;
 
 
 /**
- ---------------------------------------------------------------------------------------------------
- *                             ::: How to use this class properly :::
- ---------------------------------------------------------------------------------------------------
- *
+ * ---------------------------------------------------------------------------------------------------
+ * ::: How to use this class properly :::
+ * ---------------------------------------------------------------------------------------------------
  * this class uses state logic, and is made to work iteratively, to accomplish tasks without needing
  * to 'steal' time from the rest of the robot.
  *
@@ -33,16 +32,16 @@ import org.firstinspires.ftc.teamcode.infrastructure.SafeJsonReader;
  * for deafault Tele-op operation, use the updateFromGamepad(); command in the loop. it preforms all necessary actions
  *
  * if, for some reason, you need to avoid the deafault operation mode, (say in autonomous) use:
- *          the SetToPos() function in order to write a position
- *          This NEEDS to be followed by the updatePosition(); method
+ * the SetToPos() function in order to write a position
+ * This NEEDS to be followed by the updatePosition(); method
  *
  * Miscilanious methods:
  *
- *  homeLift();   // homes the lift: NOTE: as of now, the lift must not be in the loading position for this to work
+ * homeLift();   // homes the lift: NOTE: as of now, the lift must not be in the loading position for this to work
  *
- *  defineStartPosition(); // sets the start position of the lift as of yet, the program cannot tell what the starting
- *                         // position of the lift is, so it is necessary to set this when transitioning between opmodes
- *                         // put at the
+ * defineStartPosition(); // sets the start position of the lift as of yet, the program cannot tell what the starting
+ * // position of the lift is, so it is necessary to set this when transitioning between opmodes
+ * // put at the
  *
  *
  * ----------------------------------------------------------------------------------------------------
@@ -51,15 +50,14 @@ import org.firstinspires.ftc.teamcode.infrastructure.SafeJsonReader;
  * cd TeamCode/src/main/java/org/firstinspires/ftc/teamcode/JSON/
  *
  * To push the file:
- ~/Library/Android/sdk/platform-tools/adb push SlotTrayPositions.json /sdcard/FIRST/team9773/json18
+ * ~/Library/Android/sdk/platform-tools/adb push SlotTrayPositions.json /sdcard/FIRST/team9773/json18
  *
  * To pull the file
  * ~/Library/Android/sdk/platform-tools/adb pull /sdcard/FIRST/team9773/json18/CubeTrayServoPositions.json
- *
  */
 
 public class SlotTray implements CubeTrays {
-    public enum TrayPositions{GRABBED, OPEN,LOADING, START_POS,JEWEL_LEFT,JEWEL_CENTER,JEWEL_RIGHT}
+    public enum TrayPositions {GRABBED, OPEN, LOADING, START_POS, JEWEL_LEFT, JEWEL_CENTER, JEWEL_RIGHT}
 
     int TargetLoadPos;
 
@@ -83,7 +81,7 @@ public class SlotTray implements CubeTrays {
     private double grabberPos = 0;
     private double blockerPos = 0;
 
-    private double leftRollerOutVal =  0.89;
+    private double leftRollerOutVal = 0.89;
     private double rightRollerOutVal = 0.11;
 
     private boolean ejecting = false;
@@ -99,8 +97,6 @@ public class SlotTray implements CubeTrays {
     private boolean usingExMotor = false;
 
 
-
-
     public boolean AutonomousMode = false;
 
     // create motor and servo objects
@@ -111,12 +107,12 @@ public class SlotTray implements CubeTrays {
     AnalogInput limitSwitch;
 
     // for roller ejection
-    private boolean usingRollerEjection= true;
+    private boolean usingRollerEjection = true;
     private Servo leftEjectRoller;
     private Servo rightEjectRoller;
 
     PIDController liftHeightPidController;
-    DcMotorImplEx  liftMotorEx ;
+    DcMotorImplEx liftMotorEx;
 
 
     private double liftMotorPower = 0;
@@ -124,15 +120,14 @@ public class SlotTray implements CubeTrays {
 
     //DEBUGING
     private static final boolean DEBUG = true;
-    private static final String TAG = "ftc9773_CubeTray" ;
-
+    private static final String TAG = "ftc9773_CubeTray";
 
 
     private SafeJsonReader myCubeTrayPositions;
     private static final boolean useBlockerServo = true;
 
 
-    public SlotTray(HardwareMap hwMap , Gamepad gamepad1){
+    public SlotTray(HardwareMap hwMap, Gamepad gamepad1) {
 
         // read values from json
         myCubeTrayPositions = new SafeJsonReader("SlotTrayPositions");
@@ -186,27 +181,23 @@ public class SlotTray implements CubeTrays {
         Log.i(TAG, "set liftPosTol to" + liftPosTol);
 
 
-
-
-
-
         // initialize the motor and servos
         this.gamepad1 = gamepad1;
         liftMotor = hwMap.dcMotor.get("ctlMotor");
-        liftMotorEx = (DcMotorImplEx)liftMotor;
+        liftMotorEx = (DcMotorImplEx) liftMotor;
         limitSwitch = hwMap.analogInput.get("ctlLimitSwitch");
         grabServo = hwMap.servo.get("ctgServo");
         blockServo = hwMap.servo.get("csServo");
         // initialize the Extended motor
-        if(usingExMotor) {
+        if (usingExMotor) {
             Double kp = myCubeTrayPositions.getDouble("liftHeightP_EX");
             Double ki = myCubeTrayPositions.getDouble("liftHeightI_EX");
             Double kd = myCubeTrayPositions.getDouble("liftHeightD_EX");
 
-            if (DEBUG) Log.i(TAG,"liftHeightEx P = " + kp);
-            if (DEBUG) Log.i(TAG,"liftHeightEx I = " + ki);
-            if (DEBUG) Log.i(TAG,"liftHeightEx D = " + kd);
-            PIDCoefficients liftPID = new PIDCoefficients(kp,ki, kd);
+            if (DEBUG) Log.i(TAG, "liftHeightEx P = " + kp);
+            if (DEBUG) Log.i(TAG, "liftHeightEx I = " + ki);
+            if (DEBUG) Log.i(TAG, "liftHeightEx D = " + kd);
+            PIDCoefficients liftPID = new PIDCoefficients(kp, ki, kd);
 
             liftMotorEx = (DcMotorImplEx) liftMotor;
             liftMotorEx.setMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -222,15 +213,15 @@ public class SlotTray implements CubeTrays {
             Double kd = myCubeTrayPositions.getDouble("liftHeightD");
             liftHeightPidController = new PIDController(kp, ki, kd);
 
-            if (DEBUG) Log.i(TAG,"liftHeightP = " + kp);
-            if (DEBUG) Log.i(TAG,"liftHeight I = " + ki);
-            if (DEBUG) Log.i(TAG,"liftHeight D = " + kd);
+            if (DEBUG) Log.i(TAG, "liftHeightP = " + kp);
+            if (DEBUG) Log.i(TAG, "liftHeight I = " + ki);
+            if (DEBUG) Log.i(TAG, "liftHeight D = " + kd);
 
         }
 
 
         // initialize roller ejection
-        if(usingRollerEjection) {
+        if (usingRollerEjection) {
             leftEjectRoller = hwMap.servo.get("ctleServo");
             rightEjectRoller = hwMap.servo.get("ctreServo");
         }
@@ -238,30 +229,32 @@ public class SlotTray implements CubeTrays {
 
         setServoPos(TrayPositions.LOADING);
     }
+
     /// DEAFAULT INTERFACE
-    public void updateFromGamepad(){
-        if(gamepad1.x){
+    public void updateFromGamepad() {
+        if (gamepad1.x) {
             setToPos(LiftFinalStates.LOADING);
-        } else if (gamepad1.a){
+        } else if (gamepad1.a) {
             setToPos(LiftFinalStates.LOW);
-        } else if (gamepad1.b){
+        } else if (gamepad1.b) {
             setToPos(LiftFinalStates.MID);
-        } else if(gamepad1.y){
+        } else if (gamepad1.y) {
             setToPos(LiftFinalStates.HIGH);
         }
-        if(gamepad1.right_bumper){
+        if (gamepad1.right_bumper) {
             dump();
         }
         updatePosition();
 
     }
+
     // command to eject the cubes
-    public void dump(){
+    public void dump() {
         int i;
-        if(!usingRollerEjection)
-             i = 1;
-        //setServoPos(TrayPositions.OPEN);
-        else{
+        if (!usingRollerEjection)
+            i = 1;
+            //setServoPos(TrayPositions.OPEN);
+        else {
             leftEjectRoller.setPosition(leftRollerOutVal);
             rightEjectRoller.setPosition(rightRollerOutVal);
             ejecting = true;
@@ -273,8 +266,8 @@ public class SlotTray implements CubeTrays {
         }
     }
 
-    public void setToPos(LiftFinalStates state){
-        switch (state){
+    public void setToPos(LiftFinalStates state) {
+        switch (state) {
             case STOWED:
                 setServoPos(TrayPositions.LOADING);
                 break;
@@ -298,10 +291,9 @@ public class SlotTray implements CubeTrays {
         updatePosition();
     }//
 
-    public void updatePosition(){
+    public void updatePosition() {
         // mini state machine to allow the blocker servo time to turn
         setLiftPos(targetPos);
-
 
 
         setToPoitionPID(liftTargetPosition);
@@ -309,17 +301,18 @@ public class SlotTray implements CubeTrays {
         // update the ejection rollers based off of wether or not they are ejecting
         // if they are, set to ejection position
         // otherwise stop the rollers
-        if(ejecting){
+        if (ejecting) {
             leftEjectRoller.setPosition(leftRollerOutVal);
             rightEjectRoller.setPosition(rightRollerOutVal);
-        }  else {
+        } else {
             leftEjectRoller.setPosition(0.5);
             rightEjectRoller.setPosition(0.5);
         }
         ejecting = false;
 
     }
-   private void setLiftPos(LiftFinalStates state) {
+
+    private void setLiftPos(LiftFinalStates state) {
         switch (state) {
             case LOADING:
                 liftTargetPosition = loadingPosTicks;
@@ -346,9 +339,9 @@ public class SlotTray implements CubeTrays {
         }
     }
 
-    public void setToPoitionPID(int targetPos){
-        if(usingExMotor){
-               liftMotorEx.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+    public void setToPoitionPID(int targetPos) {
+        if (usingExMotor) {
+            liftMotorEx.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
             liftMotorEx.setMotorEnable();
             liftMotorEx.setTargetPosition(targetPos);
@@ -362,14 +355,15 @@ public class SlotTray implements CubeTrays {
             liftMotor.setPower(correction);
         }
     }
-    private void setServoPos(TrayPositions position){
-        switch (position){
+
+    private void setServoPos(TrayPositions position) {
+        switch (position) {
             case GRABBED:
                 grabberPos = closedGrabberPos;
                 break;
             case OPEN:
                 grabberPos = openGrabberPos;
-                break ;
+                break;
             case LOADING:
                 grabberPos = loadGrabberPos;
                 break;
@@ -392,11 +386,12 @@ public class SlotTray implements CubeTrays {
 
         Log.i(TAG, "set servo positions to " + position.toString());
 
-        Log.i(TAG, "set grabber position to: "+  grabberPos);
+        Log.i(TAG, "set grabber position to: " + grabberPos);
         Log.i(TAG, "set blocker Position to : " + blockerPos);
 
     }
-    public int getliftPos(){
+
+    public int getliftPos() {
         return liftMotor.getCurrentPosition() - zeroPos;
     }
 
@@ -417,14 +412,14 @@ public class SlotTray implements CubeTrays {
 
     @Override
     public void setZeroFromCompStart() {
-        int compStartPos =   myCubeTrayPositions.getInt("CompStartPos");
+        int compStartPos = myCubeTrayPositions.getInt("CompStartPos");
         zeroPos = liftMotor.getCurrentPosition() - compStartPos;
     }
 
-    public void setZeroFromLastOpmode(){
+    public void setZeroFromLastOpmode() {
         int lastPos = myCubeTrayPositions.getInt("LastLiftHeight");
-        if (lastPos == 0|| lastPos== -1){
-            if (DEBUG) Log.e (TAG, "unnable to read Lift Height");
+        if (lastPos == 0 || lastPos == -1) {
+            if (DEBUG) Log.e(TAG, "unnable to read Lift Height");
             return;
         }
     }
@@ -433,11 +428,9 @@ public class SlotTray implements CubeTrays {
         AutonomousMode = val;
     }
 
-    private boolean isInLoadingPocket(){
-        return (Math.abs(loadingPosTicks - liftMotor.getCurrentPosition())< liftPosTol);
+    private boolean isInLoadingPocket() {
+        return (Math.abs(loadingPosTicks - liftMotor.getCurrentPosition()) < liftPosTol);
     }
-
-
 
 
 }

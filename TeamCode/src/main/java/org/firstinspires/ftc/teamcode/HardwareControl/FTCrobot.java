@@ -82,15 +82,6 @@ public class FTCrobot {
 
     // INIT
     public FTCrobot(HardwareMap hwmap, Telemetry telemetry, Gamepad gamepad1, Gamepad gamepad2, LinearOpModeCamera myLinearOpModeCamera){
-
-        if(USING_SLOT_TRAY){
-            this.myCubeTray = new SlotTray(hwmap, gamepad2);
-
-        } else {
-            this.myCubeTray = new CubeTray(hwmap, gamepad2, null);
-        }
-
-
         jewelKnocker = new JewelKnocker(hwmap);
         this.gp1y = new ButtonStatus();
         this.hwMap = hwmap;
@@ -99,7 +90,7 @@ public class FTCrobot {
         this.myGyro = new Gyro(hwMap);
         this.mySwerveController = new SwerveController(hwMap, myGyro, telemetry);
         this.myManualIntakeController = new IntakeControllerManual(hwMap);
-        this.myDriveWithPID = new DriveWithPID(mySwerveController, myGyro, myManualIntakeController, myLinearOpModeCamera, myCubeTray, hwmap);
+        this.myDriveWithPID = new DriveWithPID(mySwerveController, myGyro, myManualIntakeController, myLinearOpModeCamera, hwmap);
         this.myRelicSystem = new RelicSystem(myTelemetry, hwMap, myLinearOpModeCamera);
 
         this.myGamepad1 = gamepad1;
@@ -114,9 +105,19 @@ public class FTCrobot {
         xyCoefficient = (1 - minPowerXY) / Math.pow(1 - zeroRange, 3);
         rotCoefficient = (1 - minPowerRot) / Math.pow(1 - zeroRange, 3);
 
+        if(USING_SLOT_TRAY){
+            this.myCubeTray = new SlotTray(hwmap, gamepad2);
+
+        } else {
+            this.myCubeTray = new CubeTray(hwmap, gamepad2, null);
+        }
+
+
     }
 
     // Joystick Scaling
+
+
 
     // This scales the XY axes from joystick inputs to create an easier driver experience
     private double scaleXYAxes (double value, boolean highPrecisionMode) {

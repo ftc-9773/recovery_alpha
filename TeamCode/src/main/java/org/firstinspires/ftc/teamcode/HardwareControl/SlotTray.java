@@ -224,6 +224,7 @@ public class SlotTray implements CubeTrays {
         updatePosition();
 
     }
+    // command to eject the cubes
     public void dump(){
         int i;
         if(!usingRollerEjection)
@@ -248,39 +249,7 @@ public class SlotTray implements CubeTrays {
 
     public void updatePosition(){
         // mini state machine to allow the blocker servo time to turn
-        switch (targetPos) {
-            case LOADING:
-                if(isInLoadingPocket()) {
-                    liftTargetPosition = loadingPosTicks;
-                    setServoPos(TrayPositions.LOADING);
-                    blockServo.setPosition(blockBlockerPos);
-                } else {
-                    liftTargetPosition = loadingPosTicks;
-                    setServoPos(TrayPositions.LOADING);
-                }
-                break;
-            case LOW:
-            case MID:
-            case HIGH:
-                setServoPos(TrayPositions.GRABBED);
-                if (isInLoadingPocket() && !waitingForLiftUp){
-                    timer = System.currentTimeMillis();
-                    waitingForLiftUp = true;
-                    blockServo.setPosition(leftStowBlockerPos);
-                } else if ( isInLoadingPocket() && waitingForLiftUp){
-                    if((System.currentTimeMillis()- timer)>= servoUpTime){
-                        setLiftPos(targetPos);
-                    }
-                } else {
-                    waitingForLiftUp = false;
-                    timer = -1;
-                    setLiftPos(targetPos);
-                }
-            default:
-                break;
-        }
-
-
+        setLiftPos(targetPos);
 
         setToPoitionPID(liftTargetPosition);
 

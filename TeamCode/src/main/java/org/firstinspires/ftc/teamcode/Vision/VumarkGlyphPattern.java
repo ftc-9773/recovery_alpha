@@ -1,9 +1,13 @@
 package org.firstinspires.ftc.teamcode.Vision;
 
 import android.graphics.Bitmap;
+import android.util.Log;
 
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.util.RobotLog;
 import com.vuforia.Image;
+import com.vuforia.PIXEL_FORMAT;
+import com.vuforia.Vuforia;
 
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.navigation.RelicRecoveryVuMark;
@@ -20,9 +24,19 @@ public class VumarkGlyphPattern {
     HardwareMap hardwareMap;
     VuforiaLocalizer vuforia;
 
+    private Image img = null;
+    public Bitmap bm = null;
+
+    private static final String TAG = "ftc9773_Vuforia" ;
+
+
+
     public VumarkGlyphPattern(HardwareMap hardwareMap){
         this.hardwareMap = hardwareMap;
         this.template = initialTemplate();
+
+        vuforia.setFrameQueueCapacity(3);
+
     }
 
     private VuforiaTrackable initialTemplate(){
@@ -32,6 +46,10 @@ public class VumarkGlyphPattern {
         parameters.cameraDirection = VuforiaLocalizer.CameraDirection.BACK;
         this.vuforia = ClassFactory.createVuforiaLocalizer(parameters);
 
+        // testing this
+        Vuforia.setFrameFormat(PIXEL_FORMAT.RGB565, true);
+        // end of test thing
+
         VuforiaTrackables relicTrackables = this.vuforia.loadTrackablesFromAsset("RelicVuMark");
         VuforiaTrackable relicTemplate = relicTrackables.get(0);
         relicTemplate.setName("relicVuMarkTemplate"); // can help in debugging; otherwise not necessary
@@ -39,25 +57,62 @@ public class VumarkGlyphPattern {
         relicTrackables.activate();
 
         return relicTemplate;
+
     }
 
-    public Bitmap getBitmap() throws InterruptedException {
-        VuforiaLocalizer.CloseableFrame frame = vuforia.getFrameQueue().take();
-//        for(int i = 0; i<frame.getNumImages(); i++){
-        Image image = frame.getImage(0);
-//            if (image.getWidth() == imageWidth && image.getHeight() == imageHeight &&
-//                    image.getFormat() == PIXEL_FORMAT.RGB565)
-//            {
-        Bitmap bm = Bitmap.createBitmap(image.getWidth(), image.getHeight(), Bitmap.Config.RGB_565);
-        return bm;
-//                bm.copyPixelsFromBuffer(image.getPixels());
-//                Utils.bitmapToMat(bm, frame);
-//                break;
-//            }
-//        }
+//    public Bitmap getBitmap() throws InterruptedException {
+//        VuforiaLocalizer.CloseableFrame frame = vuforia.getFrameQueue().take();
+////        for(int i = 0; i<frame.getNumImages(); i++){
+//        Image image = frame.getImage(0);
+////            if (image.getWidth() == imageWidth && image.getHeight() == imageHeight &&
+////                    image.getFormat() == PIXEL_FORMAT.RGB565)
+////            {
+//        Bitmap bm = Bitmap.createBitmap(image.getWidth(), image.getHeight(), Bitmap.Config.RGB_565);
+//        return bm;
+////                bm.copyPixelsFromBuffer(image.getPixels());
+////                Utils.bitmapToMat(bm, frame);
+////                break;
+////            }
+////
+////  }
+//    }
+
+
+    public Bitmap getBitMap (){
+        Log.i(TAG,"current number of frames in the queue"+  vuforia.getFrameQueueCapacity());
+
+        VuforiaLocalizer.CloseableFrame frame ;
+        try {
+            frame = vuforia.getFrameQueue().take(); //takes the frame at the head of the queue
+        }  catch (InterruptedException e) {
+            Log.e (TAG, "error taking frame from queue");
+            e.printStackTrace();
+            return null ;
+        }
+
+        long numImages = frame.getNumImages();
+        Image rgb = null;
+
+        if(frame == null){
+            Log.e(TAG, "null frame received");
+        }
+
+        for (int i = 0; i < numImages; i++) {
+            if (frame.getImage(i).getFormat() == PIXEL_FORMAT.RGB565) {
+                rgb = frame.getImage(i);
+                break;
+            }
+        }
+        if (rgb == null)
+            return null;
+
+
+        //rgb is now the Image object that weve used in the video
+        Bitmap bm = Bitmap.createBitmap(rgb.getWidth(), rgb.getHeight(), Bitmap.Config.RGB_565);
+        bm.copyPixelsFromBuffer(rgb.getPixels());
+        frame.close();
+        return bm ;
     }
 
-    public RelicRecoveryVuMark getColumn(){
-        return RelicRecoveryVuMark.from(template);
-    }
+
 }

@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.Vision;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.hardware.Camera;
+import android.util.Log;
 
 import org.firstinspires.ftc.robotcontroller.for_camera_opmodes.LinearOpModeCamera;
 import org.firstinspires.ftc.teamcode.infrastructure.SafeJsonReader;
@@ -31,6 +32,9 @@ public class JewelDetector {
     final double colOff = 80.0;
     final boolean scaling = true;
     final int ds2 = 2;
+
+    // for Logging
+    private static final String TAG = "ftc9773_JewelDetect" ;
 
     // algorithmic parameters set in json
     SafeJsonReader thresholds ;
@@ -61,12 +65,33 @@ public class JewelDetector {
     }
 
     public JewelColors computeJewelColor(){
-        // get image, rotated so (0,0) is in the bottom left of the preview window
         if (! camOp.imageReady()) return leftJewelColor;
 
-        // only do this if an image has been returned from the camera
         Bitmap rgbImage;
         rgbImage = camOp.convertYuvImageToRgb(camOp.yuvImage, camOp.width, camOp.height, ds2);
+
+        return computeJewelColorFromBitmap(rgbImage);
+    }
+    public JewelColors computeJewelColorFromVuforia(VumarkGlyphPattern vuforia){
+        Bitmap rgbImage;
+        rgbImage = vuforia.readFrame();
+        if(rgbImage != null){
+            Log.i(TAG, "successfully got rgb bitmaps");
+        }
+        else {
+            Log.e(TAG, "issue getting bitmaps ");
+            return leftJewelColor;
+        }
+
+        return computeJewelColorFromBitmap(rgbImage);
+    }
+
+
+
+    private JewelColors computeJewelColorFromBitmap(Bitmap rgbImage){
+        // get image, rotated so (0,0) is in the bottom left of the preview window
+
+        // only do this if an image has been returned from the camera
 
         // do we want to scale?
         int minR = 255;
@@ -149,6 +174,8 @@ public class JewelDetector {
 
         return leftJewelColor;
     }
+
+
 }
 
 // FROM DEBUG_VISION3:

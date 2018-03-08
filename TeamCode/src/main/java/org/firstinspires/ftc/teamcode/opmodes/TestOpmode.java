@@ -4,16 +4,9 @@ package org.firstinspires.ftc.teamcode.opmodes;
 import android.util.Log;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.robotcontroller.for_camera_opmodes.LinearOpModeCamera;
 import org.firstinspires.ftc.teamcode.HardwareControl.FTCrobot;
-import org.firstinspires.ftc.teamcode.HardwareControl.IntakeController;
-import org.firstinspires.ftc.teamcode.HardwareControl.SwerveController;
-import org.firstinspires.ftc.teamcode.HardwareControl.CubeTray;
-import org.firstinspires.ftc.teamcode.PositionTracking.Gyro;
 /*
  * Created by zacharye on 11/19/17.
  */

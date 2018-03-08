@@ -13,6 +13,11 @@
   "liftHeightI" : 0.0009,
   "liftHeightD" : 0.0002,
 
+  "liftHeightP_EX" : 0.0025,
+  "liftHeightI_EX" : 0.0009,
+  "liftHeightD_EX" : 0.0002,
+
+
   "openGrabberPos"    : 0.6,
   "grabbedGrabberPos" : 0.41,
   "loadGrabberPos"    : 0.5,

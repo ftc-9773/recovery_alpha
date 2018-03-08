@@ -41,7 +41,8 @@ public class SwerveController {
     //Orientation tracking variables
     public boolean useFieldCentricOrientation = true;
     private SafeJsonReader myPIDCoefficients;
-    private PIDWithBaseValue turningPID;
+    private PIDController turningPID;
+    private double PIDBaseValue;
 
     // Position Tracking
     public EncoderTracking myEncoderTracker;
@@ -73,11 +74,8 @@ public class SwerveController {
         double Kp = myPIDCoefficients.getDouble("Kp");
         double Ki = myPIDCoefficients.getDouble("Ki");
         double Kd = myPIDCoefficients.getDouble("Kd");
-        double Ke = myPIDCoefficients.getDouble("Ke");
-        double baseValue = myPIDCoefficients.getDouble("baseValue");
-
-        if (DEBUG)  Log.e(TAG, "Coefficients: " + Kp + " " + Ki + " " + Kd);
-        turningPID = new PIDWithBaseValue(Kp, Ke, Ki, Kd, baseValue);
+        PIDBaseValue = myPIDCoefficients.getDouble("baseValue");
+        turningPID = new PIDController(Kp, Ki, Kd);
 
         myEncoderTracker = new EncoderTracking(flwModule, frwModule, blwModule, brwModule, myGyro);
     }
@@ -90,26 +88,31 @@ public class SwerveController {
 
     public double steerSwerve(boolean isCartesian, double xMag, double yAng, double rotation, double directionLock) {
         // direction lock  - in Degrees
-
         Vector movementVector = new Vector(isCartesian, xMag, yAng);
 
-        if (DEBUG) Log.d(TAG, "Rotation: " + rotation + "  DirectionLock: " + directionLock);
+
 
         // Check to make sure rotation is off before doing directionLock
         if (directionLock != -1 && useFieldCentricOrientation) {
+
             // Calculate Error
             double error = negToPosPi(Math.toRadians(directionLock) - myGyro.getHeading());
             rotation = turningPID.getPIDCorrection(error);
-            if (DEBUG) Log.e(TAG, "true error: " + error + "  rotation: " + rotation);
 
-            // Get rid of direction lock rotation if the rotation is too small and x/y axes are 0
-            if (movementVector.getMagnitude() == 0 && Math.abs(rotation) < 0.15) {
-                rotation = 0;
+            if (movementVector.getMagnitude() == 0) {
+                if (rotation > 0) {
+                    rotation += PIDBaseValue;
+                } else if (rotation < 0) {
+                    rotation -= PIDBaseValue;
+                }
             }
+
+            if (DEBUG) Log.e(TAG, "true error: " + error + "  rotation: " + rotation);
         }
 
 
-        //Have pointModules do the brunt work
+        // Have pointModules do the brunt work
+
         pointModules(isCartesian, xMag, yAng, rotation);
         return rotation;
     }

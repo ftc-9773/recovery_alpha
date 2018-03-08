@@ -128,9 +128,23 @@ public class RasiActions {
                     break;
                 case "jwlarmd":
                     ftcRobot.jewelKnocker.ArmInitialLower();
+                    Log.i("RasiActions", "jwlarmd");
                     break;
                 case "jwlarmu":
                     ftcRobot.jewelKnocker.ArmReturn();
+                    Log.i("RasiActions", "jwlarmu");
+                    break;
+                case "jwlarmr":
+                    ftcRobot.jewelKnocker.KnockerRight();
+                    Log.i("RasiActions", "jwlarmr");
+                    break;
+                case "jwlarml":
+                    ftcRobot.jewelKnocker.KnockerLeftStowed();
+                    Log.i("RasiActions", "jwlarml");
+                    break;
+                case "jwlarmc":
+                    ftcRobot.jewelKnocker.KnockerStartMove();
+                    Log.i("RasiActions", "jwlarmc");
                     break;
                 case "end":
                     linearOpModeCamera.requestOpModeStop();

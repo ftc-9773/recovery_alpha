@@ -54,7 +54,6 @@ public class CloseRedMulti extends LinearOpModeCamera {
         // Initialize Classes
         vumarkGlyphPattern = new VumarkGlyphPattern(hardwareMap);
         jewelDetector = new JewelDetector(this);
-        rasiActions = new RasiActions("AutoRedCloseMulti", rasiTag, this, gamepad1, gamepad2, telemetry, hardwareMap);
 
         // Read the Vumark
         while(!opModeIsActive() && !isStopRequested()){
@@ -94,11 +93,10 @@ public class CloseRedMulti extends LinearOpModeCamera {
         telemetry.addData("rasitag[1] ", rasiTag[1]);
         telemetry.update();
 
-        rasiActions.rasiParser.rasiTag = this.rasiTag;
         Log.e("Tag 0", rasiTag[0]);
         Log.e("Tag 1", rasiTag[1]);
 
-
+        rasiActions = new RasiActions("AutoRedCloseMulti", rasiTag, this, gamepad1, gamepad2, telemetry, hardwareMap);
         // DO EVERYTHING
         rasiActions.runRasi();
     }

@@ -3,6 +3,8 @@ package org.firstinspires.ftc.teamcode.HardwareControl;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
+import org.firstinspires.ftc.teamcode.infrastructure.SafeJsonReader;
+
 /**
  * Created by nicky on 2/19/18.
  */
@@ -11,23 +13,24 @@ public class JewelKnocker {
 
     private Servo armServo;
     private Servo knockerServo;
-
-    private static final double armStoredPos = 0.0;
-    private static final double armOutPos = .6;
-    private static final double knockerOutPos= .6;
-    private static final double knockerRightSidePos= 1;
-    private static final double knockerLeftSideStowedPos= 0;
-
+    private SafeJsonReader safeJsonReader = new SafeJsonReader("jewel knocker positions");
+    private double armOutPos;
+    private double knockerOutPos;
+    private double armStoredPos;
+    private double knockerLeftSideStowedPos;
+    private double knockerRightSidePos;
 
 
 
     public JewelKnocker(HardwareMap hwMap) {
-
         armServo = hwMap.servo.get("jaServo");
         knockerServo = hwMap.servo.get("jkServo");
 
-
-
+        armOutPos = safeJsonReader.getDouble("armOutPos");
+        armStoredPos = safeJsonReader.getDouble("armStoredPos");
+        knockerOutPos = safeJsonReader.getDouble("knockerOutPos");
+        knockerLeftSideStowedPos = safeJsonReader.getDouble("knockerLeftSideStowedPos");
+        knockerRightSidePos = safeJsonReader.getDouble("knockerRightSidePos");
     }
     public void ArmInitialLower() { armServo.setPosition(armOutPos);}
     public void ArmReturn(){ armServo.setPosition(armStoredPos);}
@@ -40,3 +43,4 @@ public class JewelKnocker {
 
 
 }
+

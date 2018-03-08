@@ -1,0 +1,17 @@
+intkl;
+jwlarmd;
+jwlarmc;
+wait, 1.5;
+RED:jwlarmr;
+BLUE:jwlarml;
+wait, 1.0;
+turn, 30;
+jwlarmu;
+intki;
+drvd, 0.75, 45, 30;
+drvd, 0.75, 135, 10;
+turn, 0.0;
+intks;
+ctlow;
+R:drvd, 0.5, 180, 24;
+end;

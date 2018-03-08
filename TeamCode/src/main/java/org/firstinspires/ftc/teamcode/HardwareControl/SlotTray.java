@@ -4,6 +4,7 @@ import android.util.Log;
 
 import com.qualcomm.robotcore.hardware.AnalogInput;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorImpl;
 import com.qualcomm.robotcore.hardware.DcMotorImplEx;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -192,6 +193,7 @@ public class SlotTray implements CubeTrays {
         // initialize the motor and servos
         this.gamepad1 = gamepad1;
         liftMotor = hwMap.dcMotor.get("ctlMotor");
+        liftMotorEx = (DcMotorImplEx)liftMotor;
         limitSwitch = hwMap.analogInput.get("ctlLimitSwitch");
         grabServo = hwMap.servo.get("ctgServo");
         blockServo = hwMap.servo.get("csServo");
@@ -208,7 +210,10 @@ public class SlotTray implements CubeTrays {
 
             liftMotorEx = (DcMotorImplEx) liftMotor;
             liftMotorEx.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            Log.d(TAG, "currentPID coeffs: " + liftMotorEx.getPIDCoefficients(DcMotor.RunMode.RUN_TO_POSITION).toString());
+            Log.d(TAG, "currentPID coeffs: p" + liftMotorEx.getPIDCoefficients(DcMotor.RunMode.RUN_TO_POSITION).p);
+            Log.d(TAG, "currentPID coeffs: i" + liftMotorEx.getPIDCoefficients(DcMotor.RunMode.RUN_TO_POSITION).i);
+            Log.d(TAG, "currentPID coeffs: d" + liftMotorEx.getPIDCoefficients(DcMotor.RunMode.RUN_TO_POSITION).d);
+
             liftMotorEx.setPIDCoefficients(DcMotor.RunMode.RUN_TO_POSITION, liftPID);
         } else {
 
@@ -343,9 +348,9 @@ public class SlotTray implements CubeTrays {
 
     public void setToPoitionPID(int targetPos){
         if(usingExMotor){
-            if (!liftMotorEx.getMode().equals(DcMotor.RunMode.RUN_WITHOUT_ENCODER)) {
-                liftMotorEx.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-            }
+               liftMotorEx.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+            liftMotorEx.setMotorEnable();
             liftMotorEx.setTargetPosition(targetPos);
 
         } else {

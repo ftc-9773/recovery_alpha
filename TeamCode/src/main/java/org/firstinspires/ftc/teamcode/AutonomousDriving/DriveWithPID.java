@@ -83,7 +83,6 @@ public class DriveWithPID {
         errorThreshold = turningPIDCoefficients.getDouble("errorThreshold");
         speedThreshold = turningPIDCoefficients.getDouble("speedThreshold");
 
-        backSensor = hwMap.i2cDevice.get("backColorSensor");
 
     }
 
@@ -130,7 +129,6 @@ public class DriveWithPID {
             mySwerveController.moveRobot(true);
 
             if (averageEncoderDist() >= targetTicks) break;
-            if ()
         }
 
     }

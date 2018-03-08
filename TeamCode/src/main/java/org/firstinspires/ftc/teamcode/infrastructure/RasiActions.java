@@ -50,7 +50,6 @@ public class RasiActions {
                     ftcRobot.myDriveWithPID.driveDist(rasiParser.getAsDouble(1), rasiParser.getAsDouble(2), rasiParser.getAsDouble(3));
                     break;
                 case "drvultra":
-                    ftcRobot.myDriveWithPID.driveUltrasonic(rasiParser.getAsDouble(1), rasiParser.getAsDouble(2), ftcRobot.distanceSensor, rasiParser.getAsDouble(3), rasiParser.getAsDouble(4));
                     break;
                 case "drvt":
                     ftcRobot.myDriveWithPID.driveTime(rasiParser.getAsDouble(1), rasiParser.getAsDouble(2), rasiParser.getAsDouble(3));

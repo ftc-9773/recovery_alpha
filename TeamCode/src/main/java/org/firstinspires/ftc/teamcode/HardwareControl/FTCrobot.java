@@ -33,7 +33,6 @@ public class FTCrobot {
     private Gyro myGyro;
     private RasiParser opModeControl;
     private String[] currentCommand;
-//    private IntakeController myIntakeController;
     public IntakeControllerManual myManualIntakeController;
     public DriveWithPID myDriveWithPID;                      // <--
 
@@ -87,12 +86,11 @@ public class FTCrobot {
         this.gp1y = new ButtonStatus();
         this.hwMap = hwmap;
         this.myTelemetry = telemetry;
-        // myIntakeController = new IntakeController(hwMap);
         this.distanceSensor = hwMap.get(ModernRoboticsI2cRangeSensor.class, "ultrasonicSensor");
         this.myGyro = new Gyro(hwMap);
         this.mySwerveController = new SwerveController(hwMap, myGyro, telemetry);
         this.myManualIntakeController = new IntakeControllerManual(hwMap);
-        this.myDriveWithPID = new DriveWithPID(mySwerveController, myGyro, myLinearOpModeCamera);
+        this.myDriveWithPID = new DriveWithPID(mySwerveController, myGyro, myManualIntakeController, myLinearOpModeCamera);
         this.myRelicSystem = new RelicSystem(myTelemetry, hwMap, myLinearOpModeCamera);
 
         this.myGamepad1 = gamepad1;

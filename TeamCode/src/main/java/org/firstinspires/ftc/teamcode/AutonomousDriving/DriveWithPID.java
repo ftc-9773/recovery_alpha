@@ -5,10 +5,13 @@ import android.util.Log;
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cRangeSensor;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.ColorSensor;
+import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcontroller.for_camera_opmodes.LinearOpModeCamera;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.teamcode.HardwareControl.DistanceColorSensor;
+import org.firstinspires.ftc.teamcode.HardwareControl.IntakeControllerManual;
 import org.firstinspires.ftc.teamcode.HardwareControl.SwerveController;
 import org.firstinspires.ftc.teamcode.PositionTracking.Gyro;
 import org.firstinspires.ftc.teamcode.infrastructure.PIDController;
@@ -27,6 +30,8 @@ public class DriveWithPID {
     // Useful objects
     private static SwerveController mySwerveController;
     private static Gyro myGyro;
+
+    private static IntakeControllerManual myIntakeController;
 
     // Variables
     static double tempZeroPosition;
@@ -52,12 +57,21 @@ public class DriveWithPID {
     private double errorThreshold;
     private double speedThreshold;
 
+
+    // Sensors:
+    DistanceColorSensor backSensor;
+    DistanceColorSensor frontColorSensor;
+
+    ModernRoboticsI2cRangeSensor ultrasonicSensor;
+
+
     // INIT
-    public DriveWithPID (SwerveController mySwerveController, Gyro myGyro, LinearOpModeCamera myOpMode) {
+    public DriveWithPID (SwerveController mySwerveController, Gyro myGyro, IntakeControllerManual myIntakeController, LinearOpModeCamera myOpMode, HardwareMap hwMap) {
         this.myOpMode = myOpMode;
         this.mySwerveController = mySwerveController;
         this.mySwerveController.useFieldCentricOrientation = true;
         this.myGyro = myGyro;
+        this.myIntakeController = myIntakeController;
 
         // Make the turning pid
         SafeJsonReader turningPIDCoefficients = new SafeJsonReader("TurningPIDCoefficients");
@@ -68,6 +82,9 @@ public class DriveWithPID {
         turningPID = new PIDController(Kp, Ki, Kd);
         errorThreshold = turningPIDCoefficients.getDouble("errorThreshold");
         speedThreshold = turningPIDCoefficients.getDouble("speedThreshold");
+
+        backSensor = hwMap.i2cDevice.get("backColorSensor");
+
     }
 
     // Actual driving funftions
@@ -86,7 +103,7 @@ public class DriveWithPID {
         zeroEncoders();
 
         // Calculate target distance
-        targetTicks = encoderTicksPerInch * distInches;
+        double targetTicks = encoderTicksPerInch * distInches;
         if (DEBUG) { Log.i(TAG, "Target Ticks: " + targetTicks); }
 
         // Drive
@@ -101,6 +118,21 @@ public class DriveWithPID {
         mySwerveController.pointModules(true, 0, 0, 0);
         mySwerveController.moveRobot(false);
         if (DEBUG) { Log.i(TAG, "Extra Distance: " + (Math.abs(averageEncoderDist()) - targetTicks)); }
+    }
+
+    public void driveIntake (double speed, double angleDegrees, double maxDistInches, double headingDegrees, double intakePower) {
+
+        // Calculate target distance
+        double maxTicks = encoderTicksPerInch * maxDistInches;
+
+        while (!myOpMode.isStopRequested()) {
+            mySwerveController.steerSwerve(false, speed, Math.toRadians(angleDegrees), 0, headingDegrees);
+            mySwerveController.moveRobot(true);
+
+            if (averageEncoderDist() >= targetTicks) break;
+            if ()
+        }
+
     }
 
     //Alais
@@ -122,16 +154,7 @@ public class DriveWithPID {
 
     }
 
-    public void driveUltrasonic(double speed, double angleDegrees, ModernRoboticsI2cRangeSensor distanceSensor, double minDist, double maxDist) {
-
-        boolean inThres = false;
-
-        // Drive
-        while (myOpMode.opModeIsActive() && !inThres) {
-            inThres = distanceSensor.cmUltrasonic() < maxDist && distanceSensor.cmUltrasonic() > minDist;
-            mySwerveController.steerSwerve(false, speed, Math.toRadians(angleDegrees), 0, -1);
-            mySwerveController.moveRobot(true);
-        }
+    public void driveByLeftUltraonicDis (double speed, double targetUltrasonicDist, double distForward) {
 
     }
 

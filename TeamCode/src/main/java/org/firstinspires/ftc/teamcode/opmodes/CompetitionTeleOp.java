@@ -9,10 +9,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import org.firstinspires.ftc.robotcontroller.for_camera_opmodes.LinearOpModeCamera;
 import org.firstinspires.ftc.teamcode.HardwareControl.CubeTray;
 import org.firstinspires.ftc.teamcode.HardwareControl.FTCrobot;
-import org.firstinspires.ftc.teamcode.HardwareControl.IntakeController;
 import org.firstinspires.ftc.teamcode.HardwareControl.LiftFinalStates;
-import org.firstinspires.ftc.teamcode.HardwareControl.SwerveController;
-import org.firstinspires.ftc.teamcode.PositionTracking.Gyro;
 
 
 /**

@@ -18,13 +18,13 @@ public class DistanceColorSensor {
     private long lastTime = 0;
 
     public DistanceColorSensor(HardwareMap hwMap, String DeviceName){
-        distanceSensor = hwMap.get(DistanceSensor.class, DeviceName);
+        distanceSensor = hwMap.get(DistanceSensor.class, "sensor");
     }
 
     public double getDistance(DistanceUnit unit){
         return distanceSensor.getDistance(unit);
     }
-    //run this is a loop
+    //run this in a loop
     public double getDerivative(DistanceUnit distUnit){
         if(firstRun){
             firstRun = false;

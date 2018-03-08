@@ -5,6 +5,7 @@ import android.util.Log;
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cRangeSensor;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.ColorSensor;
+import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcontroller.for_camera_opmodes.LinearOpModeCamera;
@@ -17,6 +18,7 @@ import org.firstinspires.ftc.teamcode.PositionTracking.Gyro;
 import org.firstinspires.ftc.teamcode.infrastructure.PIDController;
 import org.firstinspires.ftc.teamcode.infrastructure.PIDWithBaseValue;
 import org.firstinspires.ftc.teamcode.infrastructure.SafeJsonReader;
+import org.firstinspires.ftc.teamcode.resources.Vector;
 
 /**
  * Created by nicky on 11/22/17.
@@ -59,7 +61,7 @@ public class DriveWithPID {
 
 
     // Sensors:
-    DistanceColorSensor backSensor;
+    DistanceColorSensor backColorSensor;
     DistanceColorSensor frontColorSensor;
 
     ModernRoboticsI2cRangeSensor ultrasonicSensor;
@@ -84,6 +86,11 @@ public class DriveWithPID {
         speedThreshold = turningPIDCoefficients.getDouble("speedThreshold");
 
 
+        // Sensors
+        backColorSensor = new DistanceColorSensor(hwMap, "backColorSensor");
+        frontColorSensor = new DistanceColorSensor(hwMap, "frontColorSensor");
+
+        ultrasonicSensor = hwMap.get(ModernRoboticsI2cRangeSensor.class, "leftUltrasonic");
     }
 
     // Actual driving funftions
@@ -128,7 +135,9 @@ public class DriveWithPID {
             mySwerveController.steerSwerve(false, speed, Math.toRadians(angleDegrees), 0, headingDegrees);
             mySwerveController.moveRobot(true);
 
+            // Check Break conditions
             if (averageEncoderDist() >= targetTicks) break;
+            if (backColorSensor.getDistance(DistanceUnit.INCH) < 2.35 && frontColorSensor.getDistance(DistanceUnit.INCH) < 2.35) break;
         }
 
     }
@@ -152,8 +161,12 @@ public class DriveWithPID {
 
     }
 
-    public void driveByLeftUltraonicDis (double speed, double targetUltrasonicDist, double distForward) {
+    public void driveByLeftUltraonicDis (double speed, double targetUltrasonicDist, double distForward) throws InterruptedException {
 
+        final double yDist = targetUltrasonicDist - ultrasonicSensor.getDistance(DistanceUnit.INCH);
+        Vector distanceVector = new Vector(true, distForward, yDist);
+
+        driveDist(speed, distanceVector.getAngle(), distanceVector.getMagnitude(), -1);
     }
 
     // Turn the Robot

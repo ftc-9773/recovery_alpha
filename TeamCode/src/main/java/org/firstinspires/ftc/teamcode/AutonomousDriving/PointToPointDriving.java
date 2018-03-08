@@ -21,7 +21,6 @@ public class PointToPointDriving {
 
     // Actual variables
     double acceleration = 4 / 2 / 1000000;// m/s ** converted to power per ms
-    Vector distanceVector = new Vector(true, 0,0);
 
 
     // INIT
@@ -37,13 +36,14 @@ public class PointToPointDriving {
 
         // Variables
         double currentSpeed = minSpeed;
+        Vector distanceVector = new Vector(true, 0, 0);
 
-        long lastTime = System.currentTimeMillis();
-        long currentTime;
+        long lastTime;
+        long currentTime = System.currentTimeMillis();
 
 
 
-        while (distanceVector.getMagnitude() < 0.05 && !opmode.isStopRequested()) {
+        while (!opmode.isStopRequested()) {
 
             // Calculate error in position
             double xError = xCord - myEncoderTracker.getXinInches();
@@ -53,20 +53,40 @@ public class PointToPointDriving {
 
             distanceVector.set(true, xCord, yCord);
 
-            for (int i = 0; i< 50; i++) {
-                // Set the current time
-                currentTime = System.currentTimeMillis();
 
-                // Acceleration and deceleration
+            // Set the current time
+            lastTime = currentTime;
+            currentTime = System.currentTimeMillis();
 
-                // Check to see if it has driven the distance
-                if (distanceVector.getMagnitude() < 0.05) break;
 
-                // Drive
-                mySwerveController.steerSwerve(false, currentSpeed, distanceVector.getAngle(), 0, headingDegrees);
-                mySwerveController.moveRobot(true);
 
+            // Acceleration and deceleration
+
+            // Calculate distance to start decelerating
+            final double minDist = (currentSpeed*currentSpeed + minSpeed*minSpeed) / 2;
+
+            // If you are far enough away, accelerate
+            if (distanceVector.getMagnitude() > minDist && currentSpeed < maxSpeed) {
+                currentSpeed += acceleration * (currentTime - lastTime);
+
+                // Verify that speed is less than max
+                if (currentSpeed > maxSpeed) currentSpeed = maxSpeed;
+
+            // If you are close enough, decelerate
+            } else if (distanceVector.getMagnitude() <= minDist && currentSpeed > minSpeed) {
+                currentSpeed -= acceleration * (currentTime - lastTime);
+
+                // Verify that speed is less than min
+                if (currentSpeed < minSpeed) currentSpeed = minSpeed;
             }
+
+
+            // Check to see if it has driven the distance
+            if (distanceVector.getMagnitude() < 0.05) break;
+
+            // Drive
+            mySwerveController.steerSwerve(false, currentSpeed, distanceVector.getAngle(), 0, headingDegrees);
+            mySwerveController.moveRobot(true);
 
         }
 

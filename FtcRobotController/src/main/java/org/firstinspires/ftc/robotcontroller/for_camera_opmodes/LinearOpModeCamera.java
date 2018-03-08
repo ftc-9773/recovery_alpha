@@ -119,7 +119,7 @@ public class LinearOpModeCamera extends LinearOpMode {
 
 
     if (DEBUG)  {
-      if (dir==Camera.CameraInfo.CAMERA_FACING_FRONT) Log.e(TAG, "hi alex, using the forward facing camera ");
+      if (dir==Camera.CameraInfo.CAMERA_FACING_FRONT) Log.e(TAG, "hi robocrat, using the forward facing camera ");
       else Log.e(TAG, "hi alex, using the back facing camera ");
     }
 

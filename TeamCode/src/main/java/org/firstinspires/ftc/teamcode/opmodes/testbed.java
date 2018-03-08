@@ -9,7 +9,6 @@ import org.firstinspires.ftc.teamcode.RASI.RasiExecutor;
 /**
  * Created by Vikesh on 11/19/2017.
  */
-@Disabled
 @Autonomous(name = "testbed")
 public class testbed extends LinearOpModeCamera {
 

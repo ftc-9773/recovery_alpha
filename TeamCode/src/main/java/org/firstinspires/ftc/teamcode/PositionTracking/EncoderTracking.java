@@ -28,8 +28,6 @@ public class EncoderTracking {
 
     double[] currentHeading = new double[4];
 
-    double lastGyroHeading;
-    double currentGyroHeading;
 
 
     // Units: inches
@@ -52,8 +50,6 @@ public class EncoderTracking {
         readCurrentPosition();
 
 
-        currentGyroHeading = myGyro.getHeading();
-
         // Sets the position to zero
         position[0] = 0;
         position[1] = 0;
@@ -75,27 +71,12 @@ public class EncoderTracking {
         double xDisp = 0;
         double yDisp = 0;
 
-        // Update gyro headings:
-        lastGyroHeading = currentGyroHeading;
-        currentGyroHeading = myGyro.getHeading();
-
         // Add each wheel's distance to the total
         for (int i = 0; i< 4; i++) {
             // Make sure the wheel isn't just pivoting
             if (!wheels[i].isPivoting()) {
 
-                // Calculate difference in position due to robot rotation, and subtract this from estimated displacement
-
-                // Find local displacement and divide by encoder ticks per inch
-                double dist = (currentPos[i] - lastPos[i]) / encoderTicksPerInch;
-                Vector tempVector = new Vector(false, dist, currentHeading[i]);
-
-                // Subtract rotation vector
-                final double distFromRotation = Utilities.negToPosPi(currentGyroHeading - lastGyroHeading) * WHEEL_CENTER_RADIUS;
-                tempVector.addVector(false, -distFromRotation, rotationDirection[i]);
-
-                // Shift to robot perspective
-                tempVector.shiftAngle(-currentGyroHeading);
+                Vector tempVector = new Vector(false, currentPos[i] - lastPos[i], currentHeading[i] - myGyro.getHeading());
 
                 xDisp += tempVector.getX();
                 yDisp += tempVector.getY();
@@ -104,6 +85,8 @@ public class EncoderTracking {
         xDisp/=4;
         yDisp/=4;
 
+        xDisp /= encoderTicksPerInch;
+        yDisp /= encoderTicksPerInch;
 
         position[0] += xDisp;
         position[1] += yDisp;

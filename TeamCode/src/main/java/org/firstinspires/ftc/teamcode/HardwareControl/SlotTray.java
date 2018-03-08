@@ -117,7 +117,7 @@ public class SlotTray implements CubeTrays {
     public int liftTargetPosition = 0;  // change to private
 
     //DEBUGING
-    private static final boolean DEBUG = false;
+    private static final boolean DEBUG = true;
     private static final String TAG = "ftc9773_CubeTray" ;
 
 
@@ -243,6 +243,26 @@ public class SlotTray implements CubeTrays {
     }
 
     public void setToPos(LiftFinalStates state){
+        switch (state){
+            case STOWED:
+                setServoPos(TrayPositions.LOADING);
+                break;
+            case LOADING:
+                setServoPos(TrayPositions.LOADING);
+                break;
+            case LOW:
+            case MID:
+            case HIGH:
+                setServoPos(TrayPositions.GRABBED);
+                break;
+            case JEWELC:
+            case JEWELR:
+            case JEWELL:
+                setServoPos(TrayPositions.OPEN);
+                break;
+            default:
+                break;
+        }
         targetPos = state;
         updatePosition();
     }//
@@ -250,6 +270,8 @@ public class SlotTray implements CubeTrays {
     public void updatePosition(){
         // mini state machine to allow the blocker servo time to turn
         setLiftPos(targetPos);
+
+
 
         setToPoitionPID(liftTargetPosition);
 
@@ -331,6 +353,8 @@ public class SlotTray implements CubeTrays {
         }
 
         grabServo.setPosition(grabberPos);
+
+        Log.i(TAG, "set servo positions to " + position.toString());
 
         Log.i(TAG, "set grabber position to: "+  grabberPos);
         Log.i(TAG, "set blocker Position to : " + blockerPos);

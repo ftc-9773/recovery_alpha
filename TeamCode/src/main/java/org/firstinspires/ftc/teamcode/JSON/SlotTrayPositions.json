@@ -13,9 +13,9 @@
   "liftHeightI" : 0.0009,
   "liftHeightD" : 0.0002,
 
-  "openGrabberPos"    : 0.7,
-  "grabbedGrabberPos" : 0.51,
-  "loadGrabberPos"    : 0.6,
+  "openGrabberPos"    : 0.6,
+  "grabbedGrabberPos" : 0.41,
+  "loadGrabberPos"    : 0.5,
   "startGrabberPos"   : 0.58,
 
   "blockBlockerPos"  : 0.2,

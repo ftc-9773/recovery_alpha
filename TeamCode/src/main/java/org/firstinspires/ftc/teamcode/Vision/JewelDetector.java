@@ -74,7 +74,7 @@ public class JewelDetector {
     }
     public JewelColors computeJewelColorFromVuforia(VumarkGlyphPattern vuforia){
         Bitmap rgbImage;
-        rgbImage = vuforia.readFrame();
+        rgbImage = vuforia.getBitMap();
         if(rgbImage != null){
             Log.i(TAG, "successfully got rgb bitmaps");
         }

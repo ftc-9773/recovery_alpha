@@ -115,4 +115,7 @@ public class VumarkGlyphPattern {
     }
 
 
+    public RelicRecoveryVuMark getColumn(){
+        return RelicRecoveryVuMark.from(template);
+    }
 }

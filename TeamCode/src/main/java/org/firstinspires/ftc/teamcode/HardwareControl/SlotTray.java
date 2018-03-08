@@ -4,8 +4,10 @@ import android.util.Log;
 
 import com.qualcomm.robotcore.hardware.AnalogInput;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorImplEx;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.PIDCoefficients;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.infrastructure.PIDController;
@@ -93,6 +95,8 @@ public class SlotTray implements CubeTrays {
     private long timer = -1;
     private long servoUpTime = 250;
 
+    private boolean usingExMotor = false;
+
 
 
 
@@ -111,6 +115,7 @@ public class SlotTray implements CubeTrays {
     private Servo rightEjectRoller;
 
     PIDController liftHeightPidController;
+    DcMotorImplEx  liftMotorEx ;
 
 
     private double liftMotorPower = 0;
@@ -182,28 +187,49 @@ public class SlotTray implements CubeTrays {
 
 
 
+
+
         // initialize the motor and servos
         this.gamepad1 = gamepad1;
         liftMotor = hwMap.dcMotor.get("ctlMotor");
         limitSwitch = hwMap.analogInput.get("ctlLimitSwitch");
         grabServo = hwMap.servo.get("ctgServo");
         blockServo = hwMap.servo.get("csServo");
+        // initialize the Extended motor
+        if(usingExMotor) {
+            Double kp = myCubeTrayPositions.getDouble("liftHeightP_EX");
+            Double ki = myCubeTrayPositions.getDouble("liftHeightI_EX");
+            Double kd = myCubeTrayPositions.getDouble("liftHeightD_EX");
+
+            if (DEBUG) Log.i(TAG,"liftHeightEx P = " + kp);
+            if (DEBUG) Log.i(TAG,"liftHeightEx I = " + ki);
+            if (DEBUG) Log.i(TAG,"liftHeightEx D = " + kd);
+            PIDCoefficients liftPID = new PIDCoefficients(kp,ki, kd);
+
+            liftMotorEx = (DcMotorImplEx) liftMotor;
+            liftMotorEx.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            Log.d(TAG, "currentPID coeffs: " + liftMotorEx.getPIDCoefficients(DcMotor.RunMode.RUN_TO_POSITION).toString());
+            liftMotorEx.setPIDCoefficients(DcMotor.RunMode.RUN_TO_POSITION, liftPID);
+        } else {
+
+            Double kp = myCubeTrayPositions.getDouble("liftHeightP");
+            Double ki = myCubeTrayPositions.getDouble("liftHeightI");
+            Double kd = myCubeTrayPositions.getDouble("liftHeightD");
+            liftHeightPidController = new PIDController(kp, ki, kd);
+
+            if (DEBUG) Log.i(TAG,"liftHeightP = " + kp);
+            if (DEBUG) Log.i(TAG,"liftHeight I = " + ki);
+            if (DEBUG) Log.i(TAG,"liftHeight D = " + kd);
+
+        }
+
+
         // initialize roller ejection
         if(usingRollerEjection) {
             leftEjectRoller = hwMap.servo.get("ctleServo");
             rightEjectRoller = hwMap.servo.get("ctreServo");
         }
 
-
-
-        Double kp = myCubeTrayPositions.getDouble("liftHeightP");
-        Double ki = myCubeTrayPositions.getDouble("liftHeightI");
-        Double kd = myCubeTrayPositions.getDouble("liftHeightD");
-        liftHeightPidController = new PIDController(kp, ki, kd);
-
-        if (DEBUG) Log.i(TAG,"liftHeightP = " + kp);
-        if (DEBUG) Log.i(TAG,"liftHeight I = " + ki);
-        if (DEBUG) Log.i(TAG,"liftHeight D = " + kd);
 
         setServoPos(TrayPositions.LOADING);
     }
@@ -316,15 +342,20 @@ public class SlotTray implements CubeTrays {
     }
 
     public void setToPoitionPID(int targetPos){
-        if (!liftMotor.getMode().equals(DcMotor.RunMode.RUN_WITHOUT_ENCODER)){
-            liftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        if(usingExMotor){
+            if (!liftMotorEx.getMode().equals(DcMotor.RunMode.RUN_WITHOUT_ENCODER)) {
+                liftMotorEx.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+            }
+            liftMotorEx.setTargetPosition(targetPos);
+
+        } else {
+            double correction = liftHeightPidController.getPIDCorrection(targetPos, getliftPos());
+
+            if (DEBUG) Log.d(TAG, "lift Target position" + targetPos);
+            if (DEBUG) Log.d(TAG, "lift position correction =" + correction);
+
+            liftMotor.setPower(correction);
         }
-        double correction = liftHeightPidController.getPIDCorrection(targetPos, getliftPos());
-
-        if (DEBUG) Log.d(TAG,"lift Target position"+ targetPos );
-        if (DEBUG) Log.d(TAG,"lift position correction =" + correction);
-
-        liftMotor.setPower(correction);
     }
     private void setServoPos(TrayPositions position){
         switch (position){

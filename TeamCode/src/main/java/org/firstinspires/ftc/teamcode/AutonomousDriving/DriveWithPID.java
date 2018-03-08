@@ -11,6 +11,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import org.firstinspires.ftc.robotcontroller.for_camera_opmodes.LinearOpModeCamera;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.teamcode.HardwareControl.CubeTrays;
 import org.firstinspires.ftc.teamcode.HardwareControl.DistanceColorSensor;
 import org.firstinspires.ftc.teamcode.HardwareControl.IntakeControllerManual;
 import org.firstinspires.ftc.teamcode.HardwareControl.SwerveController;
@@ -34,6 +35,7 @@ public class DriveWithPID {
     private static Gyro myGyro;
 
     private static IntakeControllerManual myIntakeController;
+    private static CubeTrays myCubeTray;
 
     // Variables
     static double tempZeroPosition;
@@ -68,12 +70,13 @@ public class DriveWithPID {
 
 
     // INIT
-    public DriveWithPID (SwerveController mySwerveController, Gyro myGyro, IntakeControllerManual myIntakeController, LinearOpModeCamera myOpMode, HardwareMap hwMap) {
+    public DriveWithPID (SwerveController mySwerveController, Gyro myGyro, IntakeControllerManual myIntakeController, LinearOpModeCamera myOpMode, CubeTrays myCubeTray, HardwareMap hwMap) {
         this.myOpMode = myOpMode;
         this.mySwerveController = mySwerveController;
         this.mySwerveController.useFieldCentricOrientation = true;
         this.myGyro = myGyro;
         this.myIntakeController = myIntakeController;
+        this.myCubeTray = myCubeTray;
 
         // Make the turning pid
         SafeJsonReader turningPIDCoefficients = new SafeJsonReader("TurningPIDCoefficients");
@@ -118,6 +121,9 @@ public class DriveWithPID {
             mySwerveController.steerSwerve(false , speed, Math.toRadians(angleDegrees), 0, headingDegrees);
             mySwerveController.moveRobot(true);
             if (DEBUG) { Log.i(TAG, "Distance so far: " + averageEncoderDist()); }
+
+            // Update Cube tray
+            myCubeTray.updatePosition();
         }
 
         //Stop the robot
@@ -129,17 +135,34 @@ public class DriveWithPID {
     public void driveIntake (double speed, double angleDegrees, double maxDistInches, double headingDegrees, double intakePower) {
 
         // Calculate target distance
+        zeroEncoders();
         double maxTicks = encoderTicksPerInch * maxDistInches;
 
+
         while (!myOpMode.isStopRequested()) {
+
+            // Turn on intake
+            myIntakeController.RunIntake(0, -1);
+
             mySwerveController.steerSwerve(false, speed, Math.toRadians(angleDegrees), 0, headingDegrees);
             mySwerveController.moveRobot(true);
 
             // Check Break conditions
             if (averageEncoderDist() >= targetTicks) break;
             if (backColorSensor.getDistance(DistanceUnit.INCH) < 2.35 && frontColorSensor.getDistance(DistanceUnit.INCH) < 2.35) break;
-        }
 
+            // Update Cube tray
+            myCubeTray.updatePosition();
+        }
+        myIntakeController.RunIntake(0, 0);
+
+        while (!myOpMode.isStopRequested() && averageEncoderDist() > 0) {
+            mySwerveController.steerSwerve(false, -speed, Math.toRadians(angleDegrees), 0, headingDegrees);
+            mySwerveController.moveRobot(true);
+
+            // Update Cube tray
+            myCubeTray.updatePosition();
+        }
     }
 
     //Alais
@@ -157,6 +180,10 @@ public class DriveWithPID {
         while (System.currentTimeMillis() - zeroTime < timeSeconds * 1000) {
             mySwerveController.steerSwerve(false, speed, Math.toRadians(angleDegrees), 0, -1);
             mySwerveController.moveRobot(true);
+
+            // Update Cube tray
+            myCubeTray.updatePosition();
+
         }
 
     }
@@ -226,6 +253,10 @@ public class DriveWithPID {
             }
 
             firstTime = false;
+
+            // Update Cube tray
+            myCubeTray.updatePosition();
+
         }
         mySwerveController.stopRobot();
     }

@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.HardwareControl;
 
+import android.util.Log;
+
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
@@ -33,7 +35,9 @@ public class JewelKnocker {
         knockerRightSidePos = safeJsonReader.getDouble("knockerRightSidePos");
     }
     public void ArmInitialLower() { armServo.setPosition(armOutPos);}
-    public void ArmReturn(){ armServo.setPosition(armStoredPos);}
+    public void ArmReturn(){ armServo.setPosition(armStoredPos);
+        Log.e("Servo Position", "" + armStoredPos);
+    }
     public void KnockerStartMove(){knockerServo.setPosition(knockerOutPos);}
     public void KnockerLeftStowed(){knockerServo.setPosition(knockerLeftSideStowedPos);}
     public void KnockerRight(){knockerServo.setPosition(knockerRightSidePos);}

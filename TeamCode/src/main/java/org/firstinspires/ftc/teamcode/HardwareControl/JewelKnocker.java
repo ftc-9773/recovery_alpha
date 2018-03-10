@@ -15,7 +15,6 @@ public class JewelKnocker {
 
     private Servo armServo;
     private Servo knockerServo;
-    private SafeJsonReader safeJsonReader = new SafeJsonReader("jewel knocker positions");
     private double armOutPos;
     private double knockerOutPos;
     private double armStoredPos;
@@ -25,6 +24,8 @@ public class JewelKnocker {
 
 
     public JewelKnocker(HardwareMap hwMap) {
+        SafeJsonReader safeJsonReader = new SafeJsonReader("jewelknockerpositions");
+
         armServo = hwMap.servo.get("jaServo");
         knockerServo = hwMap.servo.get("jkServo");
 

@@ -19,7 +19,7 @@ public class MiscTests extends LinearOpMode {
     JewelKnocker jewel;
     @Override
     public void runOpMode() throws InterruptedException {
-        jewel = new JewelKnocker(hardwareMap);
+        //jewel = new JewelKnocker(hardwareMap);
         waitForStart();
 
      //   jewel.lowerArm();

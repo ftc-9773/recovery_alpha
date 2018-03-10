@@ -5,16 +5,23 @@ package org.firstinspires.ftc.teamcode.resources;
  */
 
 public class Timer {
-    long delayTimeMillis;
-    long startTimeMillis;
+    long delayTimeMillis = 0;
+    long startTimeMillis = 0;
+    boolean isInit = false;
 
     public Timer(double delayInSeconds) {
+        isInit = true;
         delayTimeMillis = (long) delayInSeconds * 1000;
         startTimeMillis = System.currentTimeMillis();
     }
 
     public boolean isDone () {
-        return ((System.currentTimeMillis() - startTimeMillis) > delayTimeMillis);
+        if(isInit) {
+            return ((System.currentTimeMillis() - startTimeMillis) > delayTimeMillis);
+        }
+        else{
+            return false;
+        }
     }
 
     public boolean isDone(double delayInSeconds) {

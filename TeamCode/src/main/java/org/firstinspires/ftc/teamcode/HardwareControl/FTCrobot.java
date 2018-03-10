@@ -89,7 +89,6 @@ public class FTCrobot {
         this.myGyro = new Gyro(hwMap);
         this.mySwerveController = new SwerveController(hwMap, myGyro, telemetry);
         this.myManualIntakeController = new IntakeControllerManual(hwMap);
-        this.myDriveWithPID = new DriveWithPID(mySwerveController, myGyro, myManualIntakeController, myLinearOpModeCamera, myCubeTray, hwmap);
         this.myRelicSystem = new RelicSystem(myTelemetry, hwMap, myLinearOpModeCamera);
 
         this.myGamepad1 = gamepad1;
@@ -110,7 +109,7 @@ public class FTCrobot {
         } else {
             this.myCubeTray = new CubeTray(hwmap, gamepad2, null);
         }
-
+        this.myDriveWithPID = new DriveWithPID(mySwerveController, myGyro, myManualIntakeController, myLinearOpModeCamera, myCubeTray, hwmap);
 
     }
 

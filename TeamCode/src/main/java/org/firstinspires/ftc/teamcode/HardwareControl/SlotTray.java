@@ -94,6 +94,17 @@ public class SlotTray implements CubeTrays {
     private long timer = -1;
     private long servoUpTime = 250;
 
+    // for homing and restart methods
+    private static final double homingPower = 0.5; //TODO: this might need to be changed or inversed
+    private boolean homing = false;
+    private long lastTime ;
+    private int lastPosition;
+    private int minSpeed = 2;
+
+    //set up the writing for restart method
+    private int iterNum = 0;
+    private static int itersPerWrite = 3;
+
     private boolean usingExMotor = false;
 
 
@@ -241,20 +252,29 @@ public class SlotTray implements CubeTrays {
         } else if (gamepad1.y) {
             setToPos(LiftFinalStates.HIGH);
         }
-        if (gamepad1.right_bumper) {
+        if (gamepad1.right_bumper && targetPos!= LiftFinalStates.LOADING) {
+            if(gamepad1.right_trigger >0.5){
+                setServoPos(TrayPositions.OPEN);
+            } else
             dump();
+        } else if(gamepad1.right_trigger >0.5){
+            // if the bottom trigger is pressed, pull in the cubes
+            // this is achieved by writing the opposite roller's out val
+                // note this is NOT a mistake
+            leftEjectRoller.setPosition(rightRollerOutVal);
+            rightEjectRoller.setPosition(leftRollerOutVal);
         }
+
         updatePosition();
 
     }
 
     // command to eject the cubes
     public void dump() {
-        int i;
-        if (!usingRollerEjection)
-            i = 1;
+
+        if (!usingRollerEjection) {
             //setServoPos(TrayPositions.OPEN);
-        else {
+        } else {
             leftEjectRoller.setPosition(leftRollerOutVal);
             rightEjectRoller.setPosition(rightRollerOutVal);
             ejecting = true;
@@ -264,6 +284,25 @@ public class SlotTray implements CubeTrays {
 
 
         }
+    }
+    public void home(){ // TODO: test this method and add a way to run it from teleop
+        liftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        if(!homing){
+            homing = true;
+            liftMotor.setPower(0.5);
+            setServoPos(TrayPositions.GRABBED);
+            lastPosition = liftMotor.getCurrentPosition();
+            lastTime = System.currentTimeMillis();
+            return;
+        } else {
+            setServoPos(TrayPositions.GRABBED);
+        }
+        // check if the lift has homed correctly
+        if(Math.abs(lastPosition - liftMotor.getCurrentPosition())/ (System.currentTimeMillis()-lastTime)>minSpeed)
+            setZeroFromKnownPosition(0);
+
+
+
     }
 
     public void setToPos(LiftFinalStates state) {
@@ -292,23 +331,26 @@ public class SlotTray implements CubeTrays {
     }//
 
     public void updatePosition() {
-        // mini state machine to allow the blocker servo time to turn
-        setLiftPos(targetPos);
-
-
-        setToPoitionPID(liftTargetPosition);
-
-        // update the ejection rollers based off of wether or not they are ejecting
-        // if they are, set to ejection position
-        // otherwise stop the rollers
-        if (ejecting) {
-            leftEjectRoller.setPosition(leftRollerOutVal);
-            rightEjectRoller.setPosition(rightRollerOutVal);
+        if(!homing){
+            home();
         } else {
-            leftEjectRoller.setPosition(0.5);
-            rightEjectRoller.setPosition(0.5);
+            // mini state machine to allow the blocker servo time to turn
+            setLiftPos(targetPos);
+
+            setToPoitionPID(liftTargetPosition);
+
+            // update the ejection rollers based off of wether or not they are ejecting
+            // if they are, set to ejection position
+            // otherwise stop the rollers
+            if (ejecting) {
+                leftEjectRoller.setPosition(leftRollerOutVal);
+                rightEjectRoller.setPosition(rightRollerOutVal);
+            } else {
+                leftEjectRoller.setPosition(0.5);
+                rightEjectRoller.setPosition(0.5);
+            }
+            ejecting = false;
         }
-        ejecting = false;
 
     }
 
@@ -337,6 +379,17 @@ public class SlotTray implements CubeTrays {
             default:
                 break;
         }
+        if (iterNum%itersPerWrite == 0) {
+            myCubeTrayPositions.modifyInt("LastLiftHeight", getliftPos());
+
+            myCubeTrayPositions.updateFile();
+
+             Log.i(TAG,"Wrote the following vals to file: (cubeTrayLogging)");
+             Log.i(TAG + "Height", String.valueOf(getliftPos()));
+
+        }
+        iterNum++;
+
     }
 
     public void setToPoitionPID(int targetPos) {
@@ -419,9 +472,14 @@ public class SlotTray implements CubeTrays {
     public void setZeroFromLastOpmode() {
         int lastPos = myCubeTrayPositions.getInt("LastLiftHeight");
         if (lastPos == 0 || lastPos == -1) {
-            if (DEBUG) Log.e(TAG, "unnable to read Lift Height");
-            return;
+            if (DEBUG) Log.e(TAG, "might have been unnable to read Lift Height");
+        } else {
+            setZeroFromKnownPosition(lastPos);
         }
+    }
+    private void setZeroFromKnownPosition(int position){
+        zeroPos = liftMotor.getCurrentPosition() - position;
+
     }
 
     public void setAutonomousMode(boolean val) {

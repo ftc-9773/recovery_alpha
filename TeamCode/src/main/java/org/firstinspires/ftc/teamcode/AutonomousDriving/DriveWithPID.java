@@ -70,7 +70,7 @@ public class DriveWithPID {
 
 
     // INIT
-    public DriveWithPID (SwerveController mySwerveController, Gyro myGyro, IntakeControllerManual myIntakeController, LinearOpModeCamera myOpMode, CubeTrays myCubeTray, HardwareMap hwMap) {
+    public DriveWithPID(SwerveController mySwerveController, Gyro myGyro, IntakeControllerManual myIntakeController, LinearOpModeCamera myOpMode) {
         this.myOpMode = myOpMode;
         this.mySwerveController = mySwerveController;
         this.mySwerveController.useFieldCentricOrientation = true;

@@ -137,7 +137,7 @@ public class DriveWithPID {
 
     public void driveDistStopIntake(double speed, double angleDegrees, double distInches, double headingDegrees) throws InterruptedException {
 
-        Timer myTimer;
+        Timer myTimer = new Timer(60000);
         boolean wasCubeIn = false;
         myIntakeController.RunIntake(0, -1);
         //////// Drive until it has gone the right distance ////////
@@ -161,7 +161,7 @@ public class DriveWithPID {
 
             if (backColorSensor.getDistance(DistanceUnit.INCH) < 2.35 && frontColorSensor.getDistance(DistanceUnit.INCH) < 2.35 && !wasCubeIn){
                 wasCubeIn = true;
-                myTimer = new Timer(1);
+                myTimer = new Timer(2);
             }
 
             if(wasCubeIn && myTimer.isDone()){
@@ -180,7 +180,7 @@ public class DriveWithPID {
 
     public void driveIntake (double speed, double angleDegrees, double maxDistInches, double headingDegrees, double intakePower) {
 
-        Timer myTimer;
+        Timer myTimer = new Timer(60000);
         boolean wasCubeIn = false;
 
         // Calculate target distance
@@ -291,9 +291,15 @@ public class DriveWithPID {
         driveDist(speed, distanceVector.getAngle(), distanceVector.getMagnitude(), -1);
     }
     public void driveByLeftUltraonicDis (double speed, double targetUltrasonicDist) throws InterruptedException {
-        final double yDist = ultrasonicSensor.getDistance(DistanceUnit.INCH) - targetUltrasonicDist;
+        double yDist = ultrasonicSensor.getDistance(DistanceUnit.INCH) - targetUltrasonicDist;
         Log.i("yDist", Double.toString(yDist));
-        driveDist(speed,270, yDist, -1);
+        if(yDist > 0) {
+            driveDist(speed, (270 + getClosestQuadrantal())%360, yDist, -1);
+        }
+        else if(yDist<0){
+            driveDist(speed, (90 + getClosestQuadrantal())%360
+                    , -1*yDist, -1);
+        }
     }
 
     // Turn the Robot
@@ -396,5 +402,23 @@ public class DriveWithPID {
             return num - 2*Math.PI;
         }
         return num;
+    }
+    private double getClosestQuadrantal(){
+        double gyroangle = Math.toDegrees(myGyro.getHeading());
+        Log.i("DPID gyroAngle", Double.toString(gyroangle));
+        if (gyroangle < 45 || gyroangle > 315){
+            gyroangle = 0;
+        }else if(gyroangle < 135 && gyroangle > 45){
+            gyroangle = 90;
+        }else if(gyroangle < 225 && gyroangle > 125){
+            gyroangle = 180;
+        }else if(gyroangle < 315 && gyroangle > 225){
+            gyroangle = 270;
+        }
+        else {
+            gyroangle = 0;
+        }
+        Log.i("DPID ClosestQuad", Double.toString(gyroangle));
+        return gyroangle;
     }
 }

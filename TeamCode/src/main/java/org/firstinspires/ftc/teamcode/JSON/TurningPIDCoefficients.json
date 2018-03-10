@@ -3,6 +3,6 @@
   "Ki": 0.0,
   "Kd": 0.45,
   "min": 0.36,
-  "errorThreshold": 0.02,
+  "errorThreshold": 0.035,
   "speedThreshold": 0.00005
 }

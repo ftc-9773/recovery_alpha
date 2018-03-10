@@ -72,8 +72,8 @@ public class FarRedMulti extends LinearOpModeCamera {
         waitForStart();
 
         // Read Jewel Color
-        jewelDetector.startCamera();
-        jewelDetector.computeJewelColor();
+        //jewelDetector.startCamera();
+        //jewelDetector.computeJewelColor();
 
         Timer myTimer = new Timer(2);
         while(!myTimer.isDone()){

@@ -22,4 +22,7 @@ public interface CubeTrays {
     void setZeroFromLastOpmode();
     void setAutonomousMode(boolean val);
 
+    void startDump();
+    void endDump();
+
 }

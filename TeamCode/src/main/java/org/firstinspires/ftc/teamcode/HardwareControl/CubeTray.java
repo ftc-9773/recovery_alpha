@@ -697,4 +697,10 @@ public class CubeTray implements CubeTrays {
     public void setAutonomousMode(boolean val) {
         AutonomousMode = val;
     }
+    public void startDump(){
+        dump();
+    }
+    public void endDump(){
+
+    }
 }

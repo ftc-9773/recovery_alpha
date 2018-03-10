@@ -14,6 +14,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.HardwareControl.CubeTrays;
 import org.firstinspires.ftc.teamcode.HardwareControl.DistanceColorSensor;
 import org.firstinspires.ftc.teamcode.HardwareControl.IntakeControllerManual;
+import org.firstinspires.ftc.teamcode.HardwareControl.RelicSystem;
 import org.firstinspires.ftc.teamcode.HardwareControl.SwerveController;
 import org.firstinspires.ftc.teamcode.PositionTracking.Gyro;
 import org.firstinspires.ftc.teamcode.infrastructure.PIDController;
@@ -37,6 +38,7 @@ public class DriveWithPID {
 
     private static IntakeControllerManual myIntakeController;
     private static CubeTrays myCubeTray;
+    private static RelicSystem myRelicSystem;
 
     // Variables
     static double tempZeroPosition;
@@ -71,13 +73,14 @@ public class DriveWithPID {
 
 
     // INIT
-    public DriveWithPID (SwerveController mySwerveController, Gyro myGyro, IntakeControllerManual myIntakeController, LinearOpModeCamera myOpMode, CubeTrays myCubeTray, HardwareMap hwMap) {
+    public DriveWithPID (SwerveController mySwerveController, Gyro myGyro, IntakeControllerManual myIntakeController, LinearOpModeCamera myOpMode, CubeTrays myCubeTray, RelicSystem myRelicSystem, HardwareMap hwMap) {
         this.myOpMode = myOpMode;
         this.mySwerveController = mySwerveController;
         this.mySwerveController.useFieldCentricOrientation = true;
         this.myGyro = myGyro;
         this.myIntakeController = myIntakeController;
         this.myCubeTray = myCubeTray;
+        this.myRelicSystem = myRelicSystem;
 
         // Make the turning pid
         SafeJsonReader turningPIDCoefficients = new SafeJsonReader("TurningPIDCoefficients");
@@ -128,8 +131,7 @@ public class DriveWithPID {
         }
 
         //Stop the robot
-        mySwerveController.pointModules(true, 0, 0, 0);
-        mySwerveController.moveRobot(false);
+        mySwerveController.stopRobot();
         if (DEBUG) { Log.i(TAG, "Extra Distance: " + (Math.abs(averageEncoderDist()) - targetTicks)); }
     }
 
@@ -219,6 +221,44 @@ public class DriveWithPID {
         myIntakeController.RunIntake(0, 0);
         mySwerveController.stopRobot();
     }
+
+
+    public void driveLowerIntake (double speed, double angleDegrees, double distInches, double headingDegrees) {
+
+        // Set a 1.4 seccond timer
+        Timer myTimer = new Timer(1.3);
+
+        // Zero the encoders
+        zeroEncoders();
+
+        // Calculate target distance
+        double targetTicks = encoderTicksPerInch * distInches;
+        if (DEBUG) { Log.i(TAG, "Target Ticks: " + targetTicks); }
+
+        // Extend the intake
+        myRelicSystem.runToPosition(400);
+
+        // Drive
+        while (!myOpMode.isStopRequested() && averageEncoderDist() < targetTicks) {
+            // While the robot has not driven far enough
+            mySwerveController.steerSwerve(false , speed, Math.toRadians(angleDegrees), 0, headingDegrees);
+            mySwerveController.moveRobot(true);
+
+            if (myTimer.isDone()) myRelicSystem.runToPosition(0);
+
+            // Update Cube tray
+            myCubeTray.updatePosition();
+        }
+
+        // Wait until the timer is done (if it isn't) and then retract the relic arm
+        while (!myTimer.isDone()) { } // Do nothing
+        myRelicSystem.runToPosition(0);
+
+        //Stop the robot
+        mySwerveController.stopRobot();
+
+    }
+
 
     //Alais
     public void driveDist(double speed, double angleDegrees, double distInches) throws InterruptedException {

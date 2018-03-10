@@ -48,13 +48,4 @@ public class IntakeControllerManual {
         leftMotor.setPower(motorLeftPower);
         rightMotor.setPower(motorRightPower);
     }
-
-    public void lowerIntake(boolean stopOrStart){
-        if (stopOrStart) {
-
-        }
-        else{
-        }
-    }
-
 }

@@ -104,12 +104,12 @@ public class FTCrobot {
         rotCoefficient = (1 - minPowerRot) / Math.pow(1 - zeroRange, 3);
 
         if(USING_SLOT_TRAY){
-            this.myCubeTray = new SlotTray(hwmap, gamepad2);
+            this.myCubeTray = new SlotTray(hwmap, gamepad1, gamepad2);
 
         } else {
             this.myCubeTray = new CubeTray(hwmap, gamepad2, null);
         }
-        this.myDriveWithPID = new DriveWithPID(mySwerveController, myGyro, myManualIntakeController, myLinearOpModeCamera, myCubeTray, hwmap);
+        this.myDriveWithPID = new DriveWithPID(mySwerveController, myGyro, myManualIntakeController, myLinearOpModeCamera, myCubeTray, myRelicSystem, hwmap);
 
     }
 
@@ -252,10 +252,10 @@ public class FTCrobot {
             leftBumperStatus.recordNewValue(myGamepad2.left_bumper);
             if (leftBumperStatus.isJustOn()) {
                 time = System.currentTimeMillis();
-                myManualIntakeController.lowerIntake(true);
+                myRelicSystem.runToPosition(400);
             }
             if (System.currentTimeMillis() - 500 > time) {
-                myManualIntakeController.lowerIntake(false);
+                myRelicSystem.runToPosition(0);
             }
         }
 

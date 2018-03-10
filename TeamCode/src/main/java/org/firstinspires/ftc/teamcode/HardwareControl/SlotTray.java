@@ -4,7 +4,6 @@ import android.util.Log;
 
 import com.qualcomm.robotcore.hardware.AnalogInput;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorImpl;
 import com.qualcomm.robotcore.hardware.DcMotorImplEx;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -112,6 +111,7 @@ public class SlotTray implements CubeTrays {
 
     // create motor and servo objects
     private Gamepad gamepad1;
+    private Gamepad gamepad2;
     private DcMotor liftMotor;
     private Servo grabServo;
     private Servo blockServo;
@@ -138,7 +138,7 @@ public class SlotTray implements CubeTrays {
     private static final boolean useBlockerServo = true;
 
 
-    public SlotTray(HardwareMap hwMap, Gamepad gamepad1) {
+    public SlotTray(HardwareMap hwMap, Gamepad gamepad1, Gamepad gamepad2) {
 
         // read values from json
         myCubeTrayPositions = new SafeJsonReader("SlotTrayPositions");
@@ -194,6 +194,7 @@ public class SlotTray implements CubeTrays {
 
         // initialize the motor and servos
         this.gamepad1 = gamepad1;
+        this.gamepad2 = gamepad2;
         liftMotor = hwMap.dcMotor.get("ctlMotor");
         liftMotorEx = (DcMotorImplEx) liftMotor;
         limitSwitch = hwMap.analogInput.get("ctlLimitSwitch");
@@ -243,21 +244,27 @@ public class SlotTray implements CubeTrays {
 
     /// DEAFAULT INTERFACE
     public void updateFromGamepad() {
-        if (gamepad1.x) {
+        if (gamepad2.x) {
             setToPos(LiftFinalStates.LOADING);
-        } else if (gamepad1.a) {
+        } else if (gamepad2.a) {
             setToPos(LiftFinalStates.LOW);
-        } else if (gamepad1.b) {
+        } else if (gamepad2.b) {
             setToPos(LiftFinalStates.MID);
-        } else if (gamepad1.y) {
+        } else if (gamepad2.y) {
             setToPos(LiftFinalStates.HIGH);
         }
-        if (gamepad1.right_bumper && targetPos!= LiftFinalStates.LOADING) {
-            if(gamepad1.right_trigger >0.5){
+
+        // Let gamepad 1 dump as well
+        if (gamepad1.right_bumper && targetPos != LiftFinalStates.LOADING) {
+            dump();
+        }
+
+        if (gamepad2.right_bumper && targetPos!= LiftFinalStates.LOADING) {
+            if(gamepad2.right_trigger >0.5){
                 setServoPos(TrayPositions.OPEN);
             } else
             dump();
-        } else if(gamepad1.right_trigger >0.5){
+        } else if(gamepad2.right_trigger >0.5){
             // if the bottom trigger is pressed, pull in the cubes
             // this is achieved by writing the opposite roller's out val
                 // note this is NOT a mistake

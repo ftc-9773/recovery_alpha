@@ -28,7 +28,6 @@ import org.firstinspires.ftc.teamcode.resources.Vector;
 
 public class DriveWithPID {
 
-    private Timer myTimer = new Timer(6000);
     private static final String TAG = "9773_DriveWithPID";
     private static final boolean DEBUG = false;
 
@@ -135,6 +134,8 @@ public class DriveWithPID {
     }
 
     public void driveDistStopIntake(double speed, double angleDegrees, double distInches, double headingDegrees) throws InterruptedException {
+
+        Timer myTimer;
         boolean wasCubeIn = false;
         myIntakeController.RunIntake(0, -1);
         //////// Drive until it has gone the right distance ////////
@@ -149,14 +150,19 @@ public class DriveWithPID {
         // Drive
         while (!myOpMode.isStopRequested() && averageEncoderDist() < targetTicks) {
             // While the robot has not driven far enough
+
+            // Drive
             mySwerveController.steerSwerve(false , speed, Math.toRadians(angleDegrees), 0, headingDegrees);
             mySwerveController.moveRobot(true);
+
             if (DEBUG) { Log.i(TAG, "Distance so far: " + averageEncoderDist()); }
+
             if (backColorSensor.getDistance(DistanceUnit.INCH) < 2.35 && frontColorSensor.getDistance(DistanceUnit.INCH) < 2.35 && !wasCubeIn){
                 wasCubeIn = true;
                 myTimer = new Timer(1);
             }
-            if(myTimer.isDone()){
+
+            if(wasCubeIn && myTimer.isDone()){
                 myIntakeController.RunIntake(0,0);
             }
             // Update Cube tray
@@ -165,13 +171,15 @@ public class DriveWithPID {
 
 
         //Stop the robot
-        mySwerveController.pointModules(true, 0, 0, 0);
-        mySwerveController.moveRobot(false);
+        mySwerveController.stopRobot();
         myIntakeController.RunIntake(0,0);
         if (DEBUG) { Log.i(TAG, "Extra Distance: " + (Math.abs(averageEncoderDist()) - targetTicks)); }
     }
 
     public void driveIntake (double speed, double angleDegrees, double maxDistInches, double headingDegrees, double intakePower) {
+
+        Timer myTimer;
+        boolean wasCubeIn = false;
 
         // Calculate target distance
         zeroEncoders();
@@ -188,13 +196,19 @@ public class DriveWithPID {
 
             // Check Break conditions
             if (averageEncoderDist() >= targetTicks) break;
-            if (backColorSensor.getDistance(DistanceUnit.INCH) < 2.35 && frontColorSensor.getDistance(DistanceUnit.INCH) < 2.35) break;
+            if (backColorSensor.getDistance(DistanceUnit.INCH) < 2.35 && frontColorSensor.getDistance(DistanceUnit.INCH) < 2.35) {
+                wasCubeIn = true;
+            }
 
+            if (wasCubeIn && myTimer.isDone()) break;
             // Update Cube tray
             myCubeTray.updatePosition();
         }
-        myIntakeController.RunIntake(0, 0);
 
+        // Stop the intake -- Or DON'T
+        //myIntakeController.RunIntake(0, 0);
+
+        // Drive back with intake onn
         while (!myOpMode.isStopRequested() && averageEncoderDist() > 0) {
             mySwerveController.steerSwerve(false, -speed, Math.toRadians(angleDegrees), 0, headingDegrees);
             mySwerveController.moveRobot(true);
@@ -202,6 +216,8 @@ public class DriveWithPID {
             // Update Cube tray
             myCubeTray.updatePosition();
         }
+        myIntakeController.RunIntake(0, 0);
+        mySwerveController.stopRobot();
     }
 
     //Alais

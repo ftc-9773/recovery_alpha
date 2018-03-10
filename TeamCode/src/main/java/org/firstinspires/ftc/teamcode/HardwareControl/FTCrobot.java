@@ -54,7 +54,6 @@ public class FTCrobot {
     private ButtonStatus gamepad1LeftTrigger = new ButtonStatus();
     private ButtonStatus gamepad1RightTrigger = new ButtonStatus();
     private ButtonStatus leftBumperStatus = new ButtonStatus();
-    private ButtonStatus rightBumperStatus = new ButtonStatus();
     private double directionLock = -1;
 
     private SafeJsonReader jsonReader;
@@ -74,7 +73,7 @@ public class FTCrobot {
 
     private static boolean DISABLE_LIFT = false;
     private static boolean DISABLE_RELIC_ARM = false;
-    private static boolean USE_FIELD_CENTRIC_ROTATION = true;
+    private static boolean USE_FIELD_CENTRIC_ROTATION = false;
     private static boolean DISABLE_DRIVER_INTAKE = false;
 
     private static final boolean USING_SLOT_TRAY = true;
@@ -90,7 +89,6 @@ public class FTCrobot {
         this.myGyro = new Gyro(hwMap);
         this.mySwerveController = new SwerveController(hwMap, myGyro, telemetry);
         this.myManualIntakeController = new IntakeControllerManual(hwMap);
-        this.myDriveWithPID = new DriveWithPID(mySwerveController, myGyro, myManualIntakeController, myLinearOpModeCamera);
         this.myRelicSystem = new RelicSystem(myTelemetry, hwMap, myLinearOpModeCamera);
 
         this.myGamepad1 = gamepad1;
@@ -111,7 +109,7 @@ public class FTCrobot {
         } else {
             this.myCubeTray = new CubeTray(hwmap, gamepad2, null);
         }
-
+        this.myDriveWithPID = new DriveWithPID(mySwerveController, myGyro, myManualIntakeController, myLinearOpModeCamera, myCubeTray, hwmap);
 
     }
 
@@ -164,7 +162,23 @@ public class FTCrobot {
         double drivingX =   scaleXYAxes(myGamepad1.left_stick_x, highPrecisionMode);
         double drivingY = - scaleXYAxes(myGamepad1.left_stick_y, highPrecisionMode);
 
+
+
         // Read the Dpad for Direction Lock
+
+        // Read driver B first
+        if (myGamepad2.left_trigger > 0) {
+            if (myGamepad2.dpad_up) {
+                directionLock = 0;
+            } else if (myGamepad2.dpad_left) {
+                directionLock = 270;
+            } else if (myGamepad2.dpad_down) {
+                directionLock = 180;
+            } else if (myGamepad2.dpad_right) {
+                directionLock = 90;
+            }
+        }
+
         if (myGamepad1.dpad_up) {
             directionLock = 0;
         } else if (myGamepad1.dpad_left) {
@@ -254,14 +268,15 @@ public class FTCrobot {
 
         // relic arm
         if(!DISABLE_RELIC_ARM) {
-            rightBumperStatus.recordNewValue(myGamepad1.right_bumper);
-            if (dpadupStatus.isJustOn()) {
-                armState = !armState  ;
-            }
-            if (dpaddownStatus.isJustOn()&& !armState) {
-                grabState = !grabState;
-            }
 
+            if (myGamepad2.left_trigger == 0) {
+                if (dpadupStatus.isJustOn()) {
+                    armState = !armState;
+                }
+                if (dpaddownStatus.isJustOn() && !armState) {
+                    grabState = !grabState;
+                }
+            }
             // Relic arm - Gamepad 2 Left Joystick
             myRelicSystem.runSequence(myGamepad2.left_stick_y * -0.95 + 0.05, armState, grabState);
         }
@@ -278,6 +293,9 @@ public class FTCrobot {
         if (gamepad1RightTrigger.isJustOn()) {
             myGyro.setZeroPosition();
         }
+
+        // Move jewel arm out of the way
+        jewelKnocker.ArmReturn();
     }
 
     // homes cube tray lift to top. takes cube tray position object

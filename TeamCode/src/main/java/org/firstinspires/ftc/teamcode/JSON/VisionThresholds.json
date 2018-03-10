@@ -1,4 +1,4 @@
 {
-  "RedThreshold" : 0.05,
+  "RedThreshold" : 0.01,
   "BlueThreshold" : 0.01
 }

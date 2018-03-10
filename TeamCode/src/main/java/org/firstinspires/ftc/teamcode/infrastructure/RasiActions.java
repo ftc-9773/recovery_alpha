@@ -46,6 +46,15 @@ public class RasiActions {
                 case "turn":
                     ftcRobot.myDriveWithPID.turnRobot(rasiParser.getAsDouble(1));
                     break;
+                case "drvleftultra":
+                    ftcRobot.myDriveWithPID.driveByLeftUltraonicDis(rasiParser.getAsDouble(1), rasiParser.getAsDouble(2));
+                    break;
+                case "drvstopintake":
+                    ftcRobot.myDriveWithPID.driveDistStopIntake(rasiParser.getAsDouble(1), rasiParser.getAsDouble(2), rasiParser.getAsDouble(3), -1);
+                    break;
+                case "drvintake":
+                    ftcRobot.myDriveWithPID.driveIntake(rasiParser.getAsDouble(1), rasiParser.getAsDouble(2), rasiParser.getAsDouble(3),-1, rasiParser.getAsDouble(4));
+                    break;
                 case "drvd":
                     ftcRobot.myDriveWithPID.driveDist(rasiParser.getAsDouble(1), rasiParser.getAsDouble(2), rasiParser.getAsDouble(3));
                     break;
@@ -67,6 +76,7 @@ public class RasiActions {
                 case "intks":
                     ftcRobot.myManualIntakeController.RunIntake(0, 1);
                     ftcRobot.myManualIntakeController.RunIntake(0, 0);
+                    break;
                 case "ctload":
                     timer2 = new Timer(1);
                     while(!linearOpModeCamera.isStopRequested()&&!timer2.isDone()) {
@@ -116,9 +126,15 @@ public class RasiActions {
                         ftcRobot.myCubeTray.updatePosition();
                     }
                     break;
+                case "ctout":
+                    timer2 = new Timer(rasiParser.getAsDouble(1));
+                    while(!timer2.isDone()){
+                        ftcRobot.myCubeTray.dump();
+                    }
+                    break;
                 case "wait":
                     timer2 = new Timer(rasiParser.getAsDouble(1));
-                    while (!timer2.isDone()&&!linearOpModeCamera.isStopRequested()) {}
+                    while (!timer2.isDone()&&!linearOpModeCamera.isStopRequested()) {ftcRobot.myCubeTray.updatePosition();}
                     break;
                 case "gyrolg":
                     myGyro.recordHeading();

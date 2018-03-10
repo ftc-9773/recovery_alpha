@@ -1,8 +1,11 @@
 package org.firstinspires.ftc.teamcode.HardwareControl;
 
+import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
+
+import org.firstinspires.ftc.robotcontroller.external.samples.SensorREVColorDistance;
 
 /**
  * Created by Robocracy on 12/10/17.
@@ -11,6 +14,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 public class IntakeControllerManual {
     private DcMotor leftMotor;
     private DcMotor rightMotor;
+    private SensorREVColorDistance front;
 
     private static double LEFT_MOTOR_POWER = 1;
     private static double RIGHT_MOTOR_POWER = 1;
@@ -44,13 +48,4 @@ public class IntakeControllerManual {
         leftMotor.setPower(motorLeftPower);
         rightMotor.setPower(motorRightPower);
     }
-
-    public void lowerIntake(boolean stopOrStart){
-        if (stopOrStart) {
-
-        }
-        else{
-        }
-    }
-
 }

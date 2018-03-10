@@ -121,6 +121,7 @@ public class SlotTray implements CubeTrays {
     private boolean usingRollerEjection = true;
     private Servo leftEjectRoller;
     private Servo rightEjectRoller;
+    private boolean durationRollerEjection = false;
 
     PIDController liftHeightPidController;
     DcMotorImplEx liftMotorEx;
@@ -285,6 +286,14 @@ public class SlotTray implements CubeTrays {
 
         }
     }
+    public void StartDump(){
+        durationRollerEjection = true;
+        ejecting = true;
+    }
+    public void endDump(){
+        ejecting = false;
+        durationRollerEjection = false ;
+    }
     public void home(){ // TODO: test this method and add a way to run it from teleop
         liftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         if(!homing){
@@ -349,6 +358,7 @@ public class SlotTray implements CubeTrays {
                 leftEjectRoller.setPosition(0.5);
                 rightEjectRoller.setPosition(0.5);
             }
+            if (!durationRollerEjection)
             ejecting = false;
         }
 
@@ -489,6 +499,7 @@ public class SlotTray implements CubeTrays {
     private boolean isInLoadingPocket() {
         return (Math.abs(loadingPosTicks - liftMotor.getCurrentPosition()) < liftPosTol);
     }
+
 
 
 }

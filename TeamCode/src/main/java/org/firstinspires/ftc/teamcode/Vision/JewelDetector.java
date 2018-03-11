@@ -32,6 +32,7 @@ public class JewelDetector {
     double colOff = 80.0;
 
     final boolean scaling = true;
+    final boolean commonScaling = true;
     final int ds2 = 2;
 
     // for Logging
@@ -165,6 +166,16 @@ public class JewelDetector {
                     if (valG < minG) minG = valG;
                     if (valG > maxG) maxG = valG;
                 }
+            }
+            if (commonScaling) {
+                int commonMin = minR;
+                int commonMax = maxR;
+                if (minB < commonMin) commonMin = minB;
+                if (maxB > commonMax) commonMax = maxB;
+                if (minG < commonMin) commonMin = minG;
+                if (maxG > commonMax) commonMax = maxG;
+                minR = minB = minG = commonMin;
+                maxR = maxB = maxG = commonMax;
             }
             coeffR = 255.0 / ((double)(maxR - minR));
             coeffB = 255.0 / ((double)(maxB - minB));

@@ -68,7 +68,7 @@ public class FarRedMulti extends LinearOpModeCamera {
         if (relicRecoveryVuMark == RelicRecoveryVuMark.UNKNOWN) {
             relicRecoveryVuMark = RelicRecoveryVuMark.CENTER;
         }
-
+        rasiActions = new RasiActions("AutoRedFarMulti", null, this, gamepad1, gamepad2, telemetry, hardwareMap);
         waitForStart();
 
         // Read Jewel Color
@@ -85,8 +85,11 @@ public class FarRedMulti extends LinearOpModeCamera {
         Log.e("Auto Jewel Color", "" + jewelColors);
 
         // Pass RASI Tags
+
         rasiTag[0] = jewelColors.toString();
         rasiTag[1] = Character.toString(relicRecoveryVuMark.toString().charAt(0));
+
+        rasiActions.rasiParser.rasiTag = rasiTag;
 
         telemetry.addData("rasitag[0] ", rasiTag[0]);
         telemetry.addData("rasitag[1] ", rasiTag[1]);
@@ -95,7 +98,6 @@ public class FarRedMulti extends LinearOpModeCamera {
         Log.e("Tag 0", rasiTag[0]);
         Log.e("Tag 1", rasiTag[1]);
 
-        rasiActions = new RasiActions("AutoRedFarMulti", rasiTag, this, gamepad1, gamepad2, telemetry, hardwareMap);
         // DO EVERYTHING
         rasiActions.runRasi();
     }

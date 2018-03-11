@@ -63,6 +63,7 @@ public class DriveWithPID {
     private double baseSpeed;
     private double errorThreshold;
     private double speedThreshold;
+    private double intakedelay;
 
 
     // Sensors:
@@ -84,6 +85,7 @@ public class DriveWithPID {
 
         // Make the turning pid
         SafeJsonReader turningPIDCoefficients = new SafeJsonReader("TurningPIDCoefficients");
+        intakedelay = turningPIDCoefficients.getDouble("intakedelay");
         double Kp = turningPIDCoefficients.getDouble("Kp");
         double Ki = turningPIDCoefficients.getDouble("Ki");
         double Kd = turningPIDCoefficients.getDouble("Kd");
@@ -161,7 +163,7 @@ public class DriveWithPID {
 
             if (backColorSensor.getDistance(DistanceUnit.INCH) < 2.35 && frontColorSensor.getDistance(DistanceUnit.INCH) < 2.35 && !wasCubeIn){
                 wasCubeIn = true;
-                myTimer = new Timer(2);
+                myTimer = new Timer(intakedelay);
             }
 
             if(wasCubeIn && myTimer.isDone()){
@@ -290,15 +292,30 @@ public class DriveWithPID {
 
         driveDist(speed, distanceVector.getAngle(), distanceVector.getMagnitude(), -1);
     }
+    public boolean isStuck(){
+        if(backColorSensor.getDistance(DistanceUnit.INCH) < 2.35){
+            return true;
+        }
+        else{
+            return false;
+        }
+    }
     public void driveByLeftUltraonicDis (double speed, double targetUltrasonicDist) throws InterruptedException {
+        boolean negativeDist = false;
+        double driveangle = getClosestQuadrantal();
+        double robotangle = Math.abs(Math.toDegrees(myGyro.getHeading())-driveangle);
         double yDist = ultrasonicSensor.getDistance(DistanceUnit.INCH) - targetUltrasonicDist;
         Log.i("yDist", Double.toString(yDist));
-        if(yDist > 0) {
-            driveDist(speed, (270 + getClosestQuadrantal())%360, yDist, -1);
+        if(yDist < 0) {
+            yDist *= -1;
+            negativeDist = true;
         }
-        else if(yDist<0){
-            driveDist(speed, (90 + getClosestQuadrantal())%360
-                    , -1*yDist, -1);
+        yDist = Math.cos(Math.toRadians(robotangle))*yDist;
+        if(negativeDist) {
+            driveDist(speed, (getClosestQuadrantal() + 90)%360, yDist);
+        }
+        else{
+            driveDist(speed, (getClosestQuadrantal() + 270)%360, yDist);
         }
     }
 

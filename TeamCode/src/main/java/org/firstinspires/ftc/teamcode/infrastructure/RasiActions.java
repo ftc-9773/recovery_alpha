@@ -43,6 +43,21 @@ public class RasiActions {
         while (!linearOpModeCamera.isStopRequested()) {
             Log.i("RasiActions", rasiParser.getParameter(0));
             switch (rasiParser.getParameter(0)) {
+                case "addstuck":
+                    if(ftcRobot.myDriveWithPID.isStuck()){
+                        String[] temptags = rasiParser.rasiTag;
+                        rasiParser.rasiTag = new String[temptags.length + 1];
+                        for(int index = 0; index<rasiParser.rasiTag.length; index ++){
+                            if (index < temptags.length){
+                                rasiParser.rasiTag[index] = temptags[index];
+                            }
+                            else{
+                                rasiParser.rasiTag[index] = "STUCK";
+                            }
+                        }
+                        rasiParser.rasiTag[2] = "STUCK";
+                    }
+                    break;
                 case "turn":
                     ftcRobot.myDriveWithPID.turnRobot(rasiParser.getAsDouble(1));
                     break;
@@ -127,11 +142,10 @@ public class RasiActions {
                     }
                     break;
                 case "ctout":
-                    timer2 = new Timer(rasiParser.getAsDouble(1));
-                    while(!timer2.isDone()){
-                        ftcRobot.myCubeTray.dump();
-                    }
+                        ftcRobot.myCubeTray.startDump();
                     break;
+                case "ctstop":
+                    ftcRobot.myCubeTray.dump();
                 case "wait":
                     timer2 = new Timer(rasiParser.getAsDouble(1));
                     while (!timer2.isDone()&&!linearOpModeCamera.isStopRequested()) {ftcRobot.myCubeTray.updatePosition();}

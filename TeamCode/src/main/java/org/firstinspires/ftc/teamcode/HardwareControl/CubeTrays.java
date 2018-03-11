@@ -17,7 +17,7 @@ public interface CubeTrays {
     // notice this has limited functionality for the slot tray, as it is unnable to work with the motor.
     void setServoPos(CubeTray.TrayPositions trayPos);
 
-    void homeLiftVersA ();
+    void home ();
     void setZeroFromCompStart();
     void setZeroFromLastOpmode();
     void setAutonomousMode(boolean val);

@@ -62,11 +62,11 @@ public class SlotTray implements CubeTrays {
 
     int zeroPos = 0;
 
-    int loadingPosTicks;
-    int lowPosTicks;
-    int midPosTicks;
-    int highPosTicks;
-    int compStartPos;
+    private int loadingPosTicks;
+    private int lowPosTicks;
+    private int midPosTicks;
+    private int highPosTicks;
+    private int compStartPos;
 
     double openGrabberPos;
     double closedGrabberPos;
@@ -116,8 +116,16 @@ public class SlotTray implements CubeTrays {
     private Servo grabServo;
     private Servo blockServo;
     AnalogInput limitSwitch;
+    // for motor ratio calculations
+    private static final double gearmotorRatio = -40 ;  // ex. 40, 20, 60, etc
+    private static final double afterMotorRatio = .7272727273 ;  // ratio from the motor to the chain
+    private static final double driveSprocketToothNumb = 16;//number of teeth
+    private static final double ticksPerBareMotorRot = 28;
+    // calculated par*
+    private static final double TicksPerinch = (ticksPerBareMotorRot * gearmotorRatio * afterMotorRatio / (driveSprocketToothNumb*0.25));
 
     // for roller ejection
+
     private boolean usingRollerEjection = true;
     private Servo leftEjectRoller;
     private Servo rightEjectRoller;
@@ -144,17 +152,17 @@ public class SlotTray implements CubeTrays {
         // read values from json
         myCubeTrayPositions = new SafeJsonReader("SlotTrayPositions");
 
-        loadingPosTicks = myCubeTrayPositions.getInt("loadPosTicks");
+        loadingPosTicks = (int)(myCubeTrayPositions.getDouble("loadPosIn")*TicksPerinch);
         if (DEBUG) if (DEBUG) Log.i(TAG, "set Loading Pos to" + loadingPosTicks);
-        lowPosTicks = myCubeTrayPositions.getInt("bottomPosTicks");
+        lowPosTicks = (int)(myCubeTrayPositions.getDouble("bottomPosIn")*TicksPerinch);
         if (DEBUG) Log.i(TAG, "set low Pos to" + lowPosTicks);
 
-        midPosTicks = myCubeTrayPositions.getInt("middlePosTicks");
+        midPosTicks = (int)(myCubeTrayPositions.getDouble("middlePosIn")*TicksPerinch);
         if (DEBUG) Log.i(TAG, "set mid Pos to" + midPosTicks);
 
-        highPosTicks = myCubeTrayPositions.getInt("topPosTicks");
+        highPosTicks = (int)(myCubeTrayPositions.getDouble("topPosIn")*TicksPerinch);
         if (DEBUG) Log.i(TAG, "set high Pos to" + highPosTicks);
-        compStartPos = myCubeTrayPositions.getInt("compStartPos");
+        compStartPos = (int)(myCubeTrayPositions.getDouble("compStartPosIn")*TicksPerinch);
         if (DEBUG) Log.i(TAG, "set start Pos to" + compStartPos);
 
 
@@ -294,6 +302,8 @@ public class SlotTray implements CubeTrays {
         }
     }
     public void startDump(){
+
+    public void startDump(){
         durationRollerEjection = true;
         ejecting = true;
     }
@@ -301,6 +311,7 @@ public class SlotTray implements CubeTrays {
         ejecting = false;
         durationRollerEjection = false ;
     }
+    @Override
     public void home(){ // TODO: test this method and add a way to run it from teleop
         liftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         if(!homing){
@@ -475,10 +486,6 @@ public class SlotTray implements CubeTrays {
         // for now do nothing
     }
 
-    @Override
-    public void homeLiftVersA() {
-        // for now do nothing
-    }
 
     @Override
     public void setZeroFromCompStart() {

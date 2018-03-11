@@ -28,9 +28,12 @@ public class JewelDetector {
     }
 
     // algorithmic parameters (set in class)
-    final double colOn = 160.0;
-    final double colOff = 80.0;
+    double colOn = 160.0; // Overwritten in
+    double colOff = 80.0;
+    int iter = 0;
+
     final boolean scaling = true;
+    final boolean commonScaling = true;
     final int ds2 = 2;
 
     // for Logging
@@ -40,6 +43,8 @@ public class JewelDetector {
     SafeJsonReader thresholds ;
     public double redThreshold;
     public double blueThreshold;
+
+    public double redBlueImballance;
 
     public double redThresholdVuf ;
     public double blueThresholdVuf;
@@ -52,6 +57,9 @@ public class JewelDetector {
     // result
     JewelColors leftJewelColor;
 
+    // Diff
+    public double diff = 0;
+
     public JewelDetector(LinearOpModeCamera camOp){
         this.camOp = camOp;
         thresholds = new SafeJsonReader("VisionThresholds");
@@ -61,12 +69,17 @@ public class JewelDetector {
         blueThresholdVuf =thresholds.getDouble("BlueThresholdVuforia");
         redThresholdVuf  = thresholds.getDouble("RedThresholdVuforia");
 
+        redBlueImballance = thresholds.getDouble("redBlueImballance");
+
         leftJewelColor = JewelColors.NOT_INITIALIZED ;
     }
 
     public void startCamera(){
         camOp.setCameraDownsampling(8);
         camOp.startCamera(Camera.CameraInfo.CAMERA_FACING_BACK);
+    }
+    public void stopCamera(){
+        camOp.stopCamera();
     }
 
     public JewelColors getJewelColor(){
@@ -82,6 +95,7 @@ public class JewelDetector {
 
         return computeJewelColorFromBitmap(rgbImage);
     }
+
     public JewelColors computeJewelColorFromVuforia(VumarkGlyphPattern vuforia){
         Bitmap rgbImage;
         rgbImage = vuforia.getBitMap();
@@ -134,7 +148,7 @@ public class JewelDetector {
         final int steps = 1;
         final int width = rgbImage.getWidth();
         final int heights = rgbImage.getHeight();
-        final int startHeight = 3*heights/4;
+        final int startHeight = 7*heights/8;
         final int startWidth = 3*width/4;
 
         if (scaling) {
@@ -154,16 +168,30 @@ public class JewelDetector {
                     if (valG > maxG) maxG = valG;
                 }
             }
+            if (commonScaling) {
+                int commonMin = minR;
+                int commonMax = maxR;
+                if (minB < commonMin) commonMin = minB;
+                if (maxB > commonMax) commonMax = maxB;
+                if (minG < commonMin) commonMin = minG;
+                if (maxG > commonMax) commonMax = maxG;
+                minR = minB = minG = commonMin;
+                maxR = maxB = maxG = commonMax;
+            }
             coeffR = 255.0 / ((double)(maxR - minR));
             coeffB = 255.0 / ((double)(maxB - minB));
             coeffG = 255.0 / ((double)(maxG - minG));
         }
 
         //TODO (at competition): Manually test this threshold value by the field in the competition.
+
         int redValue = 0;
         int blueValue = 0;
         int totValue = 0;
 
+
+        // Start the algorithm
+        iter++;
         for (int x = startWidth; x < width; x+=steps) {
             for (int y = startHeight; y < heights; y+=steps) {
                 int pixel = rgbImage.getPixel(x, y);
@@ -175,19 +203,22 @@ public class JewelDetector {
                     valB = (valB - minB) * coeffB;
                     valG = (valG - minG) * coeffG;
                 }
-                if(valR > colOn && valB < colOff && valG < colOff)
-                    redValue++;
-                if(valB > colOn && valR < colOff && valG < colOff)
-                    blueValue++;
+                if (iter==1) Log.e(TAG, x + "," + y + "," + valR + "," + valG + "," +valB);
+                if (valR > colOn && valB < colOff && valG < colOff) redValue++;
+                if (valB > colOn && valR < colOff && valG < colOff) blueValue++;
                 totValue ++;
             }
         }
 
-        int diff = redValue - blueValue;
+        diff = (redValue - blueValue);
+        diff /= totValue;
 
-        if(diff < -blueThreshold*totValue){
+        Log.e(TAG, "ColOn: "+ colOn + "ColOff: "+ colOff);
+        Log.e(TAG, "Red value: "+ redValue + "   Blue Value: "+ blueValue + "  diff: " + diff);
+
+        if(diff < -blueThreshold){
             leftJewelColor = JewelColors.BLUE ;
-        }else if (diff > redThreshold*totValue) {
+        }else if (diff > redThreshold) {
             leftJewelColor = JewelColors.RED ;
         } else {
             leftJewelColor = JewelColors.UNKNOWN;

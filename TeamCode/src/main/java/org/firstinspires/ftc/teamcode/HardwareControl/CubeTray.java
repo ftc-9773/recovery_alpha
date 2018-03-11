@@ -528,7 +528,7 @@ public class CubeTray implements CubeTrays {
     }
 
 
-    public void homeLiftVersA ()  { // might help use
+    public void home ()  { // might help use
         if (trayState == TrayPositions.LOADING){ // lift cannot be in loading pos to start
             setServoPos(TrayPositions.CARRYING);                      // moves tray out of load to carry position
         }

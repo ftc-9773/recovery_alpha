@@ -1,1 +1,0 @@
-This folder is for files given by FTC to go, all other files should go into /initialSwerveDrive, /infrastructure, or /HardwareControl.

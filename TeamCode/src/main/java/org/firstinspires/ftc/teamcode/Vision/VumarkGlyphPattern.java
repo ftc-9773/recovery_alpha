@@ -22,7 +22,9 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
 public class VumarkGlyphPattern {
     VuforiaTrackable template;
     HardwareMap hardwareMap;
-    VuforiaLocalizer vuforia;
+    ClosableVuforiaLocalizer vuforia;
+
+    private static final String vuforiaKey = "AVnz6or/////AAAAGdJgMmsGkkibrBL0inMjc7t54jDqna5iT9Rxes8KZU9k0cZQzyVZCbu3TRLqlFWiujEO7kX8tNMrqcya8ZcZLE4qebycHhi9ZMtMjs7oeb/g1/3TLizLP7ShiVmMQoiCMNiBHqFElzNyL5t5tPk21drKY+aw7q9aHZVgvY1R+ilPd31KKAFn+K077ympaGwv+ywll9uwvvRvYUdxqDYhkAng8bUK26WoCihPDsf5rnRzY9Y/eNr8hZTZwCc6xx1a04agmXLY2JIZ9/8LmB7nRotFXxYw9xoY40DvmKIwcqV77/kDHZ5QG45lRXtSbVxUcUqL2GgojvxtFCDO7/FeTVZoU2ukbT3lA6XrSJ1QvtfX";
 
     private Image img = null;
     public Bitmap bm = null;
@@ -35,21 +37,17 @@ public class VumarkGlyphPattern {
         this.hardwareMap = hardwareMap;
         this.template = initialTemplate();
 
-        vuforia.setFrameQueueCapacity(3);
 
     }
 
     private VuforiaTrackable initialTemplate(){
-        int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
-        VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters(cameraMonitorViewId);
-        parameters.vuforiaLicenseKey = "AVnz6or/////AAAAGdJgMmsGkkibrBL0inMjc7t54jDqna5iT9Rxes8KZU9k0cZQzyVZCbu3TRLqlFWiujEO7kX8tNMrqcya8ZcZLE4qebycHhi9ZMtMjs7oeb/g1/3TLizLP7ShiVmMQoiCMNiBHqFElzNyL5t5tPk21drKY+aw7q9aHZVgvY1R+ilPd31KKAFn+K077ympaGwv+ywll9uwvvRvYUdxqDYhkAng8bUK26WoCihPDsf5rnRzY9Y/eNr8hZTZwCc6xx1a04agmXLY2JIZ9/8LmB7nRotFXxYw9xoY40DvmKIwcqV77/kDHZ5QG45lRXtSbVxUcUqL2GgojvxtFCDO7/FeTVZoU2ukbT3lA6XrSJ1QvtfX";
-        parameters.cameraDirection = VuforiaLocalizer.CameraDirection.BACK;
-        this.vuforia = ClassFactory.createVuforiaLocalizer(parameters);
-
-        // testing this
+        // create vuforia object;
+        vuforia  = createMyVuforia();
+        // make vuforia able to pass images
         Vuforia.setFrameFormat(PIXEL_FORMAT.RGB565, true);
-        // end of test thing
+        vuforia.setFrameQueueCapacity(1);
 
+        // initialize trackables
         VuforiaTrackables relicTrackables = this.vuforia.loadTrackablesFromAsset("RelicVuMark");
         VuforiaTrackable relicTemplate = relicTrackables.get(0);
         relicTemplate.setName("relicVuMarkTemplate"); // can help in debugging; otherwise not necessary
@@ -57,8 +55,18 @@ public class VumarkGlyphPattern {
         relicTrackables.activate();
 
         return relicTemplate;
+    }
+    private ClosableVuforiaLocalizer createMyVuforia(){
+        ClosableVuforiaLocalizer newVuforia;
+        int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
+        VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters(cameraMonitorViewId);
+        parameters.vuforiaLicenseKey = vuforiaKey;
+        parameters.cameraDirection = VuforiaLocalizer.CameraDirection.BACK;
+        newVuforia = new ClosableVuforiaLocalizer(parameters);
+        return newVuforia;
 
     }
+
 
 //    public Bitmap getBitmap() throws InterruptedException {
 //        VuforiaLocalizer.CloseableFrame frame = vuforia.getFrameQueue().take();
@@ -79,7 +87,7 @@ public class VumarkGlyphPattern {
 
 
     public Bitmap getBitMap (){
-        Log.i(TAG,"current number of frames in the queue"+  vuforia.getFrameQueueCapacity());
+        Log.i(TAG,"current number of frames in the queue: "+  vuforia.getFrameQueueCapacity());
 
         VuforiaLocalizer.CloseableFrame frame ;
         try {
@@ -103,19 +111,28 @@ public class VumarkGlyphPattern {
                 break;
             }
         }
-        if (rgb == null)
-            return null;
+        if (rgb == null) return null;
 
 
         //rgb is now the Image object that weve used in the video
         Bitmap bm = Bitmap.createBitmap(rgb.getWidth(), rgb.getHeight(), Bitmap.Config.RGB_565);
         bm.copyPixelsFromBuffer(rgb.getPixels());
         frame.close();
+
         return bm ;
     }
 
     public RelicRecoveryVuMark getColumn(){
         return RelicRecoveryVuMark.from(template);
     }
+
+    public void close(){
+        vuforia.close();
+    }
+
+    public void openNew(){
+        this.template = initialTemplate();
+    }
+
 
 }

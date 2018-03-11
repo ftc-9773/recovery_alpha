@@ -117,13 +117,12 @@ public class SlotTray implements CubeTrays {
     private Servo blockServo;
     AnalogInput limitSwitch;
     // for motor ratio calculations
-    private static final double gearmotorRatio = 40 ;  // ex. 40, 20, 60, etc
+    private static final double gearmotorRatio = -40 ;  // ex. 40, 20, 60, etc
     private static final double afterMotorRatio = .7272727273 ;  // ratio from the motor to the chain
-    private static final int driveSprocketToothNumb = 16;//number of teeth
-    private static final int ticksPerBareMotorRot = 28;
+    private static final double driveSprocketToothNumb = 16;//number of teeth
+    private static final double ticksPerBareMotorRot = 28;
     // calculated par*
-    private static final double TicksPerinch = (Double)((((double)ticksPerBareMotorRot*gearmotorRatio)*(afterMotorRatio))*((double)driveSprocketToothNumb*0.25));
-
+    private static final double TicksPerinch = (ticksPerBareMotorRot * gearmotorRatio * afterMotorRatio / (driveSprocketToothNumb*0.25));
 
     // for roller ejection
 

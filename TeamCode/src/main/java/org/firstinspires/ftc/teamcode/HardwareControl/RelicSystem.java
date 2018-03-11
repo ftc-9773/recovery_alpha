@@ -2,15 +2,12 @@ package org.firstinspires.ftc.teamcode.HardwareControl;
 
 import android.util.Log;
 
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcontroller.for_camera_opmodes.LinearOpModeCamera;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.teamcode.InitialTests.SimplebotTeleopPOV_Linear;
 
 /**
  * Created by Vikesh on 11/25/2017.

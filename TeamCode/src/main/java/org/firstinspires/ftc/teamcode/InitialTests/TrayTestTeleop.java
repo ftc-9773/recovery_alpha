@@ -27,7 +27,6 @@ public class TrayTestTeleop extends LinearOpMode {
 
         myCubeTrayController.setServoPos(CubeTray.TrayPositions.STOWED);
 
-            myCubeTrayController.homeLiftVersA();
 
 
 

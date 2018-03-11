@@ -62,11 +62,11 @@ public class SlotTray implements CubeTrays {
 
     int zeroPos = 0;
 
-    int loadingPosTicks;
-    int lowPosTicks;
-    int midPosTicks;
-    int highPosTicks;
-    int compStartPos;
+    private int loadingPosTicks;
+    private int lowPosTicks;
+    private int midPosTicks;
+    private int highPosTicks;
+    private int compStartPos;
 
     double openGrabberPos;
     double closedGrabberPos;
@@ -122,9 +122,11 @@ public class SlotTray implements CubeTrays {
     private static final int driveSprocketToothNumb = 16;//number of teeth
     private static final int ticksPerBareMotorRot = 28;
     // calculated par*
-    private static final int TicksPerinch = (int)((((double)ticksPerBareMotorRot*gearmotorRatio)/(afterMotorRatio))*((double)driveSprocketToothNumb*0.25));
+    private static final double TicksPerinch = (Double)((((double)ticksPerBareMotorRot*gearmotorRatio)*(afterMotorRatio))*((double)driveSprocketToothNumb*0.25));
+
 
     // for roller ejection
+
     private boolean usingRollerEjection = true;
     private Servo leftEjectRoller;
     private Servo rightEjectRoller;
@@ -151,17 +153,17 @@ public class SlotTray implements CubeTrays {
         // read values from json
         myCubeTrayPositions = new SafeJsonReader("SlotTrayPositions");
 
-        loadingPosTicks = myCubeTrayPositions.getInt("loadPosIn")*TicksPerinch;
+        loadingPosTicks = (int)(myCubeTrayPositions.getDouble("loadPosIn")*TicksPerinch);
         if (DEBUG) if (DEBUG) Log.i(TAG, "set Loading Pos to" + loadingPosTicks);
-        lowPosTicks = myCubeTrayPositions.getInt("bottomPosIn")*TicksPerinch;
+        lowPosTicks = (int)(myCubeTrayPositions.getDouble("bottomPosIn")*TicksPerinch);
         if (DEBUG) Log.i(TAG, "set low Pos to" + lowPosTicks);
 
-        midPosTicks = myCubeTrayPositions.getInt("middlePosIn")*TicksPerinch;
+        midPosTicks = (int)(myCubeTrayPositions.getDouble("middlePosIn")*TicksPerinch);
         if (DEBUG) Log.i(TAG, "set mid Pos to" + midPosTicks);
 
-        highPosTicks = myCubeTrayPositions.getInt("topPosIn")*TicksPerinch;
+        highPosTicks = (int)(myCubeTrayPositions.getDouble("topPosIn")*TicksPerinch);
         if (DEBUG) Log.i(TAG, "set high Pos to" + highPosTicks);
-        compStartPos = myCubeTrayPositions.getInt("compStartPosIn")*TicksPerinch;
+        compStartPos = (int)(myCubeTrayPositions.getDouble("compStartPosIn")*TicksPerinch);
         if (DEBUG) Log.i(TAG, "set start Pos to" + compStartPos);
 
 

@@ -53,7 +53,13 @@ public class FarRedMulti extends LinearOpModeCamera {
 
         // Initialize Classes
         vumarkGlyphPattern = new VumarkGlyphPattern(hardwareMap);
+
         jewelDetector = new JewelDetector(this);
+        telemetry.addData("RASI Status: ", "Initializing...");
+        telemetry.update();
+        rasiActions = new RasiActions("AutoRedFarMulti", null, this, gamepad1, gamepad2, telemetry, hardwareMap);
+        telemetry.addData("RASI Status: ", "Initialized");
+        telemetry.update();
 
         // Read the Vumark
         while(!opModeIsActive() && !isStopRequested()){
@@ -68,7 +74,6 @@ public class FarRedMulti extends LinearOpModeCamera {
         if (relicRecoveryVuMark == RelicRecoveryVuMark.UNKNOWN) {
             relicRecoveryVuMark = RelicRecoveryVuMark.CENTER;
         }
-        rasiActions = new RasiActions("AutoRedFarMulti", null, this, gamepad1, gamepad2, telemetry, hardwareMap);
         waitForStart();
 
         // Read Jewel Color

@@ -30,6 +30,7 @@ public class JewelDetector {
     // algorithmic parameters (set in class)
     double colOn = 160.0; // Overwritten in
     double colOff = 80.0;
+    int iter = 0;
 
     final boolean scaling = true;
     final boolean commonScaling = true;
@@ -190,6 +191,7 @@ public class JewelDetector {
 
 
         // Start the algorithm
+        iter++;
         for (int x = startWidth; x < width; x+=steps) {
             for (int y = startHeight; y < heights; y+=steps) {
                 int pixel = rgbImage.getPixel(x, y);
@@ -201,17 +203,9 @@ public class JewelDetector {
                     valB = (valB - minB) * coeffB;
                     valG = (valG - minG) * coeffG;
                 }
-
-                if (usingVuforiaForDetect) {
-                    if (valR - valB > redBlueImballance && valR > valG) redValue++;
-                    if (valB - valR > -redBlueImballance && valB > valG) blueValue++;
-                } else {
-                    if (valR > colOn && valB < colOff && valG < colOff)
-                        redValue++;
-                    if (valB > colOn && valR < colOff && valG < colOff)
-                        blueValue++;
-                }
-
+                if (iter==1) Log.e(TAG, x + "," + y + "," + valR + "," + valG + "," +valB);
+                if (valR > colOn && valB < colOff && valG < colOff) redValue++;
+                if (valB > colOn && valR < colOff && valG < colOff) blueValue++;
                 totValue ++;
             }
         }

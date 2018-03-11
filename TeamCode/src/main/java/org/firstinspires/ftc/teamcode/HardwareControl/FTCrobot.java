@@ -27,7 +27,6 @@ import org.firstinspires.ftc.teamcode.resources.Vector;
 
 public class FTCrobot {
     public ModernRoboticsI2cRangeSensor distanceSensor;
-    private boolean pad2rotation = false;
     private SwerveController mySwerveController;
     private double stickl1x;
     private double stickl1y;
@@ -168,8 +167,16 @@ public class FTCrobot {
 
         // Read the Dpad for Direction Lock
 
-        // Read driver B first
-        if (myGamepad2.left_trigger > 0) {
+
+        if (myGamepad1.dpad_up) {
+            directionLock = 0;
+        } else if (myGamepad1.dpad_left) {
+            directionLock = 270;
+        } else if (myGamepad1.dpad_down) {
+            directionLock = 180;
+        } else if (myGamepad1.dpad_right) {
+            directionLock = 90;
+        } else if (myGamepad2.left_trigger > 0) {
             if (myGamepad2.dpad_up) {
                 directionLock = 0;
             } else if (myGamepad2.dpad_left) {
@@ -181,18 +188,6 @@ public class FTCrobot {
             }
         }
 
-        if (myGamepad1.dpad_up) {
-            directionLock = 0;
-        } else if (myGamepad1.dpad_left) {
-            directionLock = 270;
-        } else if (myGamepad1.dpad_down) {
-            directionLock = 180;
-        } else if (myGamepad1.dpad_right) {
-            directionLock = 90;
-        }
-        if(leftBumperStatus.isJustOn()){
-            pad2rotation= !pad2rotation;
-        }
         // Check to see if the robot is using field centric rotation
         if (USE_FIELD_CENTRIC_ROTATION && mySwerveController.getFieldCentric()) {
 
@@ -212,12 +207,17 @@ public class FTCrobot {
 
         } else { // Otherwise use non-field centric rotation mode
 
-            // Rotation Axis
-            double drivingRotation = scaleRotationAxis(myGamepad1.right_stick_x, highPrecisionMode);
 
-            // Scale rotation speed if the robot is translating (moving in the x or y directions)
-            if (drivingX != 0 || drivingY != 0) {
-                drivingRotation /= 2;
+            // Rotation Axis
+            double drivingRotation;
+
+            // Let gamepad 2 rotate robot if gamepad 1 isn't
+            final double gamepad1Rot = myGamepad1.right_stick_x;
+
+            if (myGamepad2.left_trigger > 0 && gamepad1Rot == 0) {
+                drivingRotation = scaleRotationAxis(myGamepad2.right_stick_x, highPrecisionMode);
+            } else {
+                drivingRotation = scaleRotationAxis(gamepad1Rot, highPrecisionMode);
             }
 
             // Disable Directon Lock if robot is rotated
@@ -274,9 +274,9 @@ public class FTCrobot {
                 if (dpaddownStatus.isJustOn() && !armState) {
                     grabState = !grabState;
                 }
+                // Relic arm - Gamepad 2 Left Joystick
+                myRelicSystem.runSequence(myGamepad2.left_stick_y * -0.95 + 0.05, armState, grabState);
             }
-            // Relic arm - Gamepad 2 Left Joystick
-            myRelicSystem.runSequence(myGamepad2.left_stick_y * -0.95 + 0.05, armState, grabState);
         }
 
 

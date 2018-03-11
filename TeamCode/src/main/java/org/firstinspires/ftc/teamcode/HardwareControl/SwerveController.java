@@ -97,7 +97,13 @@ public class SwerveController {
 
             // Calculate Error
             double error = negToPosPi(Math.toRadians(directionLock) - myGyro.getHeading());
-            rotation = turningPID.getPIDCorrection(error);
+
+            // Give rotation lock a bit of a grace period
+            if (Math.abs(error) > 0.05) {
+                rotation = turningPID.getPIDCorrection(error);
+            } else {
+                rotation = 0;
+            }
 
             if (movementVector.getMagnitude() == 0) {
                 if (rotation > 0) {

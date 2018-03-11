@@ -27,6 +27,7 @@ import org.firstinspires.ftc.teamcode.resources.Vector;
 
 public class FTCrobot {
     public ModernRoboticsI2cRangeSensor distanceSensor;
+    private boolean pad2rotation = false;
     private SwerveController mySwerveController;
     private double stickl1x;
     private double stickl1y;
@@ -65,7 +66,7 @@ public class FTCrobot {
     private double rotCoefficient;
     private double highPrecisionScalingFactor;
     private double highPrecisionRotationFactor;
-
+    private double rotationmag;
     public JewelKnocker jewelKnocker;
 
     private static final String TAG = "9773_FTCrobot";
@@ -150,6 +151,7 @@ public class FTCrobot {
 
         dpaddownStatus.recordNewValue(myGamepad2.dpad_down);
         dpadupStatus.recordNewValue(myGamepad2.dpad_up);
+        leftBumperStatus.recordNewValue(myGamepad2.left_bumper);
 
 
         /////// Driving - gamepad 1 left and right joysticks & Dpad /////
@@ -188,12 +190,18 @@ public class FTCrobot {
         } else if (myGamepad1.dpad_right) {
             directionLock = 90;
         }
-
+        if(leftBumperStatus.isJustOn()){
+            pad2rotation= !pad2rotation;
+        }
         // Check to see if the robot is using field centric rotation
         if (USE_FIELD_CENTRIC_ROTATION && mySwerveController.getFieldCentric()) {
 
             // If so, turn the rotation joystick into a vector, and get its angle to use for driving direction
+
             Vector rotationVector = new Vector(true, myGamepad1.right_stick_x, -myGamepad1.right_stick_y);
+            if(Math.abs(rotationVector.getMagnitude()) < 0.05 && myGamepad2.left_bumper){
+                rotationVector = new Vector(true, myGamepad2.left_stick_x, -myGamepad2.right_stick_y);
+            }
 
             // Change the direction lock if the joystick is sufficiently moved
             if (rotationVector.getMagnitude() > 0.8) directionLock = Math.toDegrees(rotationVector.getAngle());
@@ -247,16 +255,6 @@ public class FTCrobot {
         // Manual Intake Controller - Gamepad 2 Right Joystick
         if(!DISABLE_DRIVER_INTAKE) {
             myManualIntakeController.RunIntake(myGamepad2.right_stick_x, -1*myGamepad2.right_stick_y);
-
-            // Lowering Intake - Gamepad 2 Left Bumper
-            leftBumperStatus.recordNewValue(myGamepad2.left_bumper);
-            if (leftBumperStatus.isJustOn()) {
-                time = System.currentTimeMillis();
-                myRelicSystem.runToPosition(400);
-            }
-            if (System.currentTimeMillis() - 500 > time) {
-                myRelicSystem.runToPosition(0);
-            }
         }
 
 
@@ -297,7 +295,6 @@ public class FTCrobot {
         // Move jewel arm out of the way
         jewelKnocker.ArmReturn();
     }
-
     // homes cube tray lift to top. takes cube tray position object
 
     public void  doTelemetry() {

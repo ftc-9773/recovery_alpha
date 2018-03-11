@@ -79,7 +79,7 @@ public class VumarkGlyphPattern {
 
 
     public Bitmap getBitMap (){
-        Log.i(TAG,"current number of frames in the queue"+  vuforia.getFrameQueueCapacity());
+        Log.i(TAG,"current number of frames in the queue: "+  vuforia.getFrameQueueCapacity());
 
         VuforiaLocalizer.CloseableFrame frame ;
         try {
@@ -103,14 +103,14 @@ public class VumarkGlyphPattern {
                 break;
             }
         }
-        if (rgb == null)
-            return null;
+        if (rgb == null) return null;
 
 
         //rgb is now the Image object that weve used in the video
         Bitmap bm = Bitmap.createBitmap(rgb.getWidth(), rgb.getHeight(), Bitmap.Config.RGB_565);
         bm.copyPixelsFromBuffer(rgb.getPixels());
         frame.close();
+
         return bm ;
     }
 

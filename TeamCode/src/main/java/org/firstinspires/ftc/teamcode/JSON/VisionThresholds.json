@@ -1,7 +1,9 @@
 {
-  "RedThreshold" : -0.01,
+  "RedThreshold" : 0.05,
   "BlueThreshold" : 0.01,
 
   "BlueThresholdVuforia": 0,
-  "RedThresholdVuforia": 0
+  "RedThresholdVuforia": 0,
+
+  "redBlueImballance": 8
 }

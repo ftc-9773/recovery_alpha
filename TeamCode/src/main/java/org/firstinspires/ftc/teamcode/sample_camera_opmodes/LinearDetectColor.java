@@ -7,6 +7,7 @@ import org.firstinspires.ftc.robotcontroller.for_camera_opmodes.LinearOpModeCame
 import org.firstinspires.ftc.robotcore.external.navigation.RelicRecoveryVuMark;
 import org.firstinspires.ftc.teamcode.Vision.JewelDetector;
 import org.firstinspires.ftc.teamcode.Vision.VumarkGlyphPattern;
+import org.firstinspires.ftc.teamcode.resources.Timer;
 
 /**
  * TeleOp Mode
@@ -22,26 +23,18 @@ public class LinearDetectColor extends LinearOpModeCamera {
 
     @Override
     public void runOpMode() {
+
         VumarkGlyphPattern pattern = new VumarkGlyphPattern(hardwareMap);
         JewelDetector detector = new JewelDetector(this);
-        while (!opModeIsActive()) {
-            //vuforia
-            mark = pattern.getColumn();
-            telemetry.addData("Jewel", detector.getJewelColor());
-            telemetry.addData("vuMark", mark);
 
-            // jewel Detect
-            telemetry.addData("Red threshold: ", detector.redThreshold);
-            telemetry.addData("Blue threshold: ", detector.blueThreshold);
-            telemetry.addData("Jewel", detector.computeJewelColorFromVuforia(pattern));
-            telemetry.update();
+        while (!opModeIsActive() && !isStopRequested()) {
+
+
         }
         waitForStart();
-        ElapsedTime timer = new ElapsedTime();
 
         while (opModeIsActive()) {
         }
-        stopCamera();
 
     }
 }

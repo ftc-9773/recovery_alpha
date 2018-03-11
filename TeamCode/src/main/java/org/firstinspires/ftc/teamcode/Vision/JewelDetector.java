@@ -41,6 +41,11 @@ public class JewelDetector {
     public double redThreshold;
     public double blueThreshold;
 
+    public double redThresholdVuf ;
+    public double blueThresholdVuf;
+
+    private boolean usingVuforiaForDetect;
+
     // reference to linear opmode
     LinearOpModeCamera camOp;
 
@@ -52,6 +57,10 @@ public class JewelDetector {
         thresholds = new SafeJsonReader("VisionThresholds");
         redThreshold = thresholds.getDouble("RedThreshold");
         blueThreshold = thresholds.getDouble("BlueThreshold");
+
+        blueThresholdVuf =thresholds.getDouble("BlueThresholdVuforia");
+        redThresholdVuf  = thresholds.getDouble("RedThresholdVuforia");
+
         leftJewelColor = JewelColors.NOT_INITIALIZED ;
     }
 
@@ -69,6 +78,7 @@ public class JewelDetector {
 
         Bitmap rgbImage;
         rgbImage = camOp.convertYuvImageToRgb(camOp.yuvImage, camOp.width, camOp.height, ds2);
+        usingVuforiaForDetect = false;
 
         return computeJewelColorFromBitmap(rgbImage);
     }
@@ -83,12 +93,29 @@ public class JewelDetector {
             return leftJewelColor;
         }
 
+        usingVuforiaForDetect = true;
+
         return computeJewelColorFromBitmap(rgbImage);
     }
 
 
 
     private JewelColors computeJewelColorFromBitmap(Bitmap rgbImage){
+
+        // get the appropriate threshold based on which mode you are using
+        // allows for more freedom in tuning values
+        double myblueThreshold;
+        double myRedThreshold;
+        if(usingVuforiaForDetect){
+            myblueThreshold = blueThresholdVuf;
+            myRedThreshold = redThresholdVuf;
+        } else {
+            myblueThreshold = blueThreshold;
+            myRedThreshold = redThreshold;
+
+        }
+
+
         // get image, rotated so (0,0) is in the bottom left of the preview window
 
         // only do this if an image has been returned from the camera
@@ -157,6 +184,7 @@ public class JewelDetector {
         }
 
         int diff = redValue - blueValue;
+
         if(diff < -blueThreshold*totValue){
             leftJewelColor = JewelColors.BLUE ;
         }else if (diff > redThreshold*totValue) {

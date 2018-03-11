@@ -110,6 +110,13 @@ public class CubeTray implements CubeTrays {
     static final int itersPerWrite = 10;
     static final boolean RestartOn = true;
 
+    // TODO: get actual values for these parameters
+
+    private static final double motorRatio = 19.2;
+    private static final double motorToLiftRatio = 1.0;//(22.0/16.0);
+    private static final double  ticksPerRotation = 28 * motorRatio ;// fix
+    private static int outputSprocketSize = 16;
+
     // Safety ABORT variables
     //  private static int safteyAbortTime = 50;
     //   private static double safteyAbortMinSpeed = 0.5;

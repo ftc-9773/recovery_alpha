@@ -302,6 +302,7 @@ public class SlotTray implements CubeTrays {
         ejecting = false;
         durationRollerEjection = false ;
     }
+    @Override
     public void home(){ // TODO: test this method and add a way to run it from teleop
         liftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         if(!homing){
@@ -476,10 +477,6 @@ public class SlotTray implements CubeTrays {
         // for now do nothing
     }
 
-    @Override
-    public void homeLiftVersA() {
-        // for now do nothing
-    }
 
     @Override
     public void setZeroFromCompStart() {

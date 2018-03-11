@@ -44,9 +44,8 @@ import org.firstinspires.ftc.teamcode.HardwareControl.LiftFinalStates;
             }
 
             waitForStart();
-            myRobot.myCubeTray.setServoPos(CubeTray.TrayPositions.LOADING);
+            myRobot.myCubeTray.home();
             myRobot.myCubeTray.setToPos(LiftFinalStates.LOADING);
-
 
             while (opModeIsActive()) {
 

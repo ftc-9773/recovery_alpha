@@ -76,6 +76,9 @@ public class JewelDetector {
         camOp.setCameraDownsampling(8);
         camOp.startCamera(Camera.CameraInfo.CAMERA_FACING_BACK);
     }
+    public void stopCamera(){
+        camOp.stopCamera();
+    }
 
     public JewelColors getJewelColor(){
         return leftJewelColor;

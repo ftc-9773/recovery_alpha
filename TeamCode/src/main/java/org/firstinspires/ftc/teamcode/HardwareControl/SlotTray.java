@@ -301,9 +301,8 @@ public class SlotTray implements CubeTrays {
 
         }
     }
-    public void startDump(){
 
-    public void startDump(){
+    public void startDump() {
         durationRollerEjection = true;
         ejecting = true;
     }

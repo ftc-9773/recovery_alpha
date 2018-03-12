@@ -9,6 +9,7 @@ import org.firstinspires.ftc.teamcode.HardwareControl.FTCrobot;
 import org.firstinspires.ftc.teamcode.Vision.JewelDetector;
 import org.firstinspires.ftc.teamcode.Vision.VumarkGlyphPattern;
 import org.firstinspires.ftc.teamcode.infrastructure.RasiActions;
+import org.firstinspires.ftc.teamcode.infrastructure.SafeJsonReader;
 import org.firstinspires.ftc.teamcode.resources.ButtonStatus;
 import org.firstinspires.ftc.teamcode.resources.Timer;
 
@@ -34,60 +35,98 @@ import org.firstinspires.ftc.teamcode.resources.Timer;
 @Autonomous(name = "Far Red Multi-Glyph")
 public class FarRedMulti extends LinearOpModeCamera {
     private FTCrobot ftcrobot;
-    private VumarkGlyphPattern vumarkGlyphPattern;
-    private RelicRecoveryVuMark relicRecoveryVuMark;
     private JewelDetector jewelDetector;
     private String[] rasiTag = new String[2];
-    private String[] rasiFileNames = new String[] {"AutoFarRed", "AutoFarBlue"};
     private RasiActions rasiActions;
-    private JewelDetector.JewelColors jewelColors;
+
+    private JewelDetector.JewelColors jewelColors = JewelDetector.JewelColors.UNKNOWN;
+    private RelicRecoveryVuMark relicRecoveryVuMark = RelicRecoveryVuMark.CENTER;
+
+    double timeForVuforia;
+    double timeForJewelDetect;
 
     @Override
     public void runOpMode() throws InterruptedException {
 
-        // Select Autonomous Path
+        // Initialize Classes
+        telemetry.addData("Classes", "Initializing...");
+        telemetry.addData("RASI Status", "Waiting...");
+        telemetry.update();
 
         ftcrobot = new FTCrobot(hardwareMap, telemetry, gamepad1, gamepad2, this);
-        telemetry.addData("Initialization", "Waiting...");
-        telemetry.update();
-
-        // Initialize Classes
-        vumarkGlyphPattern = new VumarkGlyphPattern(hardwareMap);
-
         jewelDetector = new JewelDetector(this);
+
+        // Json
+        SafeJsonReader AutoInitParameters = new SafeJsonReader("AutoInitParameters");
+        timeForVuforia = AutoInitParameters.getDouble("timeForVuforia");
+        timeForJewelDetect = AutoInitParameters.getDouble("timeForJewelDetect");
+
+        // Rasi
+        telemetry.addData("Classes", "Complete");
         telemetry.addData("RASI Status: ", "Initializing...");
         telemetry.update();
+
         rasiActions = new RasiActions("AutoRedFarMulti", null, this, gamepad1, gamepad2, telemetry, hardwareMap);
-        telemetry.addData("RASI Status: ", "Initialized");
+
+        telemetry.addData("Classes", "Complete");
+        telemetry.addData("RASI Status: ", "Complete");
+        telemetry.addData("", "");
+        telemetry.addData("Vision", "Starting");
         telemetry.update();
 
-        // Read the Vumark
-        while(!opModeIsActive() && !isStopRequested()){
-            relicRecoveryVuMark = vumarkGlyphPattern.getColumn();
 
-            telemetry.addData("Initialization", "Success");
-            telemetry.addData("vumark", relicRecoveryVuMark);
-            telemetry.update();
+        // Read with vision
+        while (!opModeIsActive() && !isStopRequested()) {
+            // initialize the vuforia section of vision routine
+            // during this time, the robot checks for vuforia until either the time is up,
+            // or a vumark is detected
+
+            // we start by initializing vuforia
+            Timer vuf = new Timer(timeForVuforia);
+            VumarkGlyphPattern pattern = new VumarkGlyphPattern(hardwareMap);
+            // create a temporary variable to store the mark value for this run
+            RelicRecoveryVuMark tempMark;
+            // run so long as either the
+            while (!opModeIsActive() && !isStopRequested()&& !vuf.isDone()) {
+                tempMark = pattern.getColumn();
+                // if the vumark is known, update the official value
+                Log.v(TAG, "temp mark is: " + tempMark);
+                if(tempMark != RelicRecoveryVuMark.UNKNOWN) {
+                    relicRecoveryVuMark = tempMark;
+                    break;
+                }
+
+                // report back to the driver station
+                runVisionTelemetry("Vuforia", vuf);
+                if(vuf.isDone())  break;
+
+            }
+            pattern.close();
+
+            Timer jewel = new Timer(timeForJewelDetect);
+            jewelDetector.startCamera();
+            JewelDetector.JewelColors tempColor;
+            Log.i(TAG, "switching to Jewel camera");
+            while (!opModeIsActive() && !isStopRequested() &&  !jewel.isDone()) {
+
+                tempColor = jewelDetector.computeJewelColor();
+                // if the color is known update the 'official' value
+                Log.v(TAG, "temp color is: " + tempColor);
+
+                if(tempColor != JewelDetector.JewelColors.NOT_INITIALIZED || tempColor != JewelDetector.JewelColors.UNKNOWN) {
+                    jewelColors = tempColor;
+                    break;
+                }
+
+                // Report back to driver station
+                runVisionTelemetry("Jewel", jewel);
+
+                if(jewel.isDone()) break;
+            }
+            jewelDetector.stopCamera();
         }
 
-        //Default to center
-        if (relicRecoveryVuMark == RelicRecoveryVuMark.UNKNOWN) {
-            relicRecoveryVuMark = RelicRecoveryVuMark.CENTER;
-        }
         waitForStart();
-
-        // Read Jewel Color
-        //jewelDetector.startCamera();
-        //jewelDetector.computeJewelColor();
-
-        Timer myTimer = new Timer(2);
-        while(!myTimer.isDone()){
-            jewelColors = jewelDetector.computeJewelColor();
-            jewelColors = jewelDetector.getJewelColor();
-            telemetry.addData("Jewel Color", jewelColors);
-            telemetry.update();
-        }
-        Log.e("Auto Jewel Color", "" + jewelColors);
 
         // Pass RASI Tags
 
@@ -103,8 +142,20 @@ public class FarRedMulti extends LinearOpModeCamera {
         Log.e("Tag 0", rasiTag[0]);
         Log.e("Tag 1", rasiTag[1]);
 
+
+
         // DO EVERYTHING
         rasiActions.runRasi();
+    }
+
+
+    public void runVisionTelemetry(String reading, Timer timer) {
+        telemetry.addData("Init", "Complete!");
+        telemetry.addData("Vumark", relicRecoveryVuMark);
+        telemetry.addData("Jewel", jewelColors);
+
+        telemetry.addData("Reading " + reading, timer.timePassedInSeconds());
+        telemetry.update();
     }
 }
 

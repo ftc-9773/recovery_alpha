@@ -221,7 +221,7 @@ public class FTCrobot {
             }
 
             // Disable Directon Lock if robot is rotated
-            if (drivingRotation != 0) {
+            if (drivingRotation != 0 || myGamepad1.left_stick_button) {
                 directionLock = -1;
             }
 

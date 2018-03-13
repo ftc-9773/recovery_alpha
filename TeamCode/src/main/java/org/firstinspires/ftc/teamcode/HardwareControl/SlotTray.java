@@ -306,10 +306,14 @@ public class SlotTray implements CubeTrays {
         durationRollerEjection = true;
         ejecting = true;
     }
-    public void endDump(){
+
+    public void stopDump() {
+        durationRollerEjection = false;
         ejecting = false;
-        durationRollerEjection = false ;
+        leftEjectRoller.setPosition(0.5);
+        rightEjectRoller.setPosition(0.5);
     }
+
     @Override
     public void home(){ // TODO: test this method and add a way to run it from teleop
         liftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
@@ -512,6 +516,6 @@ public class SlotTray implements CubeTrays {
         return (Math.abs(loadingPosTicks - liftMotor.getCurrentPosition()) < liftPosTol);
     }
 
-
+    public void endDump() {}
 
 }

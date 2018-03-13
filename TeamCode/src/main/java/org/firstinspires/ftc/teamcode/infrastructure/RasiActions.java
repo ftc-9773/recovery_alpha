@@ -128,6 +128,8 @@ public class RasiActions {
                 case "ctout":
                         ftcRobot.myCubeTray.startDump();
                     break;
+                case "stopdump":
+                    ftcRobot.myCubeTray.stopDump();
                 case "ctstop":
                     ftcRobot.myCubeTray.dump();
                 case "wait":

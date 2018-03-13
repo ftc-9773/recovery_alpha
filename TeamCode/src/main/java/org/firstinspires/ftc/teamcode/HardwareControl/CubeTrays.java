@@ -23,6 +23,7 @@ public interface CubeTrays {
     void setAutonomousMode(boolean val);
 
     void startDump();
+    void stopDump();
     void endDump();
 
 }

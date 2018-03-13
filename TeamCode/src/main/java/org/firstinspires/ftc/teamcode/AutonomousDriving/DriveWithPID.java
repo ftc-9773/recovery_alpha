@@ -225,7 +225,7 @@ public class DriveWithPID {
         double maxTicks = encoderTicksPerInch * maxDistInches;
 
 
-        while (!myOpMode.isStopRequested()) {
+        while (!myOpMode.isStopRequested() && averageEncoderDist() < maxTicks) {
 
             // Turn on intake
             myIntakeController.RunIntake(0, -intakePower);
@@ -284,7 +284,7 @@ public class DriveWithPID {
         if (DEBUG) { Log.i(TAG, "Target Ticks: " + targetTicks); }
 
         Timer timerLower = new Timer(0.8);
-        Timer timerRetract = new Timer(1.2);
+        Timer timerRetract = new Timer(1.6);
 
         myRelicSystem.extensionMotor.setPower(1);
 

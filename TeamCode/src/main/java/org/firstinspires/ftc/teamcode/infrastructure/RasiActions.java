@@ -129,7 +129,7 @@ public class RasiActions {
                         ftcRobot.myCubeTray.startDump();
                     break;
                 case "ctstop":
-                    ftcRobot.myCubeTray.endDump();
+                    ftcRobot.myCubeTray.dump();
                 case "wait":
                     timer2 = new Timer(rasiParser.getAsDouble(1));
                     while (!timer2.isDone() && !linearOpModeCamera.isStopRequested()) {ftcRobot.myCubeTray.updatePosition();}

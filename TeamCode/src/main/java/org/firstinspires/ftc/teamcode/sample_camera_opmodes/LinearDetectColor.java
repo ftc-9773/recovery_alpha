@@ -59,9 +59,15 @@ public class LinearDetectColor extends LinearOpModeCamera {
                 runTelemetryAndLogs();
                 if(vuf.isDone() )
                     break;
+                if(isStarted() || isStopRequested())
+                    break;
 
             }
+            if(isStarted() || isStopRequested())
+                break;
             pattern.close();
+            if(isStarted() || isStopRequested())
+                break;
 
             detector.startCamera();
             Timer jewel = new Timer(timeForJewelDetect);
@@ -77,8 +83,16 @@ public class LinearDetectColor extends LinearOpModeCamera {
                 runTelemetryAndLogs();
                 if(jewel.isDone() )
                     break;
+                if(isStarted() || isStopRequested())
+                    break;
             }
+            if(isStarted() || isStopRequested())
+                break;
+
             detector.stopCamera();
+            if(isStarted() || isStopRequested())
+                break;
+
 
         }
         // end vision patterns

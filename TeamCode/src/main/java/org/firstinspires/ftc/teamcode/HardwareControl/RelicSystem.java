@@ -17,7 +17,7 @@ public class RelicSystem {
     private HardwareMap hwMap;
     private Servo armServo;
     private Servo grabServo;
-    private DcMotor extensionMotor;
+    public DcMotor extensionMotor;
     private int index = 0;
     private Telemetry telemetry;
     private long lastTime;
@@ -31,7 +31,7 @@ public class RelicSystem {
         this.hwMap = hwMap;
         this.telemetry = telemetry;
         extensionMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        extensionMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        extensionMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
 
     public void runSequence(double power, boolean armState, boolean grabState){

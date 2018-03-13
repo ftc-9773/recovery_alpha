@@ -153,7 +153,7 @@ public class SlotTray implements CubeTrays {
         myCubeTrayPositions = new SafeJsonReader("SlotTrayPositions");
 
         loadingPosTicks = (int)(myCubeTrayPositions.getDouble("loadPosIn")*TicksPerinch);
-        if (DEBUG) if (DEBUG) Log.i(TAG, "set Loading Pos to" + loadingPosTicks);
+        if (DEBUG) Log.i(TAG, "set Loading Pos to" + loadingPosTicks);
         lowPosTicks = (int)(myCubeTrayPositions.getDouble("bottomPosIn")*TicksPerinch);
         if (DEBUG) Log.i(TAG, "set low Pos to" + lowPosTicks);
 
@@ -186,19 +186,19 @@ public class SlotTray implements CubeTrays {
 
         // init roller ejection stuff
         usingRollerEjection = myCubeTrayPositions.getBoolean("usingRollerEjection");
-        Log.i(TAG, "set usingRollerEjection to" + usingRollerEjection);
+        if (DEBUG) Log.i(TAG, "set usingRollerEjection to" + usingRollerEjection);
 
 
         rightRollerOutVal = myCubeTrayPositions.getDouble("rightRollerOutVal");
-        Log.i(TAG, "set rightRollerOutVal to" + rightRollerOutVal);
+        if (DEBUG) Log.i(TAG, "set rightRollerOutVal to" + rightRollerOutVal);
         leftRollerOutVal = myCubeTrayPositions.getDouble("leftRollerOutVal");
-        Log.i(TAG, "set leftRollerOutVal to" + leftRollerOutVal);
+        if (DEBUG) Log.i(TAG, "set leftRollerOutVal to" + leftRollerOutVal);
 
         //state machine stuff
         //servoUpTime = (long)myCubeTrayPositions.getInt("servoUpTime");
-        Log.i(TAG, "set servoUpTIme to" + servoUpTime);
+        if (DEBUG) Log.i(TAG, "set servoUpTIme to" + servoUpTime);
         //liftPosTol = myCubeTrayPositions.getInt("liftPosTol");
-        Log.i(TAG, "set liftPosTol to" + liftPosTol);
+        if (DEBUG) Log.i(TAG, "set liftPosTol to" + liftPosTol);
 
 
         // initialize the motor and servos
@@ -215,16 +215,16 @@ public class SlotTray implements CubeTrays {
             Double ki = myCubeTrayPositions.getDouble("liftHeightI_EX");
             Double kd = myCubeTrayPositions.getDouble("liftHeightD_EX");
 
-            if (DEBUG) Log.i(TAG, "liftHeightEx P = " + kp);
+            if (DEBUG) if (DEBUG) Log.i(TAG, "liftHeightEx P = " + kp);
             if (DEBUG) Log.i(TAG, "liftHeightEx I = " + ki);
             if (DEBUG) Log.i(TAG, "liftHeightEx D = " + kd);
             PIDCoefficients liftPID = new PIDCoefficients(kp, ki, kd);
 
             liftMotorEx = (DcMotorImplEx) liftMotor;
             liftMotorEx.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            Log.d(TAG, "currentPID coeffs: p" + liftMotorEx.getPIDCoefficients(DcMotor.RunMode.RUN_TO_POSITION).p);
-            Log.d(TAG, "currentPID coeffs: i" + liftMotorEx.getPIDCoefficients(DcMotor.RunMode.RUN_TO_POSITION).i);
-            Log.d(TAG, "currentPID coeffs: d" + liftMotorEx.getPIDCoefficients(DcMotor.RunMode.RUN_TO_POSITION).d);
+            if (DEBUG) Log.d(TAG, "currentPID coeffs: p" + liftMotorEx.getPIDCoefficients(DcMotor.RunMode.RUN_TO_POSITION).p);
+            if (DEBUG) Log.d(TAG, "currentPID coeffs: i" + liftMotorEx.getPIDCoefficients(DcMotor.RunMode.RUN_TO_POSITION).i);
+            if (DEBUG) Log.d(TAG, "currentPID coeffs: d" + liftMotorEx.getPIDCoefficients(DcMotor.RunMode.RUN_TO_POSITION).d);
 
             liftMotorEx.setPIDCoefficients(DcMotor.RunMode.RUN_TO_POSITION, liftPID);
         } else {
@@ -295,8 +295,8 @@ public class SlotTray implements CubeTrays {
             rightEjectRoller.setPosition(rightRollerOutVal);
             ejecting = true;
 
-            Log.d(TAG, "set leftRoller to " + leftEjectRoller.getPosition());
-            Log.d(TAG, "set leftRoller to " + rightEjectRoller.getPosition());
+            if (DEBUG) Log.d(TAG, "set leftRoller to " + leftEjectRoller.getPosition());
+            if (DEBUG) Log.d(TAG, "set leftRoller to " + rightEjectRoller.getPosition());
 
 
         }
@@ -411,8 +411,8 @@ public class SlotTray implements CubeTrays {
 
             myCubeTrayPositions.updateFile();
 
-             Log.i(TAG,"Wrote the following vals to file: (cubeTrayLogging)");
-             Log.i(TAG + "Height", String.valueOf(getliftPos()));
+             if (DEBUG) Log.i(TAG,"Wrote the following vals to file: (cubeTrayLogging)");
+             if (DEBUG) Log.i(TAG + "Height", String.valueOf(getliftPos()));
 
         }
         iterNum++;
@@ -464,10 +464,10 @@ public class SlotTray implements CubeTrays {
 
         grabServo.setPosition(grabberPos);
 
-        Log.i(TAG, "set servo positions to " + position.toString());
+        if (DEBUG) Log.i(TAG, "set servo positions to " + position.toString());
 
-        Log.i(TAG, "set grabber position to: " + grabberPos);
-        Log.i(TAG, "set blocker Position to : " + blockerPos);
+        if (DEBUG) Log.i(TAG, "set grabber position to: " + grabberPos);
+        if (DEBUG) Log.i(TAG, "set blocker Position to : " + blockerPos);
 
     }
 
@@ -488,7 +488,6 @@ public class SlotTray implements CubeTrays {
 
     @Override
     public void setZeroFromCompStart() {
-        int compStartPos = myCubeTrayPositions.getInt("CompStartPos");
         zeroPos = liftMotor.getCurrentPosition() - compStartPos;
     }
 

@@ -55,11 +55,11 @@ public class DriveWithPID {
     //Constants
     private static final double wheelDiameter = 3;
     private static final double encoderTicksPerInch = (19.8 * 28) / (wheelDiameter * Math.PI);
-    private double targetTicks;
-
+    private static double distOffset;
 
     // Turning PID
     PIDController turningPID;
+    PIDController drivingPID;
     private double baseSpeed;
     private double errorThreshold;
     private double speedThreshold;
@@ -94,6 +94,11 @@ public class DriveWithPID {
         errorThreshold = turningPIDCoefficients.getDouble("errorThreshold");
         speedThreshold = turningPIDCoefficients.getDouble("speedThreshold");
 
+        double driveKp = turningPIDCoefficients.getDouble("driveKp");
+        double driveKi = turningPIDCoefficients.getDouble("driveKi");
+        double driveKd = turningPIDCoefficients.getDouble("driveKd");
+        distOffset = turningPIDCoefficients.getDouble("distOffset");
+        drivingPID = new PIDController(driveKp, driveKi, driveKd);
 
         // Sensors
         backColorSensor = new DistanceColorSensor(hwMap, "backColorSensor");
@@ -118,13 +123,18 @@ public class DriveWithPID {
         zeroEncoders();
 
         // Calculate target distance
-        double targetTicks = encoderTicksPerInch * distInches;
+        double targetTicks = encoderTicksPerInch * distInches - distOffset;
         if (DEBUG) { Log.i(TAG, "Target Ticks: " + targetTicks); }
 
         // Drive
         while (!myOpMode.isStopRequested() && averageEncoderDist() < targetTicks) {
             // While the robot has not driven far enough
-            mySwerveController.steerSwerve(false , speed, Math.toRadians(angleDegrees), 0, headingDegrees);
+
+            final double error = (targetTicks - averageEncoderDist());
+            double motorPower = drivingPID.getPIDCorrection(error);
+            if (motorPower > speed) motorPower = speed;
+
+            mySwerveController.steerSwerve(false , motorPower, Math.toRadians(angleDegrees), 0, headingDegrees);
             mySwerveController.moveRobot(true);
             if (DEBUG) { Log.i(TAG, "Distance so far: " + averageEncoderDist()); }
 
@@ -148,7 +158,7 @@ public class DriveWithPID {
         zeroEncoders();
 
         // Calculate target distance
-        double targetTicks = encoderTicksPerInch * distInches;
+        double targetTicks = encoderTicksPerInch * distInches - distOffset;
         if (DEBUG) { Log.i(TAG, "Target Ticks: " + targetTicks); }
 
         // Drive
@@ -156,7 +166,11 @@ public class DriveWithPID {
             // While the robot has not driven far enough
 
             // Drive
-            mySwerveController.steerSwerve(false , speed, Math.toRadians(angleDegrees), 0, headingDegrees);
+            final double error = (targetTicks - averageEncoderDist());
+            double motorPower = drivingPID.getPIDCorrection(error);
+            if (motorPower > speed) motorPower = speed;
+
+            mySwerveController.steerSwerve(false , motorPower, Math.toRadians(angleDegrees), 0, headingDegrees);
             mySwerveController.moveRobot(true);
 
             if (DEBUG) { Log.i(TAG, "Distance so far: " + averageEncoderDist()); }
@@ -180,10 +194,10 @@ public class DriveWithPID {
         if (DEBUG) { Log.i(TAG, "Extra Distance: " + (Math.abs(averageEncoderDist()) - targetTicks)); }
     }
 
+
+
     public void driveIntake (double speed, double angleDegrees, double maxDistInches, double headingDegrees, double intakePower) {
 
-        Timer myTimer = new Timer(60000);
-        boolean wasCubeIn = false;
 
         // Calculate target distance
         zeroEncoders();
@@ -193,28 +207,39 @@ public class DriveWithPID {
         while (!myOpMode.isStopRequested()) {
 
             // Turn on intake
-            myIntakeController.RunIntake(0, -1);
+            myIntakeController.RunIntake(0, -intakePower);
 
             mySwerveController.steerSwerve(false, speed, Math.toRadians(angleDegrees), 0, headingDegrees);
             mySwerveController.moveRobot(true);
 
             // Check Break conditions
-            if (averageEncoderDist() >= targetTicks) break;
-            if (backColorSensor.getDistance(DistanceUnit.INCH) < 2.35 && frontColorSensor.getDistance(DistanceUnit.INCH) < 2.35) {
-                wasCubeIn = true;
-            }
+            if (averageEncoderDist() >= maxTicks) break;
+            if (backColorSensor.getDistance(DistanceUnit.INCH) < 2.35 && frontColorSensor.getDistance(DistanceUnit.INCH) < 2.35) break;
 
-            if (wasCubeIn && myTimer.isDone()) break;
             // Update Cube tray
             myCubeTray.updatePosition();
         }
+
+        mySwerveController.stopRobot();
+
+        Timer myTimer = new Timer(0.1);
+        while (!myOpMode.isStopRequested() && !myTimer.isDone()) {} //chill
+
+        //Drive Back
+        double ticksTravledFoward = averageEncoderDist();
+        zeroEncoders();
 
         // Stop the intake -- Or DON'T
         //myIntakeController.RunIntake(0, 0);
 
         // Drive back with intake onn
-        while (!myOpMode.isStopRequested() && averageEncoderDist() > 0) {
-            mySwerveController.steerSwerve(false, -speed, Math.toRadians(angleDegrees), 0, headingDegrees);
+        while (!myOpMode.isStopRequested() && averageEncoderDist() <= ticksTravledFoward) {
+
+            final double error = (ticksTravledFoward - averageEncoderDist()); // /100 is to make the coefficients more readable
+            double motorPower = drivingPID.getPIDCorrection(error);
+            if (motorPower > speed) motorPower = speed;
+
+            mySwerveController.steerSwerve(false, -motorPower, Math.toRadians(angleDegrees), 0, headingDegrees);
             mySwerveController.moveRobot(true);
 
             // Update Cube tray
@@ -222,39 +247,63 @@ public class DriveWithPID {
         }
         myIntakeController.RunIntake(0, 0);
         mySwerveController.stopRobot();
+
+        Log.i(TAG, "Overshoot: " + (ticksTravledFoward - averageEncoderDist() - distOffset));
     }
 
 
-    public void driveLowerIntake (double speed, double angleDegrees, double distInches, double headingDegrees) {
 
-        // Set a 1.4 seccond timer
-        Timer myTimer = new Timer(1.3);
+
+    public void driveLowerIntake (double speed, double angleDegrees, double distInches, double headingDegrees) {
 
         // Zero the encoders
         zeroEncoders();
 
         // Calculate target distance
-        double targetTicks = encoderTicksPerInch * distInches;
-        if (DEBUG) { Log.i(TAG, "Target Ticks: " + targetTicks); }
+        double targetTicks = encoderTicksPerInch * distInches - distOffset;
+
 
         // Extend the intake
-        myRelicSystem.runToPosition(400);
+        myRelicSystem.extensionMotor.setPower(1);
+
+        boolean hasExtended = false;
+        boolean hasRetracted = false;
 
         // Drive
         while (!myOpMode.isStopRequested() && averageEncoderDist() < targetTicks) {
             // While the robot has not driven far enough
-            mySwerveController.steerSwerve(false , speed, Math.toRadians(angleDegrees), 0, headingDegrees);
+
+            final double error = (targetTicks - averageEncoderDist());
+            double motorPower = drivingPID.getPIDCorrection(error);
+            if (motorPower > speed) motorPower = speed;
+
+            mySwerveController.steerSwerve(false , motorPower, Math.toRadians(angleDegrees), 0, headingDegrees);
             mySwerveController.moveRobot(true);
 
-            if (myTimer.isDone()) myRelicSystem.runToPosition(0);
+            if (myRelicSystem.extensionMotor.getCurrentPosition() > 400  && !hasExtended) {
+                hasExtended = true;
+                myRelicSystem.extensionMotor.setPower(-1);
+            }
+
+            if (myRelicSystem.extensionMotor.getCurrentPosition() < 20 && hasExtended && !hasRetracted) {
+                hasRetracted = true;
+                myRelicSystem.extensionMotor.setPower(0);
+            }
 
             // Update Cube tray
             myCubeTray.updatePosition();
         }
+        mySwerveController.stopRobot();
 
-        // Wait until the timer is done (if it isn't) and then retract the relic arm
-        while (!myTimer.isDone()) { } // Do nothing
-        myRelicSystem.runToPosition(0);
+        if (!hasExtended) {
+            while (myRelicSystem.extensionMotor.getCurrentPosition() < 400 && !myOpMode.isStopRequested()) {   } // Chill
+            myRelicSystem.extensionMotor.setPower(-1);
+        }
+
+        if (!hasRetracted) {
+            while (myRelicSystem.extensionMotor.getCurrentPosition() > 20 && !myOpMode.isStopRequested()) {   } // Chill
+            myRelicSystem.extensionMotor.setPower(0);
+        }
 
         //Stop the robot
         mySwerveController.stopRobot();
@@ -292,6 +341,7 @@ public class DriveWithPID {
 
         driveDist(speed, distanceVector.getAngle(), distanceVector.getMagnitude(), -1);
     }
+
     public boolean isStuck(){
         if(backColorSensor.getDistance(DistanceUnit.INCH) < 2.35){
             return true;
@@ -300,6 +350,7 @@ public class DriveWithPID {
             return false;
         }
     }
+
     public void driveByLeftUltraonicDis (double speed, double targetUltrasonicDist) throws InterruptedException {
         boolean negativeDist = false;
         double driveangle = getClosestQuadrantal();

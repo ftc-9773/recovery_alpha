@@ -30,7 +30,7 @@ public class FTCrobot {
     private SwerveController mySwerveController;
     private double stickl1x;
     private double stickl1y;
-    private Gyro myGyro;
+    public Gyro myGyro;
     private RasiParser opModeControl;
     private String[] currentCommand;
     public IntakeControllerManual myManualIntakeController;

@@ -34,7 +34,6 @@ import org.firstinspires.ftc.teamcode.resources.Timer;
 
 @Autonomous(name = "Far Red Multi-Glyph")
 public class FarRedMulti extends LinearOpModeCamera {
-    private FTCrobot ftcrobot;
     private JewelDetector jewelDetector;
     private String[] rasiTag = new String[2];
     private RasiActions rasiActions;
@@ -53,7 +52,6 @@ public class FarRedMulti extends LinearOpModeCamera {
         telemetry.addData("RASI Status", "Waiting...");
         telemetry.update();
 
-        ftcrobot = new FTCrobot(hardwareMap, telemetry, gamepad1, gamepad2, this);
         jewelDetector = new JewelDetector(this);
 
         // Json

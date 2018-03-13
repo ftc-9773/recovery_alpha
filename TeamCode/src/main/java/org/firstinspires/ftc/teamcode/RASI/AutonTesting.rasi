@@ -1,2 +1,4 @@
-intkl;
+ctload;
+drvintake, 1, 0, 24, 0.8;
+wait, 2;
 end;

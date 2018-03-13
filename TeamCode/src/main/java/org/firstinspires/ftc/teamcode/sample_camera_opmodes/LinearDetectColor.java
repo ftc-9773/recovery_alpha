@@ -58,17 +58,13 @@ public class LinearDetectColor extends LinearOpModeCamera {
                 }
                 // report back to the driver station
                 runTelemetryAndLogs();
-                if(vuf.isDone() )
-                    break;
-                if(isStarted() || isStopRequested())
-                    break;
+                if(vuf.isDone() ) break;
+                if(isStarted() || isStopRequested()) break;
 
             }
-            if(isStarted() || isStopRequested())
-                break;
+            if(isStarted() || isStopRequested()) break;
             pattern.close();
-            if(isStarted() || isStopRequested())
-                break;
+            if(isStarted() || isStopRequested()) break;
 
             detector.startCamera();
             Timer jewel = new Timer(timeForJewelDetect);
@@ -82,13 +78,11 @@ public class LinearDetectColor extends LinearOpModeCamera {
                 if(!(tempColor.equals(JewelDetector.JewelColors.NOT_INITIALIZED)||tempColor.equals(JewelDetector.JewelColors.UNKNOWN)))
                     color = tempColor;
                 runTelemetryAndLogs();
-                if(jewel.isDone() )
-                    break;
+                if(jewel.isDone() ) break;
                 if(isStarted() || isStopRequested())
                     break;
             }
-            if(isStarted() || isStopRequested())
-                break;
+            if(isStarted() || isStopRequested()) break;
 
             detector.stopCamera();
             if(isStarted() || isStopRequested())

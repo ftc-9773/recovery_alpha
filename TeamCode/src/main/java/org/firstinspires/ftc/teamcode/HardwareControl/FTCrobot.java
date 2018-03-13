@@ -26,7 +26,6 @@ import org.firstinspires.ftc.teamcode.resources.Vector;
  */
 
 public class FTCrobot {
-    public ModernRoboticsI2cRangeSensor distanceSensor;
     private SwerveController mySwerveController;
     private double stickl1x;
     private double stickl1y;
@@ -85,7 +84,6 @@ public class FTCrobot {
         this.gp1y = new ButtonStatus();
         this.hwMap = hwmap;
         this.myTelemetry = telemetry;
-        this.distanceSensor = hwMap.get(ModernRoboticsI2cRangeSensor.class, "ultrasonicSensor");
         this.myGyro = new Gyro(hwMap);
         this.mySwerveController = new SwerveController(hwMap, myGyro, telemetry);
         this.myManualIntakeController = new IntakeControllerManual(hwMap);

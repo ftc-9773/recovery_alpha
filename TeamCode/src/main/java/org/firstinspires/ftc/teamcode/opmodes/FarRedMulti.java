@@ -69,7 +69,6 @@ public class FarRedMulti extends LinearOpModeCamera {
         telemetry.addData("Vision", "Starting");
         telemetry.update();
 
-        /*
         // Read with vision
         JewelDetector detector = new JewelDetector(this);
 
@@ -97,8 +96,12 @@ public class FarRedMulti extends LinearOpModeCamera {
                 }
                 // report back to the driver station
                 runVisionTelemetry("Vuforia", vuforiaTimer);
+                if (vuforiaTimer.isDone()) break;
+                if(isStarted() || isStopRequested()) break;
             }
+            if(isStarted() || isStopRequested()) break;
             pattern.close();
+            if(isStarted() || isStopRequested()) break;
 
             detector.startCamera();
             Timer jewelTimer = new Timer(timeForJewelDetect);
@@ -109,16 +112,22 @@ public class FarRedMulti extends LinearOpModeCamera {
                 tempColor = detector.computeJewelColor();
 
                 // if the color is known update the 'official' value
-                if(tempColor == JewelDetector.JewelColors.BLUE || tempColor == JewelDetector.JewelColors.RED) jewelColors = tempColor;
-                runVisionTelemetry( "Jewel", jewelTimer);
-                if(jewelTimer.isDone() )
+                if(tempColor == JewelDetector.JewelColors.BLUE || tempColor == JewelDetector.JewelColors.RED){
+                    jewelColors = tempColor;
                     break;
+                }
+                runVisionTelemetry( "Jewel", jewelTimer);
+
+                if(jewelTimer.isDone() ) break;
+                if(isStarted() || isStopRequested()) break;
             }
+            if(isStarted() || isStopRequested()) break;
             detector.stopCamera();
-            Thread.sleep(100);
+            if(isStarted() || isStopRequested()) break;
+
+            if (opModeIsActive()) break;
         }
 
-*/
 
         waitForStart();
 

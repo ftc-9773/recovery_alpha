@@ -70,7 +70,8 @@ public class DriveWithPID {
     DistanceColorSensor backColorSensor;
     DistanceColorSensor frontColorSensor;
 
-    ModernRoboticsI2cRangeSensor ultrasonicSensor;
+    ModernRoboticsI2cRangeSensor leftUltrasonicSensor;
+    ModernRoboticsI2cRangeSensor rightUltrasonicSensor;
 
 
     // INIT
@@ -104,7 +105,8 @@ public class DriveWithPID {
         backColorSensor = new DistanceColorSensor(hwMap, "backColorSensor");
         frontColorSensor = new DistanceColorSensor(hwMap, "frontColorSensor");
 
-        ultrasonicSensor = hwMap.get(ModernRoboticsI2cRangeSensor.class, "ultrasonicSensor");
+        leftUltrasonicSensor = hwMap.get(ModernRoboticsI2cRangeSensor.class, "leftUltrasonicSensor");
+        rightUltrasonicSensor = hwMap.get(ModernRoboticsI2cRangeSensor.class, "rightUltrasonicSensor");
     }
 
     public void driveDistDumb (double speed, double angleDegrees, double distInches, double headingDegrees) throws InterruptedException {
@@ -342,11 +344,34 @@ public class DriveWithPID {
 
     public void driveByLeftUltraonicDis (double speed, double targetUltrasonicDist, double distForward) throws InterruptedException {
 
-        final double yDist = targetUltrasonicDist - ultrasonicSensor.getDistance(DistanceUnit.INCH);
-        Vector distanceVector = new Vector(true, -1*yDist, distForward);
+        //final double yDist = targetUltrasonicDist - ultrasonicSensor.getDistance(DistanceUnit.INCH);
+        //Vector distanceVector = new Vector(true, -1*yDist, distForward);
 
-        driveDist(speed, distanceVector.getAngle(), distanceVector.getMagnitude(), -1);
+
+        double yDist = leftUltrasonicSensor.getDistance(DistanceUnit.INCH) - targetUltrasonicDist;
+        Log.i("yDist", Double.toString(yDist));
+
+        Vector motionVector = new Vector(false, (getClosestQuadrantal() + 90)%360, yDist);
+        motionVector.addVector( false, getClosestQuadrantal(), distForward);
+
+        driveDist(speed, motionVector.getAngle(), motionVector.getMagnitude(), -1);
     }
+
+    public void driveByRightUltrasonicDist (double speed, double targetUltrasonicDist, double distForward) throws InterruptedException {
+
+        //final double yDist = targetUltrasonicDist - ultrasonicSensor.getDistance(DistanceUnit.INCH);
+        //Vector distanceVector = new Vector(true, -1*yDist, distForward);
+
+
+        double yDist = rightUltrasonicSensor.getDistance(DistanceUnit.INCH) - targetUltrasonicDist;
+        Log.i("yDist", Double.toString(yDist));
+
+        Vector motionVector = new Vector(false, (getClosestQuadrantal() + 270)%360, yDist);
+        motionVector.addVector( false, getClosestQuadrantal(), distForward);
+
+        driveDist(speed, motionVector.getAngle(), motionVector.getMagnitude(), -1);
+    }
+
 
     public boolean isStuck(){
         if(backColorSensor.getDistance(DistanceUnit.INCH) < 2.35){
@@ -360,9 +385,11 @@ public class DriveWithPID {
     public void driveByLeftUltraonicDis (double speed, double targetUltrasonicDist) throws InterruptedException {
         boolean negativeDist = false;
         double driveangle = getClosestQuadrantal();
+
         double robotangle = Math.abs(Math.toDegrees(myGyro.getHeading())-driveangle);
-        double yDist = ultrasonicSensor.getDistance(DistanceUnit.INCH) - targetUltrasonicDist;
+        double yDist = leftUltrasonicSensor.getDistance(DistanceUnit.INCH) - targetUltrasonicDist;
         Log.i("yDist", Double.toString(yDist));
+
         if(yDist < 0) {
             yDist *= -1;
             negativeDist = true;
@@ -403,16 +430,16 @@ public class DriveWithPID {
             error = setOnNegToPosPi(targetAngleRad - currentHeading);
 
             double rotation = turningPID.getPIDCorrection(error);
-            Log.e("Error: ", "" + error);
+            //Log.e("Error: ", "" + error);
 
-            Log.e("First Rotation: ", "" + rotation);
+            //Log.e("First Rotation: ", "" + rotation);
 
             if (rotation > 0) {
                 rotation += baseSpeed;
             } else if (rotation < 0) {
                 rotation -= baseSpeed;
             }
-            Log.e("Second Rotation: ", "" + rotation);
+            //Log.e("Second Rotation: ", "" + rotation);
 
             mySwerveController.steerSwerve(true,0,0, rotation, -1);
             boolean log = mySwerveController.moveRobot(true);

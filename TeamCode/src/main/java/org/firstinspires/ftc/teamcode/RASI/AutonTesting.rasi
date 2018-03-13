@@ -1,2 +1,4 @@
-turn, 90;
+jwlarmd;
+jwlarmc;
+wait, 50;
 end;

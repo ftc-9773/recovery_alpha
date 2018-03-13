@@ -71,7 +71,10 @@ public class RasiActions {
                     ftcRobot.myDriveWithPID.driveDropIntake(rasiParser.getAsDouble(1), rasiParser.getAsDouble(2), rasiParser.getAsDouble(3));
                     break;
                 case "drvleftultra":
-                    ftcRobot.myDriveWithPID.driveByLeftUltraonicDis(rasiParser.getAsDouble(1), rasiParser.getAsDouble(2));
+                    ftcRobot.myDriveWithPID.driveByLeftUltraonicDis(rasiParser.getAsDouble(1), rasiParser.getAsDouble(2), rasiParser.getAsDouble(3));
+                    break;
+                case "drvrightultra":
+                    ftcRobot.myDriveWithPID.driveByRightUltrasonicDist(rasiParser.getAsDouble(1), rasiParser.getAsDouble(2), rasiParser.getAsDouble(3));
                     break;
                 case "drvstopintake":
                     ftcRobot.myDriveWithPID.driveDistStopIntake(rasiParser.getAsDouble(1), rasiParser.getAsDouble(2), rasiParser.getAsDouble(3), -1);
@@ -87,11 +90,12 @@ public class RasiActions {
                     break;
                 case "drvddumb":
                     ftcRobot.myDriveWithPID.driveDistDumb(rasiParser.getAsDouble(1), rasiParser.getAsDouble(2), rasiParser.getAsDouble(3), -1);
+                    break;
                 case "intkl":
-                    timer2 = new Timer(0.75);
-                    ftcRobot.myRelicSystem.runToPosition(400);
-                    while (!timer2.isDone() && linearOpModeCamera.opModeIsActive()){}
-                    ftcRobot.myRelicSystem.runToPosition(0);
+                    //timer2 = new Timer(0.75);
+                    //ftcRobot.myRelicSystem.runToPosition(400);
+                    //while (!timer2.isDone() && linearOpModeCamera.opModeIsActive()){}
+                    //ftcRobot.myRelicSystem.runToPosition(0);
                     break;
                 case "intki":
                     ftcRobot.myManualIntakeController.RunIntake(0, -1);
@@ -125,13 +129,16 @@ public class RasiActions {
                     while (!linearOpModeCamera.isStopRequested() && !timer2.isDone()) {
                         ftcRobot.myCubeTray.updatePosition();
                     }
+                    break;
                 case "ctout":
-                        ftcRobot.myCubeTray.startDump();
+                    ftcRobot.myCubeTray.startDump();
                     break;
                 case "stopdump":
                     ftcRobot.myCubeTray.stopDump();
+                    break;
                 case "ctstop":
                     ftcRobot.myCubeTray.dump();
+                    break;
                 case "wait":
                     timer2 = new Timer(rasiParser.getAsDouble(1));
                     while (!timer2.isDone() && !linearOpModeCamera.isStopRequested()) {ftcRobot.myCubeTray.updatePosition();}

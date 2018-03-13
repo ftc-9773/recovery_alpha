@@ -107,15 +107,36 @@ public class DriveWithPID {
         ultrasonicSensor = hwMap.get(ModernRoboticsI2cRangeSensor.class, "ultrasonicSensor");
     }
 
+    public void driveDistDumb (double speed, double angleDegrees, double distInches, double headingDegrees) throws InterruptedException {
+        //////// Drive until it has gone the right distance ////////
+
+        // Zero the encoders
+        zeroEncoders();
+
+        // Calculate target distance
+        double targetTicks = encoderTicksPerInch * distInches - distOffset;
+        if (DEBUG) { Log.i(TAG, "Target Ticks: " + targetTicks); }
+
+        // Drive
+        while (!myOpMode.isStopRequested() && averageEncoderDist() < targetTicks) {
+            // While the robot has not driven far enough
+
+            mySwerveController.steerSwerve(false , speed, Math.toRadians(angleDegrees), 0, headingDegrees);
+            mySwerveController.moveRobot(true);
+            if (DEBUG) { Log.i(TAG, "Distance so far: " + averageEncoderDist()); }
+
+            // Update Cube tray
+            myCubeTray.updatePosition();
+        }
+
+        //Stop the robot
+        mySwerveController.stopRobot();
+
+    }
     // Actual driving funftions
 
     // Driving
     public void driveDist(double speed, double angleDegrees, double distInches, double headingDegrees) throws InterruptedException {
-
-        // Orient Robot
-//        turnRobot(robotOrientationDegrees);
-//        if (DEBUG) { Log.i(TAG, "Finished setting heading"); }
-
 
         //////// Drive until it has gone the right distance ////////
 
@@ -252,22 +273,20 @@ public class DriveWithPID {
     }
 
 
-
-
-    public void driveLowerIntake (double speed, double angleDegrees, double distInches, double headingDegrees) {
+    public void driveDropIntake(double speed, double angleDegrees, double distInches) throws InterruptedException {
+        //////// Drive until it has gone the right distance ////////
 
         // Zero the encoders
         zeroEncoders();
 
         // Calculate target distance
         double targetTicks = encoderTicksPerInch * distInches - distOffset;
+        if (DEBUG) { Log.i(TAG, "Target Ticks: " + targetTicks); }
 
+        Timer timerLower = new Timer(0.8);
+        Timer timerRetract = new Timer(1.2);
 
-        // Extend the intake
         myRelicSystem.extensionMotor.setPower(1);
-
-        boolean hasExtended = false;
-        boolean hasRetracted = false;
 
         // Drive
         while (!myOpMode.isStopRequested() && averageEncoderDist() < targetTicks) {
@@ -277,37 +296,24 @@ public class DriveWithPID {
             double motorPower = drivingPID.getPIDCorrection(error);
             if (motorPower > speed) motorPower = speed;
 
-            mySwerveController.steerSwerve(false , motorPower, Math.toRadians(angleDegrees), 0, headingDegrees);
+            mySwerveController.steerSwerve(false , motorPower, Math.toRadians(angleDegrees), 0, -1);
             mySwerveController.moveRobot(true);
+            if (DEBUG) { Log.i(TAG, "Distance so far: " + averageEncoderDist()); }
 
-            if (myRelicSystem.extensionMotor.getCurrentPosition() > 400  && !hasExtended) {
-                hasExtended = true;
-                myRelicSystem.extensionMotor.setPower(-1);
-            }
-
-            if (myRelicSystem.extensionMotor.getCurrentPosition() < 20 && hasExtended && !hasRetracted) {
-                hasRetracted = true;
-                myRelicSystem.extensionMotor.setPower(0);
-            }
+            if (timerLower.isDone()) myRelicSystem.extensionMotor.setPower(-1);
+            if (timerRetract.isDone()) myRelicSystem.extensionMotor.setPower(0);
 
             // Update Cube tray
             myCubeTray.updatePosition();
-        }
-        mySwerveController.stopRobot();
-
-        if (!hasExtended) {
-            while (myRelicSystem.extensionMotor.getCurrentPosition() < 400 && !myOpMode.isStopRequested()) {   } // Chill
-            myRelicSystem.extensionMotor.setPower(-1);
-        }
-
-        if (!hasRetracted) {
-            while (myRelicSystem.extensionMotor.getCurrentPosition() > 20 && !myOpMode.isStopRequested()) {   } // Chill
-            myRelicSystem.extensionMotor.setPower(0);
         }
 
         //Stop the robot
         mySwerveController.stopRobot();
 
+        while (!timerLower.isDone()) {}
+        myRelicSystem.extensionMotor.setPower(-1);
+        while (!timerRetract.isDone()) {}
+        myRelicSystem.extensionMotor.setPower(0);
     }
 
 

@@ -139,7 +139,7 @@ public class SlotTray implements CubeTrays {
     public int liftTargetPosition = 0;  // change to private
 
     //DEBUGING
-    private static final boolean DEBUG = true;
+    private static final boolean DEBUG = false;
     private static final String TAG = "ftc9773_CubeTray";
 
 

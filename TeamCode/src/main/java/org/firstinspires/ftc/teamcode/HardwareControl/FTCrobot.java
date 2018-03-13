@@ -275,7 +275,7 @@ public class FTCrobot {
                     grabState = !grabState;
                 }
                 // Relic arm - Gamepad 2 Left Joystick
-                myRelicSystem.runSequence(myGamepad2.left_stick_y * -0.95 + 0.05, armState, grabState);
+                myRelicSystem.runSequence(-myGamepad2.left_stick_y, armState, grabState);
             }
         }
 

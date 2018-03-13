@@ -33,7 +33,6 @@ public class TestOpmode extends LinearOpModeCamera {
 
         waitForStart();
 
-        ftcRobot.myDriveWithPID.driveLowerIntake(0.8, 0, 12, -1);
     }
 
 }

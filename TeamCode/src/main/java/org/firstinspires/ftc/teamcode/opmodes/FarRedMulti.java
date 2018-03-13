@@ -34,15 +34,14 @@ import org.firstinspires.ftc.teamcode.resources.Timer;
 
 @Autonomous(name = "Far Red Multi-Glyph")
 public class FarRedMulti extends LinearOpModeCamera {
-    private JewelDetector jewelDetector;
     private String[] rasiTag = new String[2];
     private RasiActions rasiActions;
 
-    private JewelDetector.JewelColors jewelColors = JewelDetector.JewelColors.UNKNOWN;
+    private JewelDetector.JewelColors jewelColors = JewelDetector.JewelColors.BLUE;
     private RelicRecoveryVuMark relicRecoveryVuMark = RelicRecoveryVuMark.CENTER;
 
-    double timeForVuforia;
-    double timeForJewelDetect;
+    private double timeForVuforia;
+    private double timeForJewelDetect;
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -51,8 +50,6 @@ public class FarRedMulti extends LinearOpModeCamera {
         telemetry.addData("Classes", "Initializing...");
         telemetry.addData("RASI Status", "Waiting...");
         telemetry.update();
-
-        jewelDetector = new JewelDetector(this);
 
         // Json
         SafeJsonReader AutoInitParameters = new SafeJsonReader("AutoInitParameters");
@@ -72,57 +69,56 @@ public class FarRedMulti extends LinearOpModeCamera {
         telemetry.addData("Vision", "Starting");
         telemetry.update();
 
-
+        /*
         // Read with vision
+        JewelDetector detector = new JewelDetector(this);
+
+
         while (!opModeIsActive() && !isStopRequested()) {
             // initialize the vuforia section of vision routine
             // during this time, the robot checks for vuforia until either the time is up,
             // or a vumark is detected
 
             // we start by initializing vuforia
-            Timer vuf = new Timer(timeForVuforia);
             VumarkGlyphPattern pattern = new VumarkGlyphPattern(hardwareMap);
+
             // create a temporary variable to store the mark value for this run
             RelicRecoveryVuMark tempMark;
-            // run so long as either the
-            while (!opModeIsActive() && !isStopRequested()&& !vuf.isDone()) {
+
+            // run so long as either the timer is done or vuforia reads something;
+            Timer vuforiaTimer = new Timer(timeForVuforia);
+            while (!opModeIsActive() && !isStopRequested() && !vuforiaTimer.isDone()) {
                 tempMark = pattern.getColumn();
-                // if the vumark is known, update the official value
-                Log.v(TAG, "temp mark is: " + tempMark);
-                if(tempMark != RelicRecoveryVuMark.UNKNOWN) {
+
+                // if the vumark is known, update the official value and exit the loop
+                if (tempMark != RelicRecoveryVuMark.UNKNOWN) {
                     relicRecoveryVuMark = tempMark;
                     break;
                 }
-
                 // report back to the driver station
-                runVisionTelemetry("Vuforia", vuf);
-                if(vuf.isDone())  break;
-
+                runVisionTelemetry("Vuforia", vuforiaTimer);
             }
             pattern.close();
 
-            Timer jewel = new Timer(timeForJewelDetect);
-            jewelDetector.startCamera();
+            detector.startCamera();
+            Timer jewelTimer = new Timer(timeForJewelDetect);
             JewelDetector.JewelColors tempColor;
             Log.i(TAG, "switching to Jewel camera");
-            while (!opModeIsActive() && !isStopRequested() &&  !jewel.isDone()) {
 
-                tempColor = jewelDetector.computeJewelColor();
+            while (!opModeIsActive() && !isStopRequested() &&  !jewelTimer.isDone()) {
+                tempColor = detector.computeJewelColor();
+
                 // if the color is known update the 'official' value
-                Log.v(TAG, "temp color is: " + tempColor);
-
-                if(tempColor != JewelDetector.JewelColors.NOT_INITIALIZED || tempColor != JewelDetector.JewelColors.UNKNOWN) {
-                    jewelColors = tempColor;
+                if(tempColor == JewelDetector.JewelColors.BLUE || tempColor == JewelDetector.JewelColors.RED) jewelColors = tempColor;
+                runVisionTelemetry( "Jewel", jewelTimer);
+                if(jewelTimer.isDone() )
                     break;
-                }
-
-                // Report back to driver station
-                runVisionTelemetry("Jewel", jewel);
-
-                if(jewel.isDone()) break;
             }
-            jewelDetector.stopCamera();
+            detector.stopCamera();
+            Thread.sleep(100);
         }
+
+*/
 
         waitForStart();
 
@@ -157,3 +153,31 @@ public class FarRedMulti extends LinearOpModeCamera {
     }
 }
 
+/*
+ctload;
+jwlarmd;
+jwlarmc;
+wait, 0.5;
+RED:jwlarmr;
+BLUE:jwlarml;
+wait,0.25;
+jwlarmu;
+drvintkl, 1.0, 330, 25;
+drvintake, 0.75, 330, 15;
+turn, 270;
+drvd, 1.0, 90, 42;
+intki;
+wait, 0.4;
+turn, 270;
+intks;
+R:drvleftultra, 0.5, 17;
+C:drvleftultra, 0.5, 23;
+L:drvleftultra, 0.5, 29;
+ctlow;
+drvt, 0.5, 90, 1;
+
+ctout;
+wait, 1;
+drvd, 1, 270, 3;
+end;
+ */

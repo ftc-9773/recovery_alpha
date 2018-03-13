@@ -24,6 +24,8 @@ public class LinearDetectColor extends LinearOpModeCamera {
     RelicRecoveryVuMark mark;
     JewelDetector.JewelColors color = JewelDetector.JewelColors.NOT_INITIALIZED;
 
+    JewelDetector detector;
+
     // make time constraints for detectors
     private static final int timeForVuforia = 2;
     private static final int timeForJewelDetect = 2;
@@ -32,8 +34,7 @@ public class LinearDetectColor extends LinearOpModeCamera {
     @Override
     public void runOpMode() {
             // initialize vumark pattern
-        JewelDetector detector = new JewelDetector(this);
-        Timer timer = new Timer(5);
+        detector = new JewelDetector(this);
 
 
         while (!opModeIsActive() && !isStopRequested()) {
@@ -80,7 +81,9 @@ public class LinearDetectColor extends LinearOpModeCamera {
             }
             detector.stopCamera();
 
+            if (opModeIsActive()) break;
         }
+
         // end vision patterns
         waitForStart();
 

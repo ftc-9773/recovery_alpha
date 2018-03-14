@@ -228,6 +228,8 @@ public class DriveWithPID {
 
         myIntakeController.RunIntake(0, -intakePower);
 
+        Timer stopDelay = new Timer(6000);
+
         while (!myOpMode.isStopRequested() && averageEncoderDist() < maxTicks) {
 
             // Turn on intake
@@ -237,7 +239,9 @@ public class DriveWithPID {
 
             // Check Break conditions
             if (averageEncoderDist() >= maxTicks) break;
-            if (backColorSensor.getDistance(DistanceUnit.INCH) < 2.35 && frontColorSensor.getDistance(DistanceUnit.INCH) < 2.35) break;
+            if (backColorSensor.getDistance(DistanceUnit.INCH) < 2.35 && frontColorSensor.getDistance(DistanceUnit.INCH) < 2.35) stopDelay = new Timer(0.4);
+
+            if (stopDelay.isDone()) break;
 
             // Update Cube tray
             myCubeTray.updatePosition();

@@ -28,7 +28,7 @@ drvt, 0.8, 110, 1.2;
 ctout;
 wait, 0.15;
 drvddumb, 0.4, 27300, 5;
-wait, 0.15
+wait, 0.15;
 R: drvd, 0, 6;
 L: drvd, 180, 6
 stopdump;

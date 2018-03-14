@@ -17,8 +17,6 @@ drvdropintk, 0.8, 20, 29;
 jwlarmu;
 drvintake, 0.8, 20, 13, 0;
 drvd, 1.0, 270, 32;
-intko;
-wait, 0.6;
 intki;
 turn, 90;
 intks;

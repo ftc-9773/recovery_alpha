@@ -146,3 +146,64 @@ public class FarBlueMulti extends LinearOpModeCamera {
     }
 
 }
+
+// Works reasonably well
+
+/*
+ctload;
+RED: jwlarmd;
+RED: jwlarmcl;
+RED: wait, 1;
+RED: jwlarml;
+RED: wait, 0.5;
+RED: jwlarmtempu;
+
+BLUE: jwlarmd;
+BLUE: jwlarmcr;
+BLUE: wait, 1;
+BLUE: jwlarmr;
+BLUE: wait, 0.5;
+BLUE: jwlarmtempu;
+
+drvdropintk, 0.8, 20, 29;
+jwlarmu;
+drvintake, 0.8, 20, 13, 0;
+drvd, 1.0, 270, 32;
+intko;
+wait, 0.6;
+intki;
+turn, 90;
+intks;
+R: drvrightultra, 1, 31;
+C: drvrightultra, 1, 25;
+L: drvrightultra, 1, 19;
+turn, 60;
+ctlow;
+drvt, 0.65, 260, 1.2;
+ctout;
+wait, 0.15;
+drvddumb, 0.4, 60, 5;
+wait, 0.15;
+R: drvd, 1, 180, 6;
+L: drvd, 1, 0, 6;
+stopdump;
+ctload;
+drvd, 1, 80, 30;
+drvintake, 0.5, 55, 30, 3;
+gyrolg;
+drvd, 1, 263, 16;
+L: ctlow;
+C: ctlow;
+R: cthigh;
+gyrolg;
+drvt, 0.65, 230, 1.5;
+gyrolg;
+ctout;
+drvddumb, 0.7, 60, 1;
+gyrolg;
+wait, 0.3;
+gyrolg;
+drvddumb, 0.5, 60, 4;
+gyrolg;
+end;
+*/

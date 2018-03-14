@@ -162,31 +162,52 @@ public class FarRedMulti extends LinearOpModeCamera {
     }
 }
 
+// Known to work decently:
 /*
 ctload;
 jwlarmd;
 jwlarmc;
-wait, 0.5;
+wait, 0.75;
 RED:jwlarmr;
 BLUE:jwlarml;
-wait,0.25;
+wait, 0.15;
+jwlarmtempu;
+drvdropintk, 1.0, 340, 33;
 jwlarmu;
-drvintkl, 1.0, 330, 25;
-drvintake, 0.75, 330, 15;
-turn, 270;
-drvd, 1.0, 90, 42;
+drvintake, 1.0, 340, 15, 0;
+drvd, 1.0, 90, 33;
+intko;
+wait, 0.6;
 intki;
-wait, 0.4;
 turn, 270;
 intks;
-R:drvleftultra, 0.5, 17;
-C:drvleftultra, 0.5, 23;
-L:drvleftultra, 0.5, 29;
 ctlow;
-drvt, 0.5, 90, 1;
-
+R: drvleftultra, 1, 15;
+C: drvleftultra, 1, 19;
+L: drvleftultra, 1, 30;
+turn 270;
+drvt, 0.8, 90, 1;
 ctout;
-wait, 1;
-drvd, 1, 270, 3;
-end;
- */
+wait, 0.5;
+drvddumb, 0.5, 270, 5;
+stopdump;
+drvleftultra, 1, 36, 0;
+ctload;
+turn, 300;
+drvintake, 0.75, 300, 68, -6;
+ctlow;
+L: cthigh;
+turn, 270;
+R: drvleftultra, 1, 31;
+C: drvleftultra, 1, 31;
+L: drvleftultra, 1, 31;
+gyrolg;
+drvt, 0.8, 90, 1;
+gyrolg;
+ctout;
+wait 0.5;
+gyrolg;
+drvddumb, 0.5, 270, 5;
+gyrolg;
+stopdump;
+end; */

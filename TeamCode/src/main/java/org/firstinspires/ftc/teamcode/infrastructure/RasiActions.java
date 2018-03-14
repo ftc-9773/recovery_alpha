@@ -157,6 +157,9 @@ public class RasiActions {
                     ftcRobot.jewelKnocker.ArmReturn();
                     Log.i("RasiActions", "jwlarmu");
                     break;
+                case "jwlarmtempu":
+                    ftcRobot.jewelKnocker.ArmUp();
+                    break;
                 case "jwlarmr":
                     ftcRobot.jewelKnocker.KnockerRight();
                     Log.i("RasiActions", "jwlarmr");

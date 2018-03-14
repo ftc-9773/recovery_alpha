@@ -36,7 +36,7 @@ import org.firstinspires.ftc.teamcode.resources.Timer;
  * Created by vikesh on 1/26/18.
  */
 
-@Autonomous(name = "Close Blue Multi-Glyph")
+@Autonomous(name = "Close Blue Multi-Glyph", group = "Auto Paths:")
 public class CloseBlueMulti extends LinearOpModeCamera {
     private FTCrobot ftcrobot;
     private VumarkGlyphPattern vumarkGlyphPattern;

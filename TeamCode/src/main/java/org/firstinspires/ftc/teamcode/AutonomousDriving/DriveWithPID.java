@@ -361,7 +361,7 @@ public class DriveWithPID {
 
     public void driveByLeftUltraonicDis (double speed, double targetUltrasonicDist, double distForward) throws InterruptedException {
 
-        final double yDist = targetUltrasonicDist - leftUltrasonicSensor.getDistance(DistanceUnit.INCH);
+        final double yDist = targetUltrasonicDist - leftUltrasonicSensor.getDistance(DistanceUnit.INCH) * Math.cos(getClosestQuadrantal() - myGyro.getHeading());
         Vector distanceVector = new Vector(true, -1*yDist, distForward);
 
         driveDist(speed, distanceVector.getAngle(), distanceVector.getMagnitude(), -1);
@@ -371,7 +371,7 @@ public class DriveWithPID {
         boolean negativeDist = false;
         double driveangle = getClosestQuadrantal();
         double robotangle = Math.abs(Math.toDegrees(myGyro.getHeading())-driveangle);
-        double yDist = leftUltrasonicSensor.getDistance(DistanceUnit.INCH) - targetUltrasonicDist;
+        double yDist = leftUltrasonicSensor.getDistance(DistanceUnit.INCH) * Math.cos(driveangle - myGyro.getHeading()) - targetUltrasonicDist;
         Log.i("yDist", Double.toString(yDist));
         if(yDist < 0) {
             yDist *= -1;
@@ -397,7 +397,7 @@ public class DriveWithPID {
         double driveangle = getClosestQuadrantal();
 
         double robotangle = Math.abs(Math.toDegrees(myGyro.getHeading())-driveangle);
-        double yDist = rightUltrasonicSensor.getDistance(DistanceUnit.INCH) - targetUltrasonicDist;
+        double yDist = rightUltrasonicSensor.getDistance(DistanceUnit.INCH) * Math.cos(driveangle - myGyro.getHeading()) - targetUltrasonicDist;
         Log.i("yDist", Double.toString(yDist));
 
         if(yDist < 0) {
@@ -428,7 +428,7 @@ public class DriveWithPID {
         boolean negativeDist = false;
         double driveangle = getClosestQuadrantal();
         double robotangle = Math.abs(Math.toDegrees(myGyro.getHeading())-driveangle);
-        double yDist = leftUltrasonicSensor.getDistance(DistanceUnit.INCH) - targetUltrasonicDist;
+        double yDist = leftUltrasonicSensor.getDistance(DistanceUnit.INCH) * Math.cos(driveangle - myGyro.getHeading()) - targetUltrasonicDist;
         Log.i("yDist", Double.toString(yDist));
         if(yDist < 0) {
             yDist *= -1;

@@ -1,39 +1,23 @@
 package org.firstinspires.ftc.teamcode.opmodes;
 
 import android.util.Log;
+
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
 import org.firstinspires.ftc.robotcontroller.for_camera_opmodes.LinearOpModeCamera;
 import org.firstinspires.ftc.robotcore.external.navigation.RelicRecoveryVuMark;
-import org.firstinspires.ftc.teamcode.HardwareControl.FTCrobot;
 import org.firstinspires.ftc.teamcode.Vision.JewelDetector;
 import org.firstinspires.ftc.teamcode.Vision.VumarkGlyphPattern;
 import org.firstinspires.ftc.teamcode.infrastructure.RasiActions;
 import org.firstinspires.ftc.teamcode.infrastructure.SafeJsonReader;
-import org.firstinspires.ftc.teamcode.resources.ButtonStatus;
-import org.firstinspires.ftc.teamcode.resources.Timer;
-
-import android.util.Log;
-
-import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-
-import org.firstinspires.ftc.robotcontroller.for_camera_opmodes.LinearOpModeCamera;
-import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.robotcore.external.navigation.RelicRecoveryVuMark;
-import org.firstinspires.ftc.teamcode.Vision.JewelDetector;
-import org.firstinspires.ftc.teamcode.Vision.VumarkGlyphPattern;
-import org.firstinspires.ftc.teamcode.infrastructure.RasiActions;
-import org.firstinspires.ftc.teamcode.resources.ButtonStatus;
 import org.firstinspires.ftc.teamcode.resources.Timer;
 
 /**
- * Created by vikesh on 1/26/18.
+ * Created by nicky on 3/14/18.
  */
 
-@Autonomous(name = "Far Red Multi-Glyph", group = "Auto Paths:")
-public class FarRedMulti extends LinearOpModeCamera {
+@Autonomous(name = "Far Blue Multi-Glyph", group = "Auto Paths:")
+public class FarBlueMulti extends LinearOpModeCamera {
     private String[] rasiTag = new String[2];
     private RasiActions rasiActions;
 
@@ -61,7 +45,7 @@ public class FarRedMulti extends LinearOpModeCamera {
         telemetry.addData("RASI Status: ", "Initializing...");
         telemetry.update();
 
-        rasiActions = new RasiActions("AutoRedFarMulti", null, this, gamepad1, gamepad2, telemetry, hardwareMap);
+        rasiActions = new RasiActions("AutoBlueFarMulti", null, this, gamepad1, gamepad2, telemetry, hardwareMap);
 
         telemetry.addData("Classes", "Complete");
         telemetry.addData("RASI Status: ", "Complete");
@@ -160,33 +144,5 @@ public class FarRedMulti extends LinearOpModeCamera {
         telemetry.addData("Reading " + reading, timer.timePassedInSeconds());
         telemetry.update();
     }
+
 }
-
-/*
-ctload;
-jwlarmd;
-jwlarmc;
-wait, 0.5;
-RED:jwlarmr;
-BLUE:jwlarml;
-wait,0.25;
-jwlarmu;
-drvintkl, 1.0, 330, 25;
-drvintake, 0.75, 330, 15;
-turn, 270;
-drvd, 1.0, 90, 42;
-intki;
-wait, 0.4;
-turn, 270;
-intks;
-R:drvleftultra, 0.5, 17;
-C:drvleftultra, 0.5, 23;
-L:drvleftultra, 0.5, 29;
-ctlow;
-drvt, 0.5, 90, 1;
-
-ctout;
-wait, 1;
-drvd, 1, 270, 3;
-end;
- */

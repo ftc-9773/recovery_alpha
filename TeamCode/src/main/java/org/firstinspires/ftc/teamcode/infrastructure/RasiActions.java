@@ -95,10 +95,10 @@ public class RasiActions {
                     ftcRobot.myDriveWithPID.driveDistDumb(rasiParser.getAsDouble(1), rasiParser.getAsDouble(2), rasiParser.getAsDouble(3), -1);
                     break;
                 case "intkl":
-                    //timer2 = new Timer(0.75);
-                    //ftcRobot.myRelicSystem.runToPosition(400);
-                    //while (!timer2.isDone() && linearOpModeCamera.opModeIsActive()){}
-                    //ftcRobot.myRelicSystem.runToPosition(0);
+                    timer2 = new Timer(0.75);
+                    ftcRobot.myRelicSystem.runToPosition(400);
+                    while (!timer2.isDone() && linearOpModeCamera.opModeIsActive()){}
+                    ftcRobot.myRelicSystem.runToPosition(0);
                     break;
                 case "intki":
                     ftcRobot.myManualIntakeController.RunIntake(0, -1);
@@ -127,20 +127,11 @@ public class RasiActions {
                     ftcRobot.myCubeTray.setToPos(LiftFinalStates.MID);
                     ftcRobot.myCubeTray.updatePosition();
                     break;
-                case "ctrun":
-                    timer2 = new Timer(rasiParser.getAsDouble(1));
-                    while (!linearOpModeCamera.isStopRequested() && !timer2.isDone()) {
-                        ftcRobot.myCubeTray.updatePosition();
-                    }
-                    break;
                 case "ctout":
                     ftcRobot.myCubeTray.startDump();
                     break;
                 case "stopdump":
                     ftcRobot.myCubeTray.stopDump();
-                    break;
-                case "ctstop":
-                    ftcRobot.myCubeTray.dump();
                     break;
                 case "wait":
                     timer2 = new Timer(rasiParser.getAsDouble(1));
@@ -172,7 +163,14 @@ public class RasiActions {
                     ftcRobot.jewelKnocker.KnockerStartMove();
                     Log.i("RasiActions", "jwlarmc");
                     break;
+                case "jwlarmcl":
+                    ftcRobot.jewelKnocker.KnockerLeftOut();
+                    break;
+                case "jwlarmcr":
+                    ftcRobot.jewelKnocker.KnockerRightOut();
+                    break;
                 case "end":
+                    ftcRobot.myGyro.recordHeading();
                     linearOpModeCamera.requestOpModeStop();
                     while(linearOpModeCamera.opModeIsActive()){}
                     break;

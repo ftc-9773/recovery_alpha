@@ -50,6 +50,8 @@ public class JewelKnocker {
     public void KnockerLeftStowed(){knockerServo.setPosition(knockerLeftSideStowedPos);}
     public void KnockerRight(){knockerServo.setPosition(knockerRightSidePos);}
 
+    public void KnockerLeftOut() {knockerServo.setPosition(knockerOutLeft);}
+    public void KnockerRightOut() {knockerServo.setPosition(knockerOutRight);}
 
 
 

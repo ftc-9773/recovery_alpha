@@ -33,6 +33,11 @@ public class TestOpmode extends LinearOpModeCamera {
 
         waitForStart();
 
+        while (opModeIsActive()) {
+            telemetry.addData("Left Ultrasonic", ftcRobot.myDriveWithPID.leftUltrasonicSensor.getDistance(DistanceUnit.INCH));
+            telemetry.addData("Right Ultrasonic", ftcRobot.myDriveWithPID.rightUltrasonicSensor.getDistance(DistanceUnit.INCH));
+            telemetry.update();
+        }
     }
 
 }

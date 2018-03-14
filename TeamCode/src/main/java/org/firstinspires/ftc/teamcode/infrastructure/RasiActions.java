@@ -71,16 +71,19 @@ public class RasiActions {
                     ftcRobot.myDriveWithPID.driveDropIntake(rasiParser.getAsDouble(1), rasiParser.getAsDouble(2), rasiParser.getAsDouble(3));
                     break;
                 case "drvleftultra":
-                    ftcRobot.myDriveWithPID.driveByLeftUltraonicDis(rasiParser.getAsDouble(1), rasiParser.getAsDouble(2), rasiParser.getAsDouble(3));
+                    ftcRobot.myDriveWithPID.driveByLeftUltraonicDis(rasiParser.getAsDouble(1), rasiParser.getAsDouble(2));
+                    break;
+                case "drvleftultradumb":
+                    ftcRobot.myDriveWithPID.driveLeftUltrasonicFast(rasiParser.getAsDouble(1), rasiParser.getAsDouble(2), rasiParser.getAsDouble(3));
                     break;
                 case "drvrightultra":
-                    ftcRobot.myDriveWithPID.driveByRightUltrasonicDist(rasiParser.getAsDouble(1), rasiParser.getAsDouble(2), rasiParser.getAsDouble(3));
+                    ftcRobot.myDriveWithPID.driveByRightUltrasonicDist(rasiParser.getAsDouble(1), rasiParser.getAsDouble(2));
                     break;
                 case "drvstopintake":
                     ftcRobot.myDriveWithPID.driveDistStopIntake(rasiParser.getAsDouble(1), rasiParser.getAsDouble(2), rasiParser.getAsDouble(3), -1);
                     break;
                 case "drvintake":
-                    ftcRobot.myDriveWithPID.driveIntake(rasiParser.getAsDouble(1), rasiParser.getAsDouble(2), rasiParser.getAsDouble(3),-1, 1);
+                    ftcRobot.myDriveWithPID.driveIntake(rasiParser.getAsDouble(1), rasiParser.getAsDouble(2), rasiParser.getAsDouble(3),-1, 1, rasiParser.getAsDouble(4));
                     break;
                 case "drvd":
                     ftcRobot.myDriveWithPID.driveDist(rasiParser.getAsDouble(1), rasiParser.getAsDouble(2), rasiParser.getAsDouble(3));

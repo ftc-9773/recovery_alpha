@@ -2,9 +2,9 @@
   "armStoredPos":0.8,
   "armUpPos": 0.6,
   "armOutPos":0.1,
-  "knockerOutLeft": 0.47,
+  "knockerOutLeft": 0.45,
   "knockerOutPos": 0.4,
-  "knockerOutRight": 0.3,
+  "knockerOutRight": 0.35,
   "knockerRightSidePos":0.15,
   "knockerLeftSideStowedPos":0.7
 }

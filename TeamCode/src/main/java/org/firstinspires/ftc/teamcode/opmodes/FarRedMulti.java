@@ -151,6 +151,10 @@ public class FarRedMulti extends LinearOpModeCamera {
 
         // DO EVERYTHING
         rasiActions.runRasi();
+
+        // End features
+        rasiActions.ftcRobot.mySwerveController.stopRobot();
+        rasiActions.ftcRobot.myGyro.recordHeading();
     }
 
 

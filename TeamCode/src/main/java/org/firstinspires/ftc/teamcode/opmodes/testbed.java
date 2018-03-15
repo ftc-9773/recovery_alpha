@@ -16,6 +16,8 @@ public class testbed extends LinearOpModeCamera {
     @Override
     public void runOpMode() throws InterruptedException{
         RasiExecutor rasiExecutor = new RasiExecutor(this, "/sdcard/FIRST/team9773/rasi18/", "opmodetest.rasi");
+        waitForStart();
         rasiExecutor.runRasi();
+        while(opModeIsActive()){}
     }
 }

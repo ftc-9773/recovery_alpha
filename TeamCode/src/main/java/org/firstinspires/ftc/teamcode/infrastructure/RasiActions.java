@@ -61,7 +61,7 @@ public class RasiActions {
                 case "turn":
                     ftcRobot.myDriveWithPID.turnRobot(rasiParser.getAsDouble(1));
                     break;
-                case "drvleftultra":
+                case "rvleftultra":
                     ftcRobot.myDriveWithPID.driveByLeftUltraonicDis(rasiParser.getAsDouble(1), rasiParser.getAsDouble(2));
                     break;
                 case "drvstopintake":

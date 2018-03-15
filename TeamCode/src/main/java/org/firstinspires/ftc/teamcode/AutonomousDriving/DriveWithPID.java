@@ -55,11 +55,11 @@ public class DriveWithPID {
     //Constants
     private static final double wheelDiameter = 3;
     private static final double encoderTicksPerInch = (19.8 * 28) / (wheelDiameter * Math.PI);
-    private double targetTicks;
-
+    private static double distOffset;
 
     // Turning PID
     PIDController turningPID;
+    PIDController drivingPID;
     private double baseSpeed;
     private double errorThreshold;
     private double speedThreshold;
@@ -70,7 +70,8 @@ public class DriveWithPID {
     DistanceColorSensor backColorSensor;
     DistanceColorSensor frontColorSensor;
 
-    ModernRoboticsI2cRangeSensor ultrasonicSensor;
+    public ModernRoboticsI2cRangeSensor leftUltrasonicSensor;
+    public ModernRoboticsI2cRangeSensor rightUltrasonicSensor;
 
 
     // INIT
@@ -94,23 +95,50 @@ public class DriveWithPID {
         errorThreshold = turningPIDCoefficients.getDouble("errorThreshold");
         speedThreshold = turningPIDCoefficients.getDouble("speedThreshold");
 
+        double driveKp = turningPIDCoefficients.getDouble("driveKp");
+        double driveKi = turningPIDCoefficients.getDouble("driveKi");
+        double driveKd = turningPIDCoefficients.getDouble("driveKd");
+        distOffset = turningPIDCoefficients.getDouble("distOffset");
+        drivingPID = new PIDController(driveKp, driveKi, driveKd);
 
         // Sensors
         backColorSensor = new DistanceColorSensor(hwMap, "backColorSensor");
         frontColorSensor = new DistanceColorSensor(hwMap, "frontColorSensor");
 
-        ultrasonicSensor = hwMap.get(ModernRoboticsI2cRangeSensor.class, "ultrasonicSensor");
+        leftUltrasonicSensor = hwMap.get(ModernRoboticsI2cRangeSensor.class, "leftUltrasonicSensor");
+        rightUltrasonicSensor = hwMap.get(ModernRoboticsI2cRangeSensor.class, "rightUltrasonicSensor");
     }
 
+    public void driveDistDumb (double speed, double angleDegrees, double distInches, double headingDegrees) throws InterruptedException {
+        //////// Drive until it has gone the right distance ////////
+
+        // Zero the encoders
+        zeroEncoders();
+
+        // Calculate target distance
+        double targetTicks = encoderTicksPerInch * distInches - distOffset;
+        if (DEBUG) { Log.i(TAG, "Target Ticks: " + targetTicks); }
+
+        // Drive
+        while (!myOpMode.isStopRequested() && averageEncoderDist() < targetTicks) {
+            // While the robot has not driven far enough
+
+            mySwerveController.steerSwerve(false , speed, Math.toRadians(angleDegrees), 0, headingDegrees);
+            mySwerveController.moveRobot(true);
+            if (DEBUG) { Log.i(TAG, "Distance so far: " + averageEncoderDist()); }
+
+            // Update Cube tray
+            myCubeTray.updatePosition();
+        }
+
+        //Stop the robot
+        mySwerveController.stopRobot();
+
+    }
     // Actual driving funftions
 
     // Driving
     public void driveDist(double speed, double angleDegrees, double distInches, double headingDegrees) throws InterruptedException {
-
-        // Orient Robot
-//        turnRobot(robotOrientationDegrees);
-//        if (DEBUG) { Log.i(TAG, "Finished setting heading"); }
-
 
         //////// Drive until it has gone the right distance ////////
 
@@ -118,13 +146,18 @@ public class DriveWithPID {
         zeroEncoders();
 
         // Calculate target distance
-        double targetTicks = encoderTicksPerInch * distInches;
+        double targetTicks = encoderTicksPerInch * distInches - distOffset;
         if (DEBUG) { Log.i(TAG, "Target Ticks: " + targetTicks); }
 
         // Drive
         while (!myOpMode.isStopRequested() && averageEncoderDist() < targetTicks) {
             // While the robot has not driven far enough
-            mySwerveController.steerSwerve(false , speed, Math.toRadians(angleDegrees), 0, headingDegrees);
+
+            final double error = (targetTicks - averageEncoderDist());
+            double motorPower = drivingPID.getPIDCorrection(error);
+            if (motorPower > speed) motorPower = speed;
+
+            mySwerveController.steerSwerve(false , motorPower, Math.toRadians(angleDegrees), 0, headingDegrees);
             mySwerveController.moveRobot(true);
             if (DEBUG) { Log.i(TAG, "Distance so far: " + averageEncoderDist()); }
 
@@ -148,7 +181,7 @@ public class DriveWithPID {
         zeroEncoders();
 
         // Calculate target distance
-        double targetTicks = encoderTicksPerInch * distInches;
+        double targetTicks = encoderTicksPerInch * distInches - distOffset;
         if (DEBUG) { Log.i(TAG, "Target Ticks: " + targetTicks); }
 
         // Drive
@@ -156,7 +189,11 @@ public class DriveWithPID {
             // While the robot has not driven far enough
 
             // Drive
-            mySwerveController.steerSwerve(false , speed, Math.toRadians(angleDegrees), 0, headingDegrees);
+            final double error = (targetTicks - averageEncoderDist());
+            double motorPower = drivingPID.getPIDCorrection(error);
+            if (motorPower > speed) motorPower = speed;
+
+            mySwerveController.steerSwerve(false , motorPower, Math.toRadians(angleDegrees), 0, headingDegrees);
             mySwerveController.moveRobot(true);
 
             if (DEBUG) { Log.i(TAG, "Distance so far: " + averageEncoderDist()); }
@@ -180,84 +217,125 @@ public class DriveWithPID {
         if (DEBUG) { Log.i(TAG, "Extra Distance: " + (Math.abs(averageEncoderDist()) - targetTicks)); }
     }
 
-    public void driveIntake (double speed, double angleDegrees, double maxDistInches, double headingDegrees, double intakePower) {
 
-        Timer myTimer = new Timer(60000);
-        boolean wasCubeIn = false;
+
+    public void driveIntake (double speed, double angleDegrees, double maxDistInches, double headingDegrees, double intakePower, double backOffset) {
+
 
         // Calculate target distance
         zeroEncoders();
         double maxTicks = encoderTicksPerInch * maxDistInches;
 
+        myIntakeController.RunIntake(0, -intakePower);
 
-        while (!myOpMode.isStopRequested()) {
+        Timer stopDelay = new Timer(6000);
+
+        while (!myOpMode.isStopRequested() && averageEncoderDist() < maxTicks) {
 
             // Turn on intake
-            myIntakeController.RunIntake(0, -1);
 
             mySwerveController.steerSwerve(false, speed, Math.toRadians(angleDegrees), 0, headingDegrees);
             mySwerveController.moveRobot(true);
 
             // Check Break conditions
-            if (averageEncoderDist() >= targetTicks) break;
-            if (backColorSensor.getDistance(DistanceUnit.INCH) < 2.35 && frontColorSensor.getDistance(DistanceUnit.INCH) < 2.35) {
-                wasCubeIn = true;
-            }
+            if (averageEncoderDist() >= maxTicks) break;
+            if (backColorSensor.getDistance(DistanceUnit.INCH) < 2.35 && frontColorSensor.getDistance(DistanceUnit.INCH) < 2.35) stopDelay = new Timer(0.4);
 
-            if (wasCubeIn && myTimer.isDone()) break;
+            if (stopDelay.isDone()) break;
+
             // Update Cube tray
             myCubeTray.updatePosition();
         }
 
-        // Stop the intake -- Or DON'T
-        //myIntakeController.RunIntake(0, 0);
+        mySwerveController.stopRobot();
+
+        //Stop intake
+        myIntakeController.RunIntake(0, 0);
+
+        Timer myTimer = new Timer(0.1);
+        while (!myOpMode.isStopRequested() && !myTimer.isDone()) {} //chill
+
+        //Drive Back
+        double targetBack = averageEncoderDist() + backOffset * encoderTicksPerInch;
+        zeroEncoders();
+
+        // restart the intake in 0.5 seconds
+        myTimer = new Timer(0.68);
 
         // Drive back with intake onn
-        while (!myOpMode.isStopRequested() && averageEncoderDist() > 0) {
-            mySwerveController.steerSwerve(false, -speed, Math.toRadians(angleDegrees), 0, headingDegrees);
+        while (!myOpMode.isStopRequested() && averageEncoderDist() <= targetBack) {
+
+            final double error = (targetBack - averageEncoderDist()); // /100 is to make the coefficients more readable
+            double motorPower = drivingPID.getPIDCorrection(error);
+            if (motorPower > speed) motorPower = speed;
+
+            mySwerveController.steerSwerve(false, -motorPower, Math.toRadians(angleDegrees), 0, headingDegrees);
             mySwerveController.moveRobot(true);
+
+
+            if (myTimer.isDone()) myIntakeController.RunIntake(0, -intakePower);
 
             // Update Cube tray
             myCubeTray.updatePosition();
         }
         myIntakeController.RunIntake(0, 0);
         mySwerveController.stopRobot();
+
+        Log.i(TAG, "Overshoot: " + (targetBack - averageEncoderDist() - distOffset));
     }
 
 
-    public void driveLowerIntake (double speed, double angleDegrees, double distInches, double headingDegrees) {
-
-        // Set a 1.4 seccond timer
-        Timer myTimer = new Timer(1.3);
+    public void driveDropIntake(double speed, double angleDegrees, double distInches) throws InterruptedException {
+        //////// Drive until it has gone the right distance ////////
 
         // Zero the encoders
         zeroEncoders();
 
         // Calculate target distance
-        double targetTicks = encoderTicksPerInch * distInches;
+        double targetTicks = encoderTicksPerInch * distInches - distOffset;
         if (DEBUG) { Log.i(TAG, "Target Ticks: " + targetTicks); }
 
-        // Extend the intake
-        myRelicSystem.runToPosition(400);
+
+        myRelicSystem.extensionMotor.setPower(1);
+        boolean hasExtended = false;
+        boolean hasRetracted = false;
 
         // Drive
         while (!myOpMode.isStopRequested() && averageEncoderDist() < targetTicks) {
             // While the robot has not driven far enough
-            mySwerveController.steerSwerve(false , speed, Math.toRadians(angleDegrees), 0, headingDegrees);
-            mySwerveController.moveRobot(true);
 
-            if (myTimer.isDone()) myRelicSystem.runToPosition(0);
+            final double error = (targetTicks - averageEncoderDist());
+            double motorPower = drivingPID.getPIDCorrection(error);
+            if (motorPower > speed) motorPower = speed;
+
+            mySwerveController.steerSwerve(false , motorPower, Math.toRadians(angleDegrees), 0, -1);
+            mySwerveController.moveRobot(true);
+            if (DEBUG) { Log.i(TAG, "Distance so far: " + averageEncoderDist()); }
+
+            if (myRelicSystem.extensionMotor.getCurrentPosition() > 650) {
+                hasExtended = true;
+                myRelicSystem.extensionMotor.setPower(-1);
+            }
+            if (myRelicSystem.extensionMotor.getCurrentPosition() < 20){
+                hasRetracted = true;
+                myRelicSystem.extensionMotor.setPower(0);
+            }
 
             // Update Cube tray
             myCubeTray.updatePosition();
         }
 
-        // Wait until the timer is done (if it isn't) and then retract the relic arm
-        while (!myTimer.isDone()) { } // Do nothing
-        myRelicSystem.runToPosition(0);
-
         //Stop the robot
         mySwerveController.stopRobot();
+
+        if (!hasExtended) {
+            while (myRelicSystem.extensionMotor.getCurrentPosition() < 650) {}
+            myRelicSystem.extensionMotor.setPower(-1);
+        }
+        if (!hasRetracted) {
+            while (myRelicSystem.extensionMotor.getCurrentPosition() > 20) {}
+            myRelicSystem.extensionMotor.setPower(0);
+        }
 
     }
 
@@ -287,11 +365,69 @@ public class DriveWithPID {
 
     public void driveByLeftUltraonicDis (double speed, double targetUltrasonicDist, double distForward) throws InterruptedException {
 
-        final double yDist = targetUltrasonicDist - ultrasonicSensor.getDistance(DistanceUnit.INCH);
-        Vector distanceVector = new Vector(true, -1*yDist, distForward);
-
-        driveDist(speed, distanceVector.getAngle(), distanceVector.getMagnitude(), -1);
+        final double xDist = targetUltrasonicDist - leftUltrasonicSensor.getDistance(DistanceUnit.INCH) * Math.cos(getClosestQuadrantal() - myGyro.getHeading());
+        Vector distanceVector = new Vector(true, xDist, distForward);
+        Log.i(TAG, "xDist: " + xDist + "  Dist forward: " + distForward);
+        driveDist(speed, Math.toDegrees(distanceVector.getAngle()), distanceVector.getMagnitude(), -1);
     }
+
+    public void driveLeftUltrasonicFast (double speed, double targetUltrasonicDist, double distForward) throws InterruptedException {
+        boolean negativeDist = false;
+        double driveangle = getClosestQuadrantal();
+        double robotangle = Math.abs(Math.toDegrees(myGyro.getHeading())-driveangle);
+        double yDist = leftUltrasonicSensor.getDistance(DistanceUnit.INCH) * Math.cos(driveangle - myGyro.getHeading()) - targetUltrasonicDist;
+        Log.i("yDist", Double.toString(yDist));
+
+        if (Math.abs(yDist) < 0.75) {
+            return;
+        }
+
+        if(yDist < 0) {
+            yDist *= -1;
+            negativeDist = true;
+        }
+        yDist = Math.cos(Math.toRadians(robotangle))*yDist;
+
+        Vector movementVector;
+        if(negativeDist) {
+            movementVector = new Vector(false, (getClosestQuadrantal() + 90)%360, yDist);
+        }
+        else{
+            movementVector = new Vector(false, (getClosestQuadrantal() + 270)%360, yDist);
+        }
+
+        movementVector.addVector(false, distForward, getClosestQuadrantal());
+        driveDistDumb(speed, Math.toDegrees(movementVector.getAngle()), movementVector.getMagnitude(), -1);
+
+    }
+
+    public void driveByRightUltrasonicDist (double speed, double targetUltrasonicDist) throws InterruptedException {
+        boolean negativeDist = false;
+        double driveangle = getClosestQuadrantal();
+
+        double robotangle = Math.abs(Math.toDegrees(myGyro.getHeading())-driveangle);
+        double yDist = rightUltrasonicSensor.getDistance(DistanceUnit.INCH) * Math.cos(driveangle - myGyro.getHeading()) - targetUltrasonicDist;
+        Log.i("yDist", Double.toString(yDist));
+
+        if (Math.abs(yDist) < 0.75) {
+            return;
+        }
+
+        if(yDist < 0) {
+            yDist *= -1;
+            negativeDist = true;
+        }
+        yDist = Math.cos(Math.toRadians(robotangle))*yDist;
+        if(negativeDist) {
+            driveDist(speed, (getClosestQuadrantal() + 270)%360, yDist);
+        }
+        else{
+            driveDist(speed, (getClosestQuadrantal() + 90)%360, yDist);
+        }
+
+    }
+
+
     public boolean isStuck(){
         if(backColorSensor.getDistance(DistanceUnit.INCH) < 2.35){
             return true;
@@ -300,20 +436,25 @@ public class DriveWithPID {
             return false;
         }
     }
+
     public void driveByLeftUltraonicDis (double speed, double targetUltrasonicDist) throws InterruptedException {
         boolean negativeDist = false;
         double driveangle = getClosestQuadrantal();
         double robotangle = Math.abs(Math.toDegrees(myGyro.getHeading())-driveangle);
-        double yDist = ultrasonicSensor.getDistance(DistanceUnit.INCH) - targetUltrasonicDist;
+        double yDist = leftUltrasonicSensor.getDistance(DistanceUnit.INCH) - targetUltrasonicDist;
+        Log.i("Ultrasonic Dist", Double.toString(leftUltrasonicSensor.getDistance(DistanceUnit.INCH)));
         Log.i("yDist", Double.toString(yDist));
+
         if(yDist < 0) {
             yDist *= -1;
             negativeDist = true;
         }
+
         yDist = Math.cos(Math.toRadians(robotangle))*yDist;
         if(negativeDist) {
             driveDist(speed, (getClosestQuadrantal() + 90)%360, yDist);
         }
+
         else{
             driveDist(speed, (getClosestQuadrantal() + 270)%360, yDist);
         }
@@ -346,19 +487,19 @@ public class DriveWithPID {
             error = setOnNegToPosPi(targetAngleRad - currentHeading);
 
             double rotation = turningPID.getPIDCorrection(error);
-            Log.e("Error: ", "" + error);
+            //Log.e("Error: ", "" + error);
 
-            Log.e("First Rotation: ", "" + rotation);
+            //Log.e("First Rotation: ", "" + rotation);
 
             if (rotation > 0) {
                 rotation += baseSpeed;
             } else if (rotation < 0) {
                 rotation -= baseSpeed;
             }
-            Log.e("Second Rotation: ", "" + rotation);
+            //Log.e("Second Rotation: ", "" + rotation);
 
             mySwerveController.steerSwerve(true,0,0, rotation, -1);
-            boolean log = mySwerveController.moveRobot(true);
+            mySwerveController.moveRobot(true);
 
 
 
@@ -382,6 +523,42 @@ public class DriveWithPID {
 
         }
         mySwerveController.stopRobot();
+    }
+
+    public void  quickTurn(double targetAngleDegrees) {
+
+        double targetAngleRad = Math.toRadians(targetAngleDegrees);
+
+        boolean turningLeft = (targetAngleRad < myGyro.getHeading());
+
+        while (!myOpMode.isStopRequested()) {
+
+            double currentHeading = myGyro.getHeading();
+            double error = setOnNegToPosPi(targetAngleRad - currentHeading);
+
+            double rotation = turningPID.getPIDCorrection(error);
+            if (rotation > 0) {
+                rotation += baseSpeed;
+            } else if (rotation < 0) {
+                rotation -= baseSpeed;
+            }
+
+            mySwerveController.steerSwerve(true,0,0, rotation, -1);
+            mySwerveController.moveRobot(true);
+
+            if (turningLeft && targetAngleRad > currentHeading) break;
+            if (!turningLeft && targetAngleRad < currentHeading) break;
+        }
+    }
+
+    // Non-driving related
+    public void unStickCubes () {
+        if (frontColorSensor.getDistance(DistanceUnit.INCH)  < 2.35) {
+            Timer myTimer = new Timer(1);
+            myIntakeController.RunIntake(0, 1);
+            while (!myTimer.isDone()) {}
+            myIntakeController.RunIntake(0,0);
+        }
     }
 
     // Helper functions

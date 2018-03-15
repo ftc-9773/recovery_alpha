@@ -25,8 +25,7 @@ public class TestOpmode extends LinearOpModeCamera {
     public void runOpMode() throws InterruptedException {
         telemetry.addData("Init:", "waiting...");
         telemetry.update();
-        //ftcRobot = new FTCrobot(hardwareMap, telemetry, gamepad1, gamepad2, this);
-        distanceSensor = new DistanceColorSensor(hardwareMap, "sensor");
+        ftcRobot = new FTCrobot(hardwareMap, telemetry, gamepad1, gamepad2, this);
 
 
         telemetry.addData("Init", "Successful!!");
@@ -35,10 +34,10 @@ public class TestOpmode extends LinearOpModeCamera {
         waitForStart();
 
         while (opModeIsActive()) {
-            telemetry.addData("Sensor Reading", distanceSensor.getDistance(DistanceUnit.INCH));
-            if (distanceSensor.getDistance(DistanceUnit.INCH) < 2.35) telemetry.addData("Cube", "Present");
-            else telemetry.addData("Cube", "Absent");
+            telemetry.addData("Left Ultrasonic", ftcRobot.myDriveWithPID.leftUltrasonicSensor.getDistance(DistanceUnit.INCH));
+            telemetry.addData("Right Ultrasonic", ftcRobot.myDriveWithPID.rightUltrasonicSensor.getDistance(DistanceUnit.INCH));
             telemetry.update();
+            Thread.sleep(100);
         }
     }
 

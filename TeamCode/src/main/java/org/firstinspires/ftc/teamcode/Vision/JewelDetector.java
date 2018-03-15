@@ -49,6 +49,8 @@ public class JewelDetector {
     public double redThresholdVuf ;
     public double blueThresholdVuf;
 
+    private final boolean DEBUG = false;
+
     private boolean usingVuforiaForDetect;
 
     // reference to linear opmode
@@ -213,8 +215,8 @@ public class JewelDetector {
         diff = (redValue - blueValue);
         diff /= totValue;
 
-        Log.e(TAG, "ColOn: "+ colOn + "ColOff: "+ colOff);
-        Log.e(TAG, "Red value: "+ redValue + "   Blue Value: "+ blueValue + "  diff: " + diff);
+        if (DEBUG) Log.e(TAG, "ColOn: "+ colOn + "ColOff: "+ colOff);
+        if (DEBUG) Log.e(TAG, "Red value: "+ redValue + "   Blue Value: "+ blueValue + "  diff: " + diff);
 
         if(diff < -blueThreshold){
             leftJewelColor = JewelColors.BLUE ;

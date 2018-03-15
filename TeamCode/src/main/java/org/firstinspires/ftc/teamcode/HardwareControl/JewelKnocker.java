@@ -15,8 +15,11 @@ public class JewelKnocker {
 
     private Servo armServo;
     private Servo knockerServo;
+    private double armUpPos;
     private double armOutPos;
     private double knockerOutPos;
+    private double knockerOutLeft;
+    private double knockerOutRight;
     private double armStoredPos;
     private double knockerLeftSideStowedPos;
     private double knockerRightSidePos;
@@ -32,17 +35,23 @@ public class JewelKnocker {
         armOutPos = safeJsonReader.getDouble("armOutPos");
         armStoredPos = safeJsonReader.getDouble("armStoredPos");
         knockerOutPos = safeJsonReader.getDouble("knockerOutPos");
+        knockerOutLeft = safeJsonReader.getDouble("knockerOutLeft");
+        knockerOutRight = safeJsonReader.getDouble("knockerOutRight");
         knockerLeftSideStowedPos = safeJsonReader.getDouble("knockerLeftSideStowedPos");
         knockerRightSidePos = safeJsonReader.getDouble("knockerRightSidePos");
+        armUpPos = safeJsonReader.getDouble("armUpPos");
     }
     public void ArmInitialLower() { armServo.setPosition(armOutPos);}
     public void ArmReturn(){ armServo.setPosition(armStoredPos);
         Log.e("Servo Position", "" + armStoredPos);
     }
+    public void ArmUp() {armServo.setPosition(armUpPos);}
     public void KnockerStartMove(){knockerServo.setPosition(knockerOutPos);}
     public void KnockerLeftStowed(){knockerServo.setPosition(knockerLeftSideStowedPos);}
     public void KnockerRight(){knockerServo.setPosition(knockerRightSidePos);}
 
+    public void KnockerLeftOut() {knockerServo.setPosition(knockerOutLeft);}
+    public void KnockerRightOut() {knockerServo.setPosition(knockerOutRight);}
 
 
 

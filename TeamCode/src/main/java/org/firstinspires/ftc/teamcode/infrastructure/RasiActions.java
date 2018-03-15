@@ -2,19 +2,14 @@ package org.firstinspires.ftc.teamcode.infrastructure;
 
 import android.util.Log;
 
-import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcontroller.for_camera_opmodes.LinearOpModeCamera;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.teamcode.HardwareControl.CubeTray;
 import org.firstinspires.ftc.teamcode.HardwareControl.FTCrobot;
-import org.firstinspires.ftc.teamcode.HardwareControl.SwerveController;
-import org.firstinspires.ftc.teamcode.PositionTracking.Gyro;
-
-import org.firstinspires.ftc.teamcode.resources.Timer;
 import org.firstinspires.ftc.teamcode.HardwareControl.LiftFinalStates;
+import org.firstinspires.ftc.teamcode.resources.Timer;
 
 /**
  * Created by vikesh on 1/5/18.
@@ -22,18 +17,22 @@ import org.firstinspires.ftc.teamcode.HardwareControl.LiftFinalStates;
 
 public class RasiActions {
     public RasiParser rasiParser;
-    private FTCrobot ftcRobot;
+    public FTCrobot ftcRobot;
     private Timer timer2;
     private LinearOpModeCamera linearOpModeCamera;
-    private Gyro myGyro;
 
     // Init
     public RasiActions(String rasiFilename, String[] rasiTag, LinearOpModeCamera myLinearOpModeCamera, Gamepad gamepad1, Gamepad gamepad2, Telemetry telemetry, HardwareMap hwMap){
-        myGyro = new Gyro(hwMap);
+        Log.i("RasiAction", "Passing linearopmode");
         this.linearOpModeCamera = myLinearOpModeCamera;
+        Log.i("RasiActions", "Building RasiParser");
         rasiParser = new RasiParser(rasiFilename, rasiTag);
+        Log.i("RasiActions", "Building FTCRobot");
         ftcRobot = new FTCrobot(hwMap, telemetry, gamepad1, gamepad2, myLinearOpModeCamera);
-        ftcRobot.myCubeTray.setAutonomousMode(true) ;
+        Log.i("RasiActions", "Setting CubeTray to auto mode");
+        ftcRobot.myCubeTray.setAutonomousMode(true);
+        ftcRobot.myCubeTray.setZeroFromCompStart();
+        Log.i("RasiActions", "Done with Rasi init");
     }
 
     // Run the rasi commands
@@ -41,7 +40,9 @@ public class RasiActions {
         ftcRobot.myCubeTray.setZeroFromCompStart();
         rasiParser.loadNextCommand();
         while (!linearOpModeCamera.isStopRequested()) {
-            Log.i("RasiActions", rasiParser.getParameter(0));
+            Log.i("RasiActions", "Started new loop!");
+
+            Log.i("RasiActions", "Parameter - " + rasiParser.getParameter(0));
             switch (rasiParser.getParameter(0)) {
                 case "addstuck":
                     if(ftcRobot.myDriveWithPID.isStuck()){
@@ -61,20 +62,38 @@ public class RasiActions {
                 case "turn":
                     ftcRobot.myDriveWithPID.turnRobot(rasiParser.getAsDouble(1));
                     break;
-                case "rvleftultra":
+                case "quickturn":
+                    ftcRobot.myDriveWithPID.quickTurn(rasiParser.getAsDouble(1));
+                    break;
+                case "drvdropintk":
+                    ftcRobot.myDriveWithPID.driveDropIntake(rasiParser.getAsDouble(1), rasiParser.getAsDouble(2), rasiParser.getAsDouble(3));
+                    break;
+                case "drvleftultra":
                     ftcRobot.myDriveWithPID.driveByLeftUltraonicDis(rasiParser.getAsDouble(1), rasiParser.getAsDouble(2));
+                    break;
+                case "drvleftultradumb":
+                    ftcRobot.myDriveWithPID.driveLeftUltrasonicFast(rasiParser.getAsDouble(1), rasiParser.getAsDouble(2), rasiParser.getAsDouble(3));
+                    break;
+                case "drvleftultraback":
+                    ftcRobot.myDriveWithPID.driveByLeftUltraonicDis(rasiParser.getAsDouble(1), rasiParser.getAsDouble(2), rasiParser.getAsDouble(3));
+                    break;
+                case "drvrightultra":
+                    ftcRobot.myDriveWithPID.driveByRightUltrasonicDist(rasiParser.getAsDouble(1), rasiParser.getAsDouble(2));
                     break;
                 case "drvstopintake":
                     ftcRobot.myDriveWithPID.driveDistStopIntake(rasiParser.getAsDouble(1), rasiParser.getAsDouble(2), rasiParser.getAsDouble(3), -1);
                     break;
                 case "drvintake":
-                    ftcRobot.myDriveWithPID.driveIntake(rasiParser.getAsDouble(1), rasiParser.getAsDouble(2), rasiParser.getAsDouble(3),-1, rasiParser.getAsDouble(4));
+                    ftcRobot.myDriveWithPID.driveIntake(rasiParser.getAsDouble(1), rasiParser.getAsDouble(2), rasiParser.getAsDouble(3),-1, 1, rasiParser.getAsDouble(4));
                     break;
                 case "drvd":
                     ftcRobot.myDriveWithPID.driveDist(rasiParser.getAsDouble(1), rasiParser.getAsDouble(2), rasiParser.getAsDouble(3));
                     break;
                 case "drvt":
                     ftcRobot.myDriveWithPID.driveTime(rasiParser.getAsDouble(1), rasiParser.getAsDouble(2), rasiParser.getAsDouble(3));
+                    break;
+                case "drvddumb":
+                    ftcRobot.myDriveWithPID.driveDistDumb(rasiParser.getAsDouble(1), rasiParser.getAsDouble(2), rasiParser.getAsDouble(3), -1);
                     break;
                 case "intkl":
                     timer2 = new Timer(0.75);
@@ -93,65 +112,34 @@ public class RasiActions {
                     ftcRobot.myManualIntakeController.RunIntake(0, 0);
                     break;
                 case "ctload":
-                    timer2 = new Timer(1);
-                    while(!linearOpModeCamera.isStopRequested()&&!timer2.isDone()) {
-                        ftcRobot.myCubeTray.setToPos(LiftFinalStates.LOADING);
-                        ftcRobot.myCubeTray.updatePosition();
-                    }
+                    ftcRobot.myCubeTray.setToPos(LiftFinalStates.LOADING);
+                    ftcRobot.myCubeTray.setToPos(LiftFinalStates.LOADING);
+                    ftcRobot.myCubeTray.updatePosition();
                     break;
                 case "ctlow":
-                    timer2 = new Timer(0.5);
-                    while(!linearOpModeCamera.isStopRequested()&&!timer2.isDone()) {
-                        ftcRobot.myCubeTray.setToPos(LiftFinalStates.LOW);
-                        ftcRobot.myCubeTray.updatePosition();
-                    }
+                    ftcRobot.myCubeTray.setToPos(LiftFinalStates.LOW);
+                    ftcRobot.myCubeTray.updatePosition();
                     break;
                 case "cthigh":
-                    timer2 = new Timer(0.5);
-                    while(!linearOpModeCamera.isStopRequested()&&!timer2.isDone()) {
-                        ftcRobot.myCubeTray.setToPos(LiftFinalStates.HIGH);
-                        ftcRobot.myCubeTray.updatePosition();
-                    }
+                    ftcRobot.myCubeTray.setToPos(LiftFinalStates.HIGH);
+                    ftcRobot.myCubeTray.updatePosition();
                     break;
                 case "ctmid":
-                    timer2 = new Timer(0.5);
-                    while(!linearOpModeCamera.isStopRequested()&&!timer2.isDone()) {
-                        ftcRobot.myCubeTray.setToPos(LiftFinalStates.MID);
-                        ftcRobot.myCubeTray.updatePosition();
-                    }
-                    break;
-                case "ctjwlc":
-                    timer2 = new Timer(0.5);
-                    while(!linearOpModeCamera.isStopRequested()&&!timer2.isDone()) {
-                        ftcRobot.myCubeTray.setToPos(LiftFinalStates.JEWELC);
-                        ftcRobot.myCubeTray.updatePosition();
-                    }
-                    break;
-                case "ctjwlr":
-                    timer2 = new Timer(0.5);
-                    ftcRobot.myCubeTray.setToPos(LiftFinalStates.JEWELR);
-                    while(!linearOpModeCamera.isStopRequested()&&!timer2.isDone()) {
-                        ftcRobot.myCubeTray.updatePosition();
-                    }
-                    break;
-                case "ctjwll":
-                    timer2 = new Timer(0.5);
-                    ftcRobot.myCubeTray.setToPos(LiftFinalStates.JEWELL);
-                    while(!linearOpModeCamera.isStopRequested()&&!timer2.isDone()) {
-                        ftcRobot.myCubeTray.updatePosition();
-                    }
+                    ftcRobot.myCubeTray.setToPos(LiftFinalStates.MID);
+                    ftcRobot.myCubeTray.updatePosition();
                     break;
                 case "ctout":
-                        ftcRobot.myCubeTray.startDump();
+                    ftcRobot.myCubeTray.startDump();
                     break;
-                case "ctstop":
-                    ftcRobot.myCubeTray.dump();
+                case "stopdump":
+                    ftcRobot.myCubeTray.stopDump();
+                    break;
                 case "wait":
                     timer2 = new Timer(rasiParser.getAsDouble(1));
-                    while (!timer2.isDone()&&!linearOpModeCamera.isStopRequested()) {ftcRobot.myCubeTray.updatePosition();}
+                    while (!timer2.isDone() && !linearOpModeCamera.isStopRequested()) {ftcRobot.myCubeTray.updatePosition();}
                     break;
                 case "gyrolg":
-                    myGyro.recordHeading();
+                    ftcRobot.myGyro.recordHeading();
                     break;
                 case "jwlarmd":
                     ftcRobot.jewelKnocker.ArmInitialLower();
@@ -160,6 +148,9 @@ public class RasiActions {
                 case "jwlarmu":
                     ftcRobot.jewelKnocker.ArmReturn();
                     Log.i("RasiActions", "jwlarmu");
+                    break;
+                case "jwlarmtempu":
+                    ftcRobot.jewelKnocker.ArmUp();
                     break;
                 case "jwlarmr":
                     ftcRobot.jewelKnocker.KnockerRight();
@@ -173,7 +164,17 @@ public class RasiActions {
                     ftcRobot.jewelKnocker.KnockerStartMove();
                     Log.i("RasiActions", "jwlarmc");
                     break;
+                case "jwlarmcl":
+                    ftcRobot.jewelKnocker.KnockerLeftOut();
+                    break;
+                case "jwlarmcr":
+                    ftcRobot.jewelKnocker.KnockerRightOut();
+                    break;
+                case "unstickcubes":
+                    ftcRobot.myDriveWithPID.unStickCubes();
+                    break;
                 case "end":
+                    ftcRobot.myGyro.recordHeading();
                     linearOpModeCamera.requestOpModeStop();
                     while(linearOpModeCamera.opModeIsActive()){}
                     break;

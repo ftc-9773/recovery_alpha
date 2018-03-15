@@ -1,9 +1,14 @@
 {
-  "Kp": 0.28,
+  "Kp": 0.31,
   "Ki": 0.0,
-  "Kd": 0.45,
-  "min": 0.36,
-  "errorThreshold": 0.035,
-  "speedThreshold": 0.00005,
-  "intakedelay": 0.5
+  "Kd": 0.42,
+  "min": 0.38,
+  "errorThreshold": 0.05,
+  "speedThreshold": 0.0002,
+  "intakedelay": 0.5,
+
+  "driveKp": 0.0008,
+  "driveKi": 0.0,
+  "driveKd": 0.005,
+  "distOffset": 50
 }

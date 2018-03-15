@@ -26,11 +26,10 @@ import org.firstinspires.ftc.teamcode.resources.Vector;
  */
 
 public class FTCrobot {
-    public ModernRoboticsI2cRangeSensor distanceSensor;
-    private SwerveController mySwerveController;
+    public SwerveController mySwerveController;
     private double stickl1x;
     private double stickl1y;
-    private Gyro myGyro;
+    public Gyro myGyro;
     private RasiParser opModeControl;
     private String[] currentCommand;
     public IntakeControllerManual myManualIntakeController;
@@ -85,7 +84,6 @@ public class FTCrobot {
         this.gp1y = new ButtonStatus();
         this.hwMap = hwmap;
         this.myTelemetry = telemetry;
-        this.distanceSensor = hwMap.get(ModernRoboticsI2cRangeSensor.class, "ultrasonicSensor");
         this.myGyro = new Gyro(hwMap);
         this.mySwerveController = new SwerveController(hwMap, myGyro, telemetry);
         this.myManualIntakeController = new IntakeControllerManual(hwMap);
@@ -275,7 +273,7 @@ public class FTCrobot {
                     grabState = !grabState;
                 }
                 // Relic arm - Gamepad 2 Left Joystick
-                myRelicSystem.runSequence(myGamepad2.left_stick_y * -0.95 + 0.05, armState, grabState);
+                myRelicSystem.runSequence(-myGamepad2.left_stick_y, armState, grabState);
             }
         }
 

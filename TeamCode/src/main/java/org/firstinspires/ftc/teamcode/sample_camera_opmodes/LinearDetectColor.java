@@ -24,6 +24,8 @@ public class LinearDetectColor extends LinearOpModeCamera {
     RelicRecoveryVuMark mark;
     JewelDetector.JewelColors color = JewelDetector.JewelColors.NOT_INITIALIZED;
 
+    JewelDetector detector;
+
     // make time constraints for detectors
     private static final int timeForVuforia = 2;
     private static final int timeForJewelDetect = 2;
@@ -32,8 +34,7 @@ public class LinearDetectColor extends LinearOpModeCamera {
     @Override
     public void runOpMode() {
             // initialize vumark pattern
-        JewelDetector detector = new JewelDetector(this);
-        Timer timer = new Timer(5);
+        detector = new JewelDetector(this);
 
 
         while (!opModeIsActive() && !isStopRequested()) {
@@ -57,11 +58,13 @@ public class LinearDetectColor extends LinearOpModeCamera {
                 }
                 // report back to the driver station
                 runTelemetryAndLogs();
-                if(vuf.isDone() )
-                    break;
+                if(vuf.isDone() ) break;
+                if(isStarted() || isStopRequested()) break;
 
             }
+            if(isStarted() || isStopRequested()) break;
             pattern.close();
+            if(isStarted() || isStopRequested()) break;
 
             detector.startCamera();
             Timer jewel = new Timer(timeForJewelDetect);
@@ -75,12 +78,20 @@ public class LinearDetectColor extends LinearOpModeCamera {
                 if(!(tempColor.equals(JewelDetector.JewelColors.NOT_INITIALIZED)||tempColor.equals(JewelDetector.JewelColors.UNKNOWN)))
                     color = tempColor;
                 runTelemetryAndLogs();
-                if(jewel.isDone() )
+                if(jewel.isDone() ) break;
+                if(isStarted() || isStopRequested())
                     break;
             }
-            detector.stopCamera();
+            if(isStarted() || isStopRequested()) break;
 
+            detector.stopCamera();
+            if(isStarted() || isStopRequested())
+                break;
+
+
+            if (opModeIsActive()) break;
         }
+
         // end vision patterns
         waitForStart();
 

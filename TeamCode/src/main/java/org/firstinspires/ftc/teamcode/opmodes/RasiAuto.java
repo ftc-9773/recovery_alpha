@@ -12,6 +12,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.RelicRecoveryVuMark;
 import org.firstinspires.ftc.teamcode.Vision.JewelDetector;
 import org.firstinspires.ftc.teamcode.Vision.VumarkGlyphPattern;
 import org.firstinspires.ftc.teamcode.infrastructure.RasiActions;
+import org.firstinspires.ftc.teamcode.infrastructure.SafeJsonReader;
 import org.firstinspires.ftc.teamcode.resources.ButtonStatus;
 import org.firstinspires.ftc.teamcode.resources.Timer;
 
@@ -37,6 +38,14 @@ public class RasiAuto extends LinearOpModeCamera {
         int fileNameIndex = 0;
         ButtonStatus down = new ButtonStatus();
         ButtonStatus up = new ButtonStatus();
+
+        SafeJsonReader jsonReader = new SafeJsonReader("RasiAutoFileNames.json");
+
+        String[] rasiFileNames = new String [jsonReader.getInt("NumberOfPaths")];
+
+        for (int i = 0; i <= jsonReader.getInt("NumberOfPaths"); i++) {
+            rasiFileNames[i-1] = jsonReader.getString("Path" + Integer.toString(i));
+        }
 
         while(!gamepad1.y && !opModeIsActive() && !isStopRequested()) {
             down.recordNewValue(gamepad1.dpad_down);

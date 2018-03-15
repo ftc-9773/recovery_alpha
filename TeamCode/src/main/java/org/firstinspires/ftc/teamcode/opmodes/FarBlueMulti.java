@@ -1,39 +1,23 @@
 package org.firstinspires.ftc.teamcode.opmodes;
 
 import android.util.Log;
+
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
 import org.firstinspires.ftc.robotcontroller.for_camera_opmodes.LinearOpModeCamera;
 import org.firstinspires.ftc.robotcore.external.navigation.RelicRecoveryVuMark;
-import org.firstinspires.ftc.teamcode.HardwareControl.FTCrobot;
 import org.firstinspires.ftc.teamcode.Vision.JewelDetector;
 import org.firstinspires.ftc.teamcode.Vision.VumarkGlyphPattern;
 import org.firstinspires.ftc.teamcode.infrastructure.RasiActions;
 import org.firstinspires.ftc.teamcode.infrastructure.SafeJsonReader;
-import org.firstinspires.ftc.teamcode.resources.ButtonStatus;
-import org.firstinspires.ftc.teamcode.resources.Timer;
-
-import android.util.Log;
-
-import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-
-import org.firstinspires.ftc.robotcontroller.for_camera_opmodes.LinearOpModeCamera;
-import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.robotcore.external.navigation.RelicRecoveryVuMark;
-import org.firstinspires.ftc.teamcode.Vision.JewelDetector;
-import org.firstinspires.ftc.teamcode.Vision.VumarkGlyphPattern;
-import org.firstinspires.ftc.teamcode.infrastructure.RasiActions;
-import org.firstinspires.ftc.teamcode.resources.ButtonStatus;
 import org.firstinspires.ftc.teamcode.resources.Timer;
 
 /**
- * Created by vikesh on 1/26/18.
+ * Created by nicky on 3/14/18.
  */
 
-@Autonomous(name = "Far Red Multi-Glyph", group = "Auto Paths")
-public class FarRedMulti extends LinearOpModeCamera {
+@Autonomous(name = "Far Blue Multi-Glyph", group = "Auto Paths")
+public class FarBlueMulti extends LinearOpModeCamera {
     private String[] rasiTag = new String[2];
     private RasiActions rasiActions;
 
@@ -61,7 +45,7 @@ public class FarRedMulti extends LinearOpModeCamera {
         telemetry.addData("RASI Status: ", "Initializing...");
         telemetry.update();
 
-        rasiActions = new RasiActions("AutoRedFarMulti", null, this, gamepad1, gamepad2, telemetry, hardwareMap);
+        rasiActions = new RasiActions("AutoBlueFarMulti", null, this, gamepad1, gamepad2, telemetry, hardwareMap);
 
         telemetry.addData("Classes", "Complete");
         telemetry.addData("RASI Status: ", "Complete");
@@ -166,54 +150,66 @@ public class FarRedMulti extends LinearOpModeCamera {
         telemetry.addData("Reading " + reading, timer.timePassedInSeconds());
         telemetry.update();
     }
+
 }
 
-// Known to work decently:
+// Works reasonably well
+
 /*
 ctload;
-jwlarmd;
-jwlarmc;
-wait, 0.75;
-RED:jwlarmr;
-BLUE:jwlarml;
-wait, 0.15;
-jwlarmtempu;
-drvdropintk, 1.0, 340, 33;
+RED: jwlarmd;
+RED: jwlarmcl;
+RED: wait, 1;
+RED: jwlarml;
+RED: wait, 0.5;
+RED: jwlarmtempu;
+
+BLUE: jwlarmd;
+BLUE: jwlarmcr;
+BLUE: wait, 1;
+BLUE: jwlarmr;
+BLUE: wait, 0.5;
+BLUE: jwlarmtempu;
+
+drvdropintk, 0.8, 20, 29;
 jwlarmu;
-drvintake, 1.0, 340, 15, 0;
-drvd, 1.0, 90, 33;
+drvintake, 0.8, 20, 13, 0;
+drvd, 1.0, 270, 32;
 intko;
 wait, 0.6;
 intki;
-turn, 270;
+turn, 90;
 intks;
+R: drvrightultra, 1, 31;
+C: drvrightultra, 1, 25;
+L: drvrightultra, 1, 19;
+turn, 60;
 ctlow;
-R: drvleftultra, 1, 15;
-C: drvleftultra, 1, 19;
-L: drvleftultra, 1, 30;
-turn 270;
-drvt, 0.8, 90, 1;
+drvt, 0.65, 260, 1.2;
 ctout;
-wait, 0.5;
-drvddumb, 0.5, 270, 5;
+wait, 0.15;
+drvddumb, 0.4, 60, 5;
+wait, 0.15;
+R: drvd, 1, 180, 6;
+L: drvd, 1, 0, 6;
 stopdump;
-drvleftultra, 1, 36, 0;
 ctload;
-turn, 300;
-drvintake, 0.75, 300, 68, -6;
-ctlow;
-L: cthigh;
-turn, 270;
-R: drvleftultra, 1, 31;
-C: drvleftultra, 1, 31;
-L: drvleftultra, 1, 31;
+drvd, 1, 80, 30;
+drvintake, 0.5, 55, 30, 3;
 gyrolg;
-drvt, 0.8, 90, 1;
+drvd, 1, 263, 16;
+L: ctlow;
+C: ctlow;
+R: cthigh;
+gyrolg;
+drvt, 0.65, 230, 1.5;
 gyrolg;
 ctout;
-wait 0.5;
+drvddumb, 0.7, 60, 1;
 gyrolg;
-drvddumb, 0.5, 270, 5;
+wait, 0.3;
 gyrolg;
-stopdump;
-end; */
+drvddumb, 0.5, 60, 4;
+gyrolg;
+end;
+*/

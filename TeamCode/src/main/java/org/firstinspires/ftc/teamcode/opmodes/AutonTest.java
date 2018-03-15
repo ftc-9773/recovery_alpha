@@ -19,8 +19,15 @@ public class AutonTest extends LinearOpModeCamera{
     private RasiActions rasiActions;
     @Override
     public void runOpMode() throws InterruptedException {
+
+        telemetry.addData("Init", "Waiting...");
+        telemetry.update();
+
         String[] rasiTags = {"C"};
         rasiActions = new RasiActions("AutonTesting", rasiTags, this, gamepad1, gamepad2, telemetry, hardwareMap);
+
+        telemetry.addData("Init", "Complete");
+        telemetry.update();
         waitForStart();
         rasiActions.runRasi();
     }

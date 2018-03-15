@@ -15,43 +15,51 @@ BLUE: jwlarmtempu;
 
 drvdropintk, 0.8, 30, 29;
 jwlarmu;
-drvintake, 0.6, 30, 13, 0;
-drvd, 1, 110, 24;
+drvintake, 0.45, 30, 13, 0;
+drvd, 1, 105, 20;
 
-intko;
+intki;
 turn, 0;
 intks;
 
 ctlow;
-R: drvleftultraback, 1, 46, 24;
-C: drvleftultraback, 1, 52, 24;
-L: drvleftultraback, 1, 58, 24;
+R: drvleftultraback, 1, 38, -14;
+C: drvleftultraback, 1, 48, -14;
+L: drvleftultraback, 1, 52, -14;
 
 drvt, 0.6, 180, 1;
 ctout;
-wait, 0.3;
-drvddumb, 0.4, 0, 3;
+drvddumb, 0.35, 0, 2;
+wait, 0.75;
+drvddumb, 0.35, 0, 2.5;
 
-
-
-ctstop;
+stopdump;
 ctload;
-drvleftultraback, 1, 60, -30;
-drvintake, 0.6, 15, 28;
+R: drvd, 50, 23;
+L: drvd, 45, 20;
+C:  drvd, 18, 15.5
+drvintake, 0.45, 15, 28, 0;
+
+intki;
+turn, 0;
+intks;
 
 ctlow;
-R: drvleftultraback, 1, 58, 30;
-C: drvleftultraback, 1, 58, 30;
-L: drvleftultraback, 1, 46, 30;
+R: drvleftultraback, 1, 52, -12;
+C: drvleftultraback, 1, 52, -12;
+L: drvleftultraback, 1, 38, -12;
 
 drvt, 0.6, 180, 1;
 ctout;
-wait, 0.3;
-drvddumb, 0.4, 0, 3;
+drvddumb, 0.35, 0, 2;
+wait, 0.75;
+drvddumb, 0.35, 0, 2.5;
 
 
+end;
 
-ctstop;
+
+stopdump;
 ctload;
 drvleftultraback, 1, 48, 30;
 drvintake, 0.6, 15, 28;

@@ -32,7 +32,7 @@ import org.firstinspires.ftc.teamcode.resources.Timer;
  * Created by vikesh on 1/26/18.
  */
 
-@Autonomous(name = "Close Red Multi-Glyph")
+@Autonomous(name = "Close Red Multi-Glyph", group = "Auto Paths")
 public class CloseRedMulti extends LinearOpModeCamera {
     private String[] rasiTag = new String[2];
     private RasiActions rasiActions;

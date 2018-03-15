@@ -16,7 +16,7 @@ import org.firstinspires.ftc.teamcode.resources.Timer;
  * Created by nicky on 3/14/18.
  */
 
-@Autonomous(name = "Far Blue Multi-Glyph", group = "Auto Paths:")
+@Autonomous(name = "Far Blue Multi-Glyph", group = "Auto Paths")
 public class FarBlueMulti extends LinearOpModeCamera {
     private String[] rasiTag = new String[2];
     private RasiActions rasiActions;

@@ -365,10 +365,10 @@ public class DriveWithPID {
 
     public void driveByLeftUltraonicDis (double speed, double targetUltrasonicDist, double distForward) throws InterruptedException {
 
-        final double yDist = targetUltrasonicDist - leftUltrasonicSensor.getDistance(DistanceUnit.INCH) * Math.cos(getClosestQuadrantal() - myGyro.getHeading());
-        Vector distanceVector = new Vector(true, -1*yDist, distForward);
-
-        driveDist(speed, distanceVector.getAngle(), distanceVector.getMagnitude(), -1);
+        final double xDist = targetUltrasonicDist - leftUltrasonicSensor.getDistance(DistanceUnit.INCH) * Math.cos(getClosestQuadrantal() - myGyro.getHeading());
+        Vector distanceVector = new Vector(true, xDist, distForward);
+        Log.i(TAG, "xDist: " + xDist + "  Dist forward: " + distForward);
+        driveDist(speed, Math.toDegrees(distanceVector.getAngle()), distanceVector.getMagnitude(), -1);
     }
 
     public void driveLeftUltrasonicFast (double speed, double targetUltrasonicDist, double distForward) throws InterruptedException {
@@ -397,7 +397,7 @@ public class DriveWithPID {
         }
 
         movementVector.addVector(false, distForward, getClosestQuadrantal());
-        driveDistDumb(speed, movementVector.getAngle(), movementVector.getMagnitude(), -1);
+        driveDistDumb(speed, Math.toDegrees(movementVector.getAngle()), movementVector.getMagnitude(), -1);
 
     }
 

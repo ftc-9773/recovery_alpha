@@ -105,7 +105,7 @@ public class FarRedMulti extends LinearOpModeCamera {
 
             detector.startCamera();
             Timer jewelTimer = new Timer(timeForJewelDetect);
-            JewelDetector.JewelColors tempColor;
+            JewelDetector.JewelColors tempColor = JewelDetector.JewelColors.UNKNOWN;
             Log.i(TAG, "switching to Jewel camera");
 
             while (!opModeIsActive() && !isStopRequested() &&  !jewelTimer.isDone()) {
@@ -121,6 +121,8 @@ public class FarRedMulti extends LinearOpModeCamera {
                 if(jewelTimer.isDone() ) break;
                 if(isStarted() || isStopRequested()) break;
             }
+
+            if (tempColor == JewelDetector.JewelColors.UNKNOWN) jewelColors = JewelDetector.JewelColors.BLUE;
             if(isStarted() || isStopRequested()) break;
             detector.stopCamera();
             if(isStarted() || isStopRequested()) break;

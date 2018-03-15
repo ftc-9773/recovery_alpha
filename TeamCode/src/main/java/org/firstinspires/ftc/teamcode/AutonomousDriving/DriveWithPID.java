@@ -260,7 +260,7 @@ public class DriveWithPID {
         zeroEncoders();
 
         // restart the intake in 0.5 seconds
-        myTimer = new Timer(0.65);
+        myTimer = new Timer(0.68);
 
         // Drive back with intake onn
         while (!myOpMode.isStopRequested() && averageEncoderDist() <= targetBack) {
@@ -441,21 +441,20 @@ public class DriveWithPID {
         boolean negativeDist = false;
         double driveangle = getClosestQuadrantal();
         double robotangle = Math.abs(Math.toDegrees(myGyro.getHeading())-driveangle);
-        double yDist = leftUltrasonicSensor.getDistance(DistanceUnit.INCH) * Math.cos(driveangle - myGyro.getHeading()) - targetUltrasonicDist;
+        double yDist = leftUltrasonicSensor.getDistance(DistanceUnit.INCH) - targetUltrasonicDist;
+        Log.i("Ultrasonic Dist", Double.toString(leftUltrasonicSensor.getDistance(DistanceUnit.INCH)));
         Log.i("yDist", Double.toString(yDist));
-
-        if (Math.abs(yDist) < 0.75) {
-            return;
-        }
 
         if(yDist < 0) {
             yDist *= -1;
             negativeDist = true;
         }
+
         yDist = Math.cos(Math.toRadians(robotangle))*yDist;
         if(negativeDist) {
             driveDist(speed, (getClosestQuadrantal() + 90)%360, yDist);
         }
+
         else{
             driveDist(speed, (getClosestQuadrantal() + 270)%360, yDist);
         }

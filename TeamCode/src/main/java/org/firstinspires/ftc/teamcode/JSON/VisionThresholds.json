@@ -1,6 +1,6 @@
 {
   "RedThreshold" : 0.05,
-  "BlueThreshold" : 0.01,
+  "BlueThreshold" : 0.005,
 
   "BlueThresholdVuforia": 0,
   "RedThresholdVuforia": 0,

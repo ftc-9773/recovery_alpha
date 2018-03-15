@@ -2,19 +2,14 @@ package org.firstinspires.ftc.teamcode.infrastructure;
 
 import android.util.Log;
 
-import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcontroller.for_camera_opmodes.LinearOpModeCamera;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.teamcode.HardwareControl.CubeTray;
 import org.firstinspires.ftc.teamcode.HardwareControl.FTCrobot;
-import org.firstinspires.ftc.teamcode.HardwareControl.SwerveController;
-import org.firstinspires.ftc.teamcode.PositionTracking.Gyro;
-
-import org.firstinspires.ftc.teamcode.resources.Timer;
 import org.firstinspires.ftc.teamcode.HardwareControl.LiftFinalStates;
+import org.firstinspires.ftc.teamcode.resources.Timer;
 
 /**
  * Created by vikesh on 1/5/18.

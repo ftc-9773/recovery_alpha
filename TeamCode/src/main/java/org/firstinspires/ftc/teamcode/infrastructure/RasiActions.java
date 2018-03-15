@@ -74,6 +74,8 @@ public class RasiActions {
                 case "drvleftultradumb":
                     ftcRobot.myDriveWithPID.driveLeftUltrasonicFast(rasiParser.getAsDouble(1), rasiParser.getAsDouble(2), rasiParser.getAsDouble(3));
                     break;
+                case "drvleftultraback":
+                    ftcRobot.myDriveWithPID.driveByLeftUltraonicDis(rasiParser.getAsDouble(1), rasiParser.getAsDouble(2), rasiParser.getAsDouble(3));
                 case "drvrightultra":
                     ftcRobot.myDriveWithPID.driveByRightUltrasonicDist(rasiParser.getAsDouble(1), rasiParser.getAsDouble(2));
                     break;

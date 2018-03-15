@@ -1,7 +1,2 @@
-jwlarmc;
-wait, 1;
-jwlarml;
-wait, 1;
-jwlarmr;
-wait, 1;
+drvt, 0.6, 90, 5;
 end;

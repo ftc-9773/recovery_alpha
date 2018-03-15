@@ -133,6 +133,7 @@ public class FarBlueMulti extends LinearOpModeCamera {
 
         // DO EVERYTHING
         rasiActions.runRasi();
+        rasiActions.ftcRobot.myGyro.recordHeading();
     }
 
 

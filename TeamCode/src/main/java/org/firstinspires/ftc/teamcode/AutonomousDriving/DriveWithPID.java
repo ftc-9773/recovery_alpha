@@ -377,6 +377,11 @@ public class DriveWithPID {
         double robotangle = Math.abs(Math.toDegrees(myGyro.getHeading())-driveangle);
         double yDist = leftUltrasonicSensor.getDistance(DistanceUnit.INCH) * Math.cos(driveangle - myGyro.getHeading()) - targetUltrasonicDist;
         Log.i("yDist", Double.toString(yDist));
+
+        if (Math.abs(yDist) < 0.75) {
+            return;
+        }
+
         if(yDist < 0) {
             yDist *= -1;
             negativeDist = true;
@@ -403,6 +408,10 @@ public class DriveWithPID {
         double robotangle = Math.abs(Math.toDegrees(myGyro.getHeading())-driveangle);
         double yDist = rightUltrasonicSensor.getDistance(DistanceUnit.INCH) * Math.cos(driveangle - myGyro.getHeading()) - targetUltrasonicDist;
         Log.i("yDist", Double.toString(yDist));
+
+        if (Math.abs(yDist) < 0.75) {
+            return;
+        }
 
         if(yDist < 0) {
             yDist *= -1;
@@ -434,6 +443,11 @@ public class DriveWithPID {
         double robotangle = Math.abs(Math.toDegrees(myGyro.getHeading())-driveangle);
         double yDist = leftUltrasonicSensor.getDistance(DistanceUnit.INCH) * Math.cos(driveangle - myGyro.getHeading()) - targetUltrasonicDist;
         Log.i("yDist", Double.toString(yDist));
+
+        if (Math.abs(yDist) < 0.75) {
+            return;
+        }
+
         if(yDist < 0) {
             yDist *= -1;
             negativeDist = true;
@@ -510,6 +524,16 @@ public class DriveWithPID {
 
         }
         mySwerveController.stopRobot();
+    }
+
+    // Non-driving related
+    public void unStickCubes () {
+        if (frontColorSensor.getDistance(DistanceUnit.INCH)  < 2.35) {
+            Timer myTimer = new Timer(1);
+            myIntakeController.RunIntake(0, 1);
+            while (!myTimer.isDone()) {}
+            myIntakeController.RunIntake(0,0);
+        }
     }
 
     // Helper functions

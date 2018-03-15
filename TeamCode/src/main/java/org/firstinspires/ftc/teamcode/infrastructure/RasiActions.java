@@ -22,7 +22,7 @@ import org.firstinspires.ftc.teamcode.HardwareControl.LiftFinalStates;
 
 public class RasiActions {
     public RasiParser rasiParser;
-    private FTCrobot ftcRobot;
+    public FTCrobot ftcRobot;
     private Timer timer2;
     private LinearOpModeCamera linearOpModeCamera;
 
@@ -168,6 +168,9 @@ public class RasiActions {
                     break;
                 case "jwlarmcr":
                     ftcRobot.jewelKnocker.KnockerRightOut();
+                    break;
+                case "unstickcubes":
+                    ftcRobot.myDriveWithPID.unStickCubes();
                     break;
                 case "end":
                     ftcRobot.myGyro.recordHeading();

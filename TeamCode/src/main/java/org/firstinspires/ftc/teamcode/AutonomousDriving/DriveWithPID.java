@@ -260,7 +260,7 @@ public class DriveWithPID {
         zeroEncoders();
 
         // restart the intake in 0.5 seconds
-        myTimer = new Timer(0.5);
+        myTimer = new Timer(0.65);
 
         // Drive back with intake onn
         while (!myOpMode.isStopRequested() && averageEncoderDist() <= targetBack) {
@@ -500,7 +500,7 @@ public class DriveWithPID {
             //Log.e("Second Rotation: ", "" + rotation);
 
             mySwerveController.steerSwerve(true,0,0, rotation, -1);
-            boolean log = mySwerveController.moveRobot(true);
+            mySwerveController.moveRobot(true);
 
 
 
@@ -524,6 +524,32 @@ public class DriveWithPID {
 
         }
         mySwerveController.stopRobot();
+    }
+
+    public void  quickTurn(double targetAngleDegrees) {
+
+        double targetAngleRad = Math.toRadians(targetAngleDegrees);
+
+        boolean turningLeft = (targetAngleRad < myGyro.getHeading());
+
+        while (!myOpMode.isStopRequested()) {
+
+            double currentHeading = myGyro.getHeading();
+            double error = setOnNegToPosPi(targetAngleRad - currentHeading);
+
+            double rotation = turningPID.getPIDCorrection(error);
+            if (rotation > 0) {
+                rotation += baseSpeed;
+            } else if (rotation < 0) {
+                rotation -= baseSpeed;
+            }
+
+            mySwerveController.steerSwerve(true,0,0, rotation, -1);
+            mySwerveController.moveRobot(true);
+
+            if (turningLeft && targetAngleRad > currentHeading) break;
+            if (!turningLeft && targetAngleRad < currentHeading) break;
+        }
     }
 
     // Non-driving related

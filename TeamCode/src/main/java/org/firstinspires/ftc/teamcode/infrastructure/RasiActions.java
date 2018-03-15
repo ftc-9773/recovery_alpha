@@ -67,6 +67,9 @@ public class RasiActions {
                 case "turn":
                     ftcRobot.myDriveWithPID.turnRobot(rasiParser.getAsDouble(1));
                     break;
+                case "quickturn":
+                    ftcRobot.myDriveWithPID.quickTurn(rasiParser.getAsDouble(1));
+                    break;
                 case "drvdropintk":
                     ftcRobot.myDriveWithPID.driveDropIntake(rasiParser.getAsDouble(1), rasiParser.getAsDouble(2), rasiParser.getAsDouble(3));
                     break;

@@ -26,7 +26,7 @@ import org.firstinspires.ftc.teamcode.resources.Vector;
  */
 
 public class FTCrobot {
-    private SwerveController mySwerveController;
+    public SwerveController mySwerveController;
     private double stickl1x;
     private double stickl1y;
     public Gyro myGyro;

@@ -709,4 +709,6 @@ public class CubeTray implements CubeTrays {
     }
     public void endDump(){}
     public void stopDump() {}
+    public void openDump(){}
+
 }

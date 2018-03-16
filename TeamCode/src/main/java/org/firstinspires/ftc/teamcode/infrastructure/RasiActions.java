@@ -7,6 +7,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcontroller.for_camera_opmodes.LinearOpModeCamera;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.teamcode.HardwareControl.CubeTray;
 import org.firstinspires.ftc.teamcode.HardwareControl.FTCrobot;
 import org.firstinspires.ftc.teamcode.HardwareControl.LiftFinalStates;
 import org.firstinspires.ftc.teamcode.resources.Timer;
@@ -180,6 +181,9 @@ public class RasiActions {
                     ftcRobot.myGyro.recordHeading();
                     linearOpModeCamera.requestOpModeStop();
                     while(linearOpModeCamera.opModeIsActive()){}
+                    break;
+                case "ctdump":
+                    ftcRobot.myCubeTray.openDump();
                     break;
                 default:
                     break;

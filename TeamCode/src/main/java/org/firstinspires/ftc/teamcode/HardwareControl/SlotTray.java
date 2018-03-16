@@ -308,6 +308,9 @@ public class SlotTray implements CubeTrays {
         durationRollerEjection = true;
         ejecting = true;
     }
+    public void openDump(){
+        setServoPos(TrayPositions.OPEN);
+    }
 
     public void stopDump() {
         durationRollerEjection = false;

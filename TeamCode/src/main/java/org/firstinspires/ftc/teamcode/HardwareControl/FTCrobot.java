@@ -54,6 +54,7 @@ public class FTCrobot {
     private ButtonStatus gamepad1RightTrigger = new ButtonStatus();
     private ButtonStatus leftBumperStatus = new ButtonStatus();
     private double directionLock = -1;
+    private boolean jewelarmpos = false;
 
     private SafeJsonReader jsonReader;
 
@@ -66,6 +67,7 @@ public class FTCrobot {
     private double highPrecisionRotationFactor;
     private double rotationmag;
     public JewelKnocker jewelKnocker;
+    private ButtonStatus padabuttona;
 
     private static final String TAG = "9773_FTCrobot";
     private static final boolean DEBUG = false;
@@ -80,6 +82,7 @@ public class FTCrobot {
 
     // INIT
     public FTCrobot(HardwareMap hwmap, Telemetry telemetry, Gamepad gamepad1, Gamepad gamepad2, LinearOpModeCamera myLinearOpModeCamera){
+        padabuttona = new ButtonStatus();
         jewelKnocker = new JewelKnocker(hwmap);
         this.gp1y = new ButtonStatus();
         this.hwMap = hwmap;
@@ -145,7 +148,7 @@ public class FTCrobot {
 
     // Basically all of teleop :)
     public void runGamepadCommands(){
-
+        padabuttona.recordNewValue(myGamepad1.a);
         dpaddownStatus.recordNewValue(myGamepad2.dpad_down);
         dpadupStatus.recordNewValue(myGamepad2.dpad_up);
         leftBumperStatus.recordNewValue(myGamepad2.left_bumper);
@@ -153,6 +156,9 @@ public class FTCrobot {
 
         /////// Driving - gamepad 1 left and right joysticks & Dpad /////
 
+        if(myGamepad1.b){
+            myTelemetry.addData("gyro heading", myGyro.getHeading());
+        }
         // Get current direction
         boolean highPrecisionMode = myGamepad1.left_bumper;
 
@@ -186,6 +192,15 @@ public class FTCrobot {
             }
         }
 
+        if(padabuttona.isJustOn()){
+            jewelarmpos = !jewelarmpos;
+        }
+        if(jewelarmpos){
+            jewelKnocker.ArmUp();
+        }
+        else{
+            jewelKnocker.ArmReturn();
+        }
         // Check to see if the robot is using field centric rotation
         if (USE_FIELD_CENTRIC_ROTATION && mySwerveController.getFieldCentric()) {
 

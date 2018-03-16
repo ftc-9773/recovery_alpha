@@ -25,5 +25,6 @@ public interface CubeTrays {
     void startDump();
     void stopDump();
     void endDump();
+    void openDump();
 
 }

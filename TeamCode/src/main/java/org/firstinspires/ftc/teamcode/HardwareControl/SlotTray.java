@@ -50,6 +50,8 @@ import org.firstinspires.ftc.teamcode.infrastructure.SafeJsonReader;
  *
  * To push the file:
  * ~/Library/Android/sdk/platform-tools/adb push SlotTrayPositions.json /sdcard/FIRST/team9773/json18
+ * ~/Library/Android/sdk/platform-tools/adb push JSON/jewelknockerpositions.json /sdcard/FIRST/team9773/json18
+ * ~/Library/Android/sdk/platform-tools/adb push RASI/5GlyphRed.rasi /sdcard/FIRST/team9773/rasi18
  *
  * To pull the file
  * ~/Library/Android/sdk/platform-tools/adb pull /sdcard/FIRST/team9773/json18/CubeTrayServoPositions.json

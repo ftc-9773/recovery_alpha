@@ -20,6 +20,8 @@ drvd, 1, 105, 20;
 
 intki;
 turn, 0;
+intko;
+wait, 0.25;
 intks;
 
 ctlow;

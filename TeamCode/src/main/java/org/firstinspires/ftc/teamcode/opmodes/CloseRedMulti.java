@@ -61,7 +61,7 @@ public class CloseRedMulti extends LinearOpModeCamera {
         telemetry.addData("RASI Status: ", "Initializing...");
         telemetry.update();
 
-        rasiActions = new RasiActions("AutoRedCloseMulti", null, this, gamepad1, gamepad2, telemetry, hardwareMap);
+        rasiActions = new RasiActions("5GlyphRed", null, this, gamepad1, gamepad2, telemetry, hardwareMap);
 
         telemetry.addData("Classes", "Complete");
         telemetry.addData("RASI Status: ", "Complete");

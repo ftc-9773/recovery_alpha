@@ -252,7 +252,7 @@ public class DriveWithPID {
         //Stop intake
         myIntakeController.RunIntake(0, 0);
 
-        Timer myTimer = new Timer(0.1);
+        Timer myTimer = new Timer(intakedelay);
         while (!myOpMode.isStopRequested() && !myTimer.isDone()) {} //chill
 
         //Drive Back

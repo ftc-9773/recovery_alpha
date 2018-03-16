@@ -170,6 +170,9 @@ public class RasiActions {
                 case "jwlarmcr":
                     ftcRobot.jewelKnocker.KnockerRightOut();
                     break;
+                case "jwlarmstore":
+                    ftcRobot.jewelKnocker.ArmReturn();
+                    break;
                 case "unstickcubes":
                     ftcRobot.myDriveWithPID.unStickCubes();
                     break;

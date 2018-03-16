@@ -1,0 +1,40 @@
+ctload;
+RED: jwlarmd;
+RED: jwlarmcr;
+RED: wait, 1;
+RED: jwlarmr;
+RED: intkl;
+RED: jwlarmtempu;
+
+BLUE: jwlarmd;
+BLUE: jwlarmcl;
+BLUE: wait, 1;
+BLUE: jwlarml;
+BLUE: intkl;
+BLUE: jwlarmtempu;
+
+jwlarmstore;
+
+R:drvdropintk, 0.75, 90, 30;
+C:drvdropintk, 0.75, 90, 36;
+L:drvdropintk, 0.75, 90, 42;
+
+ctlow;
+drvddumb, 0.25, 180, 2;
+ctout;
+wait, 0.75;
+drvddumb, 0.25, 0, 2;
+ctload;
+stopdump;
+drvstopintake, 0.75, 0, 40;
+drvd, 0.75, 180, 16;
+intki;
+turn, 0;
+ctmid;
+drvd, 0.75, 180, 20;
+R:drvddumb, 0.75, 90, 9;
+drvddumb, 0.75, 180, 4;
+ctout;
+wait, 0.75;
+drvddumb, 0.25, 0, 2;
+end;

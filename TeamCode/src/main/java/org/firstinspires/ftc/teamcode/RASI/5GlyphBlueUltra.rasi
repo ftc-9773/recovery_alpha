@@ -19,9 +19,7 @@ L:drvdropintk, 0.75, 270, 29;
 C:drvdropintk, 0.75, 270, 34;
 R:drvdropintk, 0.75, 270, 43;
 
-//deposit cubes
-
-drvddumb, 0.5, 0, 4;
+turn, 0;
 ctlow;
 drvt, 0.6, 180, 1;
 ctout;
@@ -31,9 +29,9 @@ drvddumb, 0.35, 0, 2.5;
 ctload;
 stopdump;
 
-R: drvd, 342, 15.5;
-C: drvd, 315, 20;
-L: drvd, 310, 23;
+R: drvd, 1, 342, 15.5;
+C: drvd, 1, 315, 20;
+L: drvd, 1, 310, 23;
 
 drvstopintake, 0.6, 0, 22;
 drvd, 0.75, 180, 22;
@@ -44,10 +42,8 @@ intks;
 
 ctlow;
 R: drvrightultraback, 1, 38, -12;
-C: drvrightultraback, 1, 52, -12;
-L: drvrightultraback, 1, 52, -12;
-
-// dump sequence
+C: drvrightultraback, 1, 50, -12;
+L: drvrightultraback, 1, 50, -12;
 
 drvt, 0.6, 180, 1;
 ctout;
@@ -72,8 +68,6 @@ ctlow;
 R: drvrightultraback, 1, 48, -12;
 C: drvrightultraback, 1, 38, -12;
 L: drvrightultraback, 1, 48, -12;
-
-// dumperino
 
 drvt, 0.6, 180, 1;
 ctout;

@@ -1,6 +1,9 @@
 drvrightultraback, 1, 48, 0;
-wait, 5;
-drvrightultraback, 1, 52, 3;
-wait, 5;
-drvrightultraback, 1, 38, -3;
+wait, 3;
+turn, 0;
+drvrightultraback, 1, 54.5, 0;
+wait, 3;
+turn, 0;
+drvrightultraback, 1, 36, 0;
+turn, 0;
 end;

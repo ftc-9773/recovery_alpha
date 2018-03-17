@@ -32,7 +32,7 @@ import org.firstinspires.ftc.teamcode.resources.Timer;
  * Created by vikesh on 1/26/18.
  */
 
-@Autonomous(name = "Close Blue Ultrasonic", group = "Auto Paths")
+@Autonomous(name = "Close Red Ultrasonic", group = "Auto Paths")
 public class UltrasonicCloseRedAuto extends LinearOpModeCamera {
     private String[] rasiTag = new String[2];
     private RasiActions rasiActions;

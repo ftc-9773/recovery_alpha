@@ -38,8 +38,8 @@ drvddumb, 0.35, 0, 2.5;
 stopdump;
 ctload;
 R: drvd, 50, 23;
-L: drvd, 45, 20;
-C:  drvd, 18, 15.5
+C: drvd, 45, 20;
+L:  drvd, 18, 15.5
 drvintake, 0.45, 15, 28, 0;
 
 intki;

@@ -1,2 +1,6 @@
-drvleftultraback, 1, 46, -14;
+drvrightultraback, 1, 48, 0;
+wait, 5;
+drvrightultraback, 1, 52, 3;
+wait, 5;
+drvrightultraback, 1, 38, -3;
 end;

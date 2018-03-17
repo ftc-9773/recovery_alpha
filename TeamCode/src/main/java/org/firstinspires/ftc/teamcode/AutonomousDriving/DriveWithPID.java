@@ -371,6 +371,14 @@ public class DriveWithPID {
         driveDist(speed, Math.toDegrees(distanceVector.getAngle()), distanceVector.getMagnitude(), -1);
     }
 
+    public void driveByRightUltrasonicDis (double speed, double targetUltrasonicDist, double distForward) throws InterruptedException {
+        final double xDist = targetUltrasonicDist - rightUltrasonicSensor.getDistance(DistanceUnit.INCH) * Math.cos(getClosestQuadrantal() - myGyro.getHeading());
+        Vector distanceVector = new Vector(true, -xDist, distForward);
+        Log.i(TAG, "xDist: " + -xDist + "  Dist forward: " + distForward);
+        driveDist(speed, Math.toDegrees(distanceVector.getAngle()), distanceVector.getMagnitude(), -1);
+
+    }
+
     public void driveLeftUltrasonicFast (double speed, double targetUltrasonicDist, double distForward) throws InterruptedException {
         boolean negativeDist = false;
         double driveangle = getClosestQuadrantal();

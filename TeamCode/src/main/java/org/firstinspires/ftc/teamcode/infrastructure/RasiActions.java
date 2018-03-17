@@ -81,6 +81,9 @@ public class RasiActions {
                 case "drvrightultra":
                     ftcRobot.myDriveWithPID.driveByRightUltrasonicDist(rasiParser.getAsDouble(1), rasiParser.getAsDouble(2));
                     break;
+                case "drvrightultraback":
+                    ftcRobot.myDriveWithPID.driveByRightUltrasonicDis(rasiParser.getAsDouble(1), rasiParser.getAsDouble(2), rasiParser.getAsDouble(3));
+                    break;
                 case "drvstopintake":
                     ftcRobot.myDriveWithPID.driveDistStopIntake(rasiParser.getAsDouble(1), rasiParser.getAsDouble(2), rasiParser.getAsDouble(3), -1);
                     break;

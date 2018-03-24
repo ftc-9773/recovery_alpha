@@ -26,5 +26,7 @@ public interface CubeTrays {
     void stopDump();
     void endDump();
     void openDump();
+    boolean isInLoadingPocket();
+
 
 }

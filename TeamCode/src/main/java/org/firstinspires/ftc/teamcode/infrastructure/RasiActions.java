@@ -7,6 +7,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcontroller.for_camera_opmodes.LinearOpModeCamera;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.HardwareControl.CubeTray;
 import org.firstinspires.ftc.teamcode.HardwareControl.FTCrobot;
 import org.firstinspires.ftc.teamcode.HardwareControl.LiftFinalStates;
@@ -160,6 +161,9 @@ public class RasiActions {
                     ftcRobot.jewelKnocker.KnockerRight();
                     Log.i("RasiActions", "jwlarmr");
                     break;
+                case "jwlarmmidstored":
+                    ftcRobot.jewelKnocker.ArmMidStored();
+                    break;
                 case "jwlarml":
                     ftcRobot.jewelKnocker.KnockerLeftStowed();
                     Log.i("RasiActions", "jwlarml");
@@ -187,6 +191,11 @@ public class RasiActions {
                     break;
                 case "ctdump":
                     ftcRobot.myCubeTray.openDump();
+                    break;
+                case "endifstuck":
+                    if(ftcRobot.myCubeTray.isInLoadingPocket()){
+                        linearOpModeCamera.requestOpModeStop();
+                    }
                     break;
                 default:
                     break;

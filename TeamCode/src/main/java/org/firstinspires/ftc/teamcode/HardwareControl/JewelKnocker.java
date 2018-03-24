@@ -23,6 +23,7 @@ public class JewelKnocker {
     private double armStoredPos;
     private double knockerLeftSideStowedPos;
     private double knockerRightSidePos;
+    private double armMidStoredPos;
 
 
 
@@ -32,6 +33,7 @@ public class JewelKnocker {
         armServo = hwMap.servo.get("jaServo");
         knockerServo = hwMap.servo.get("jkServo");
 
+        armMidStoredPos = safeJsonReader.getDouble("armMidStoredPos");
         armOutPos = safeJsonReader.getDouble("armOutPos");
         armStoredPos = safeJsonReader.getDouble("armStoredPos");
         knockerOutPos = safeJsonReader.getDouble("knockerOutPos");
@@ -45,6 +47,7 @@ public class JewelKnocker {
     public void ArmReturn(){ armServo.setPosition(armStoredPos);
         Log.e("Servo Position", "" + armStoredPos);
     }
+    public void ArmMidStored(){armServo.setPosition(armMidStoredPos);}
     public void ArmUp() {armServo.setPosition(armUpPos);}
     public void KnockerStartMove(){knockerServo.setPosition(knockerOutPos);}
     public void KnockerLeftStowed(){knockerServo.setPosition(knockerLeftSideStowedPos);}

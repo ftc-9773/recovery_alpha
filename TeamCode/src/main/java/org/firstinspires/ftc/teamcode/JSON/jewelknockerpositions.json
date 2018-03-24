@@ -1,6 +1,7 @@
 {
-  "armStoredPos":0.95,
-  "armUpPos": 0.95,
+  "armMidStoredPos":0.7,
+  "armStoredPos":0.8,
+  "armUpPos": 0.8,
   "armOutPos":0.15,
   "knockerOutLeft": 0.45,
   "knockerOutPos": 0.41,

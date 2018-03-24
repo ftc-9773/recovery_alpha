@@ -273,6 +273,7 @@ public class SlotTray implements CubeTrays {
         if (gamepad2.right_bumper && targetPos!= LiftFinalStates.LOADING) {
             if(gamepad2.right_trigger >0.5){
                 setServoPos(TrayPositions.OPEN);
+                ejecting = true;
             } else
             dump();
         } else if(gamepad2.right_trigger >0.5){
@@ -517,8 +518,8 @@ public class SlotTray implements CubeTrays {
         AutonomousMode = val;
     }
 
-    private boolean isInLoadingPocket() {
-        return (Math.abs(loadingPosTicks - liftMotor.getCurrentPosition()) < liftPosTol);
+    public boolean isInLoadingPocket() {
+        return (Math.abs(loadingPosTicks - liftMotor.getCurrentPosition()) < 400);
     }
 
     public void endDump() {}

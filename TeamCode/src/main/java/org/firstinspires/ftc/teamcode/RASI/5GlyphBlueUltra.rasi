@@ -26,6 +26,7 @@ ctout;
 drvddumb, 0.35, 0, 2;
 wait, 0.75;
 drvddumb, 0.35, 0, 2.5;
+endifstuck;
 ctload;
 stopdump;
 
@@ -34,28 +35,30 @@ C: drvd, 1, 315, 20;
 L: drvd, 1, 310, 23;
 
 drvstopintake, 0.6, 0, 22;
-drvd, 0.75, 180, 22;
+drvd, 0.75, 180, 19;
 
 intki;
 turn, 0;
 intks;
 
 ctlow;
-R: drvrightultraback, 1, 38, -12;
-C: drvrightultraback, 1, 50, -12;
-L: drvrightultraback, 1, 50, -12;
+R: drvrightultraback, 1, 22.5, -15;
+C: drvrightultraback, 1, 36, -15;
+L: drvrightultraback, 1, 36, -15;
 
 drvt, 0.6, 180, 1;
 ctout;
 drvddumb, 0.35, 0, 2;
 wait, 0.75;
-drvddumb, 0.35, 0, 2.5;
+drvddumb, 0.35, 0, 4;
+endifstuck;
 ctload;
 stopdump;
-
+end;
 R: drvd, 1, 18, 15.5;
 C: drvd, 1, 50, 23;
 L: drvd, 1, 50, 23;
+
 
 drvstopintake, 0.6, 0, 22;
 drvd, 0.75, 180, 22;

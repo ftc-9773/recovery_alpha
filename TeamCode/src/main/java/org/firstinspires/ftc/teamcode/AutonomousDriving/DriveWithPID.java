@@ -67,8 +67,8 @@ public class DriveWithPID {
 
 
     // Sensors:
-    DistanceColorSensor backColorSensor;
-    DistanceColorSensor frontColorSensor;
+    public DistanceColorSensor backColorSensor;
+    public DistanceColorSensor frontColorSensor;
 
     public ModernRoboticsI2cRangeSensor leftUltrasonicSensor;
     public ModernRoboticsI2cRangeSensor rightUltrasonicSensor;

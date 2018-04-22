@@ -1,7 +1,7 @@
 ## Welcome!
 Hi this is the FTC robocracy 2017-18 repo for our FTC app. 
 
-We are a 4H club based robotics team from westester New york. you can find our site at [www.ftcrobocracy.org](www.ftcrobocracy.org)
+We are a 4H club based robotics team from westester New york. you can find our site at [www.ftcrobocracy.org](http://www.ftcrobocracy.org)
 
 
 We have set up our repo in the following way: 

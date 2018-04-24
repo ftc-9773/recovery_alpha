@@ -47,7 +47,7 @@ public class SafeJsonReader {
 
     private String FullName() {
         return baseDir + "/" + this.fileName + ".json";
-    }
+    }  //Returns path and name to this.filenName on the phone
 
     // fileName is local name, baseDir will be appended to create full path name
     public SafeJsonReader(String fileName) {

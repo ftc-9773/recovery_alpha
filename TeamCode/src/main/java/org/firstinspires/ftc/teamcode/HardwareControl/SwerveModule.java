@@ -181,7 +181,12 @@ public class SwerveModule {
         lastTime = System.currentTimeMillis();
         lastError = input;
 
-        //if (DEBUG) { Log.d(TAG, "Prop: " + proportionalCorrection + "   Dif:" + differentialCorrection); }
+        Log.d(TAG,"Pe correction: " +  proportionalCorrection);
+        Log.d(TAG,"D correction: " +  differentialCorrection);
+
+
+        if (DEBUG) { Log.d(TAG, "Prop: " + proportionalCorrection + "   Dif:" + differentialCorrection); }
+
 
         return proportionalCorrection + differentialCorrection;
 

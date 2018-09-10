@@ -30,25 +30,27 @@ public class RobotInThreeDays extends LinearOpMode {
 
     public void runOpMode(){
         // init
-        leftDriveMotorA = hardwareMap.dcMotor.get("lMotorA");
-        leftDriveMotorB = hardwareMap.dcMotor.get("lMotorB");
 
-        rightDriveMotorA = hardwareMap.dcMotor.get("rMotorA");
-        rightDriveMotorB = hardwareMap.dcMotor.get("rMotorB");
+        // leftDriveMotors
+        leftDriveMotorA = hardwareMap.dcMotor.get("lMotorA"); // leftDriveMotor A
+        leftDriveMotorB = hardwareMap.dcMotor.get("lMotorB"); // leftDriveMotor B
+        // rightDriveMotors
+        rightDriveMotorA = hardwareMap.dcMotor.get("rMotorA"); // rightDriveMotor A
+        rightDriveMotorB = hardwareMap.dcMotor.get("rMotorB"); // rightDriveMotor B
         //liftMotors
-        liftMotorA = hardwareMap.dcMotor.get("liftMotorA");
-        liftMotorB = hardwareMap.dcMotor.get("liftMotorB");
+        liftMotorA = hardwareMap.dcMotor.get("liftMotorA"); // liftMotor A
+        liftMotorB = hardwareMap.dcMotor.get("liftMotorB"); // liftMotor B
 
         // armMotors
-        armMotor = hardwareMap.dcMotor.get("armMotor");
-        intakeMotor = hardwareMap.dcMotor.get("intakeMotor");
+        armMotor = hardwareMap.dcMotor.get("armMotor"); // armMotor
+        intakeMotor = hardwareMap.dcMotor.get("intakeMotor"); // intakeMotor
 
         // servos
-        litkServo = hardwareMap.servo.get("litkServo");
-        ritkServo = hardwareMap.servo.get("ritkServo" );
+        litkServo = hardwareMap.servo.get("litkServo"); // leftIntakeServo
+        ritkServo = hardwareMap.servo.get("ritkServo" ); // rightIntakeServo
 
-        lDump = hardwareMap.servo.get("lDump");
-        rDump = hardwareMap.servo.get("rDump");
+        lDump = hardwareMap.servo.get("lDump"); // leftDump (Cubes)
+        rDump = hardwareMap.servo.get("rDump"); // rightDump (Balls)
 
         sorterServo = hardwareMap.servo.get("sortServo");
 
@@ -66,10 +68,9 @@ public class RobotInThreeDays extends LinearOpMode {
             setLiftPower(-gamepad2.left_stick_y);
             armMotor.setPower(-gamepad2.right_stick_y);
 
-            if(gamepad2.x) intakeStore();
-            else if(gamepad2.b) intakeDown();
-            else if(gamepad2.a) intakeTransfer();
 
+
+            //Open Gates
             if(gamepad2.left_bumper){
                 rDump.setPosition(0.5);
                 lDump.setPosition(0.5);
@@ -77,17 +78,21 @@ public class RobotInThreeDays extends LinearOpMode {
                 rDump.setPosition(0.0);
                 lDump.setPosition(1.0);
             }
+
+            //Set intake state
+            if(gamepad2.y) intakeStore();
+            else if(gamepad2.a) intakeDown();
+            else if(gamepad2.x) intakeTransfer();
+
+            //Set the correct value for the intake
             if(gamepad2.right_bumper){
-                intakeMotor.setPower(0.75);
+                intakeOn(0.75);
             } else if(gamepad2.right_trigger > 0.2){
-                intakeMotor.setPower(-gamepad2.right_trigger);
+                intakeOn(-gamepad2.right_trigger);
             } else {
                 intakeMotor.setPower(0.0);
             }
         }
-
-
-
     }
 
 
@@ -117,6 +122,9 @@ public class RobotInThreeDays extends LinearOpMode {
     void intakeTransfer(){
         ritkServo.setPosition(0.5);
         litkServo.setPosition(0.5);
+    }
+    void intakeOn(double pow){
+        intakeMotor.setPower(pow);
     }
 
 

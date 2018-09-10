@@ -13,10 +13,10 @@ import org.firstinspires.ftc.teamcode.resources.ButtonStatus;
 
 @TeleOp(name = "Allign Swerve Modules")
 public class AlignBySensor extends LinearOpMode {
-    AnalogInput brwAbsEncoder;
-    AnalogInput frwAbsEncoder;
-    AnalogInput flwAbsEncoder;
-    AnalogInput blwAbsEncoder;
+    AnalogInput brwAbsEncoder; //Back Right Wheel Absolute Value encoder
+    AnalogInput frwAbsEncoder; //Front Right Wheel Absolute Value encoder
+    AnalogInput flwAbsEncoder; //Front Left Wheel Absolute Value encoder
+    AnalogInput blwAbsEncoder; //Back Left Wheel Absolute Value encoder
 
     ButtonStatus aButton = new ButtonStatus();
 
@@ -30,10 +30,10 @@ public class AlignBySensor extends LinearOpMode {
         blwAbsEncoder = hardwareMap.analogInput.get("blwAbsEncoder");
         brwAbsEncoder = hardwareMap.analogInput.get("brwAbsEncoder");
 
-        double flwZeroPosition = coefficientsFile.getDouble("flwStraightPosition");
-        double frwZeroPosition = coefficientsFile.getDouble("frwStraightPosition");
-        double blwZeroPosition = coefficientsFile.getDouble("blwStraightPosition");
-        double brwZeroPosition = coefficientsFile.getDouble("brwStraightPosition");
+        double flwZeroPosition = coefficientsFile.getDouble("flwStraightPosition"); //Starting position of the front left wheel
+        double frwZeroPosition = coefficientsFile.getDouble("frwStraightPosition"); //Starting position of the front right wheel
+        double blwZeroPosition = coefficientsFile.getDouble("blwStraightPosition"); //Starting position of the back left wheel
+        double brwZeroPosition = coefficientsFile.getDouble("brwStraightPosition"); //Starting position of the back right wheel
 
         waitForStart();
 
@@ -41,12 +41,12 @@ public class AlignBySensor extends LinearOpMode {
 
             aButton.recordNewValue(gamepad1.a);
             if (aButton.isJustOn()) {
-                coefficientsFile.modifyDouble("flwStraightPosition", 2*Math.PI * (1 - flwAbsEncoder.getVoltage() / 3.23));
-                coefficientsFile.modifyDouble("frwStraightPosition", 2*Math.PI * (1 - frwAbsEncoder.getVoltage() / 3.23));
-                coefficientsFile.modifyDouble("blwStraightPosition", 2*Math.PI * (1 - blwAbsEncoder.getVoltage() / 3.23));
-                coefficientsFile.modifyDouble("brwStraightPosition", 2*Math.PI * (1 - brwAbsEncoder.getVoltage() / 3.23));
+                coefficientsFile.modifyDouble("flwStraightPosition", 2*Math.PI * (1 - flwAbsEncoder.getVoltage() / 3.23)); //Update angle of wheel
+                coefficientsFile.modifyDouble("frwStraightPosition", 2*Math.PI * (1 - frwAbsEncoder.getVoltage() / 3.23)); //Update angle of wheel
+                coefficientsFile.modifyDouble("blwStraightPosition", 2*Math.PI * (1 - blwAbsEncoder.getVoltage() / 3.23)); //Update angle of wheel
+                coefficientsFile.modifyDouble("brwStraightPosition", 2*Math.PI * (1 - brwAbsEncoder.getVoltage() / 3.23)); //Update angle of wheel
 
-                coefficientsFile.updateFile();
+                coefficientsFile.updateFile(); //Writes new values to file
 
                 telemetry.addData("Updated? ", "True");
 

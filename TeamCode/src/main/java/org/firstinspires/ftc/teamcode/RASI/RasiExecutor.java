@@ -13,6 +13,9 @@ import java.util.Scanner;
 
 /**
  * Created by Vikesh on 2/20/2018.
+ * Interpretor for the Rasi language
+ * Documentation can be found  here <filepath>
+ *
  */
 
 public class RasiExecutor {

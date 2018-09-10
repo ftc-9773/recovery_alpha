@@ -2,6 +2,9 @@ package org.firstinspires.ftc.teamcode.infrastructure;
 
 /**
  * Created by Vikesh on 11/20/2017.
+ *
+ * Class PIDController implements a basic Proportional-Integral-Derivative controller.
+ *
  */
 
 public class PIDController {
@@ -23,6 +26,7 @@ public class PIDController {
     private static boolean DEBUG = true;
 
     public PIDController (double KP, double KE, double KI, double KD) {
+        //Deprecated
         this.KP = KP;
         this.KI = KI;
         this.KD = KD;
@@ -43,9 +47,9 @@ public class PIDController {
 
         //Calculate exponential error
         double expError = 1;
-        if (useExponential) {expError = Math.pow(Math.abs(error), KE - 1); }
+        if (useExponential) {expError = Math.pow(Math.abs(error), KE - 1); } //This should instead be {Math.pow(KE-1, Math.abs(error));}
 
-        // If it is the first run, just return proportional error as i and d cannot be cauculated yet
+        // If it is the first run, just return proportional error as i and d cannot be calculated yet
         if (firstRun || deltaTime > maxDeltaTime) {
             firstRun = false;
             return error * expError * KP;

@@ -28,7 +28,7 @@ import org.firstinspires.ftc.teamcode.infrastructure.SafeJsonReader;
  *
  * for deafault Tele-op operation, use the updateFromGamepad(); command in the loop. it preforms all necessary actions
  *
- * if, for some reason, you need to avoid the deafault operation mode, (say in autonomous) use:
+ * if, for some reason, you need to avoid the default operation mode, (say in autonomous) use:
  *          the SetToPos() function in order to write a position
  *          This NEEDS to be followed by the updatePosition(); method
  *
@@ -44,7 +44,7 @@ import org.firstinspires.ftc.teamcode.infrastructure.SafeJsonReader;
  * ----------------------------------------------------------------------------------------------------
  * To change PID parameters, go to swervePIDCoefficients.json under the JSON package and change the value
  *
- * To go to the dirrectory:
+ * To go to the directory:
  * cd TeamCode/src/main/java/org/firstinspires/ftc/teamcode/JSON/
  *
  * To push the file:
@@ -57,7 +57,7 @@ import org.firstinspires.ftc.teamcode.infrastructure.SafeJsonReader;
 
 
 public class CubeTray implements CubeTrays {
-    // setup enum valeus for state machine
+    // setup enum values for state machine
     public enum TrayPositions {STOWED, LOADING, CARRYING, DUMP_A, JEWEL}
     public enum OverallStates {LOADING, CARRY, STOWED, TO_LOADING, FROM_STOWED, TO_CARRY, TO_JEWEL}
     public boolean homing = false;
@@ -113,7 +113,7 @@ public class CubeTray implements CubeTrays {
     // TODO: get actual values for these parameters
 
     private static final double motorRatio = 19.2;
-    private static final double motorToLiftRatio = 1.0;//(22.0/16.0);
+    private static final double motorToLiftRatio = 1.0; //(22.0/16.0);
     private static final double  ticksPerRotation = 28 * motorRatio ;// fix
     private static int outputSprocketSize = 16;
 

@@ -3,7 +3,10 @@ package org.firstinspires.ftc.teamcode.opmodes;
 
 import android.util.Log;
 
+import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cRangeSensor;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.hardware.DistanceSensor;
+import com.qualcomm.robotcore.hardware.OpticalDistanceSensor;
 
 import org.firstinspires.ftc.robotcontroller.for_camera_opmodes.LinearOpModeCamera;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
@@ -23,6 +26,27 @@ public class TestOpmode extends LinearOpModeCamera {
 
     @Override
     public void runOpMode() throws InterruptedException {
+
+
+        // Definition
+        ModernRoboticsI2cRangeSensor myRangeSensor;
+
+        // Initialization
+        myRangeSensor = hardwareMap.get(ModernRoboticsI2cRangeSensor.class, "my rangeSensor name");
+
+        // reading values in inches
+        myRangeSensor.getDistance(DistanceUnit.INCH);
+
+
+
+
+
+
+
+
+
+
+
         telemetry.addData("Init:", "waiting...");
         telemetry.update();
         ftcRobot = new FTCrobot(hardwareMap, telemetry, gamepad1, gamepad2, this);

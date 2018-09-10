@@ -150,7 +150,7 @@ public class SafeJsonReader {
             String key = getRealKeyIgnoreCase(obj, name);
             value = obj.getString(key);
         } catch (JSONException e) {
-            Log.e(TAG, "Error while getting string value for key " + name + " in jason file " + this.fileName, e);
+            Log.e(TAG, "Error while getting string value for key " + name + " in json file " + this.fileName, e);
         }
         if (DEBUG) {
             if (value!=null) Log.d(TAG, "read string for key " + name + " and got " + value);
@@ -170,7 +170,7 @@ public class SafeJsonReader {
                 if (DEBUG) Log.d(TAG, "write string for key " + name + " with new value " + newValue);
             }
         } catch (JSONException e) {
-            Log.d(TAG, "Error while setting string value for key " + name + " to " + newValue + " in jason file " + this.fileName, e);
+            Log.d(TAG, "Error while setting string value for key " + name + " to " + newValue + " in json file " + this.fileName, e);
         }
 
     }
@@ -181,7 +181,7 @@ public class SafeJsonReader {
             String key = getRealKeyIgnoreCase(obj, name);
             value = obj.getInt(key);
         } catch (JSONException e) {
-            Log.e(TAG, "Error while getting int value for key " + name + " in jason file " + this.fileName, e);
+            Log.e(TAG, "Error while getting int value for key " + name + " in json file " + this.fileName, e);
         }
         if (DEBUG) Log.d(TAG, "read int for key " + name + " and got " + value);
         return (value);
@@ -198,7 +198,7 @@ public class SafeJsonReader {
 
             }
         } catch (JSONException e) {
-            Log.e(TAG, "Error while modifying int value for key " + name + " to " + newValue + " in jason file " + this.fileName, e);
+            Log.e(TAG, "Error while modifying int value for key " + name + " to " + newValue + " in json file " + this.fileName, e);
         }
     }
 
@@ -211,7 +211,7 @@ public class SafeJsonReader {
             key = getRealKeyIgnoreCase(obj, name);
             value = obj.getDouble(key);
         } catch (JSONException e) {
-            Log.e(TAG, "Error while getting double value for key " + name + " in jason file " + this.fileName, e);
+            Log.e(TAG, "Error while getting double value for key " + name + " in json file " + this.fileName, e);
         }
         if (DEBUG) Log.d(TAG, "read double for key " + name + " and got " + value);
         return (value);
@@ -227,7 +227,7 @@ public class SafeJsonReader {
                 if (DEBUG) Log.d(TAG, "write double for key " + name + " with new value " + newValue);
             }
         } catch (JSONException e) {
-            Log.e(TAG, "Error while modifying double value for key " + name + " to " + newValue + " in jason file " + this.fileName, e);
+            Log.e(TAG, "Error while modifying double value for key " + name + " to " + newValue + " in json file " + this.fileName, e);
         }
     }
 
@@ -239,7 +239,7 @@ public class SafeJsonReader {
             key = getRealKeyIgnoreCase(obj, name);
             value = obj.getBoolean(key);
         } catch (JSONException e) {
-            Log.e(TAG, "Error while getting boolean value for key " + name + " in jason file " + this.fileName, e);
+            Log.e(TAG, "Error while getting boolean value for key " + name + " in json file " + this.fileName, e);
         }
         if (DEBUG) Log.d(TAG, "read boolean for key " + name + " and got " + value);
         return (value);

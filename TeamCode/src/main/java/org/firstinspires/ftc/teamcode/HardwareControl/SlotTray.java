@@ -46,7 +46,7 @@ import org.firstinspires.ftc.teamcode.infrastructure.SafeJsonReader;
  * ----------------------------------------------------------------------------------------------------
  *
  * To go to the dirrectory:
- * cd TeamCode/src/main/java/org/firstinspires/ftc/teamcode/JSON/
+ * cd TeamCode/src/main/java/org//ftc/teamcode/JSON/
  *
  * To push the file:
  * ~/Library/Android/sdk/platform-tools/adb push SlotTrayPositions.json /sdcard/FIRST/team9773/json18
@@ -251,6 +251,14 @@ public class SlotTray implements CubeTrays {
 
 
         setServoPos(TrayPositions.LOADING);
+
+
+
+
+
+
+
+
     }
 
     /// DEAFAULT INTERFACE
@@ -522,6 +530,15 @@ public class SlotTray implements CubeTrays {
         return (Math.abs(loadingPosTicks - liftMotor.getCurrentPosition()) < 400);
     }
 
-    public void endDump() {}
+
+
+    public void endDump() {
+
+
+
+
+
+
+    }
 
 }

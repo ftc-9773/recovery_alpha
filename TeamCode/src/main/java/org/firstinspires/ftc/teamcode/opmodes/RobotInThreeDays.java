@@ -25,7 +25,6 @@ public class RobotInThreeDays extends LinearOpMode {
 
     Servo sorterServo;
 
-
     SafeJsonReader config  ;// do later
 
     public void runOpMode(){
@@ -77,6 +76,12 @@ public class RobotInThreeDays extends LinearOpMode {
             } else {
                 rDump.setPosition(0.0);
                 lDump.setPosition(1.0);
+            }
+            if(gamepad2.left_trigger > 0.2){
+                sorterServo.setPosition(.85); //One direction
+            }
+            else {
+                sorterServo.setPosition(.5); //Stationary
             }
 
             //Set intake state

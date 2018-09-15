@@ -56,7 +56,7 @@ public class RobotInThreeDays extends LinearOpMode {
         setLiftPower(-0.15);
 
         waitForStart();
-        sorterServo.setPosition(1);
+        sorterServo.setPosition(0.8);
         while(opModeIsActive()){
 
             // driving
@@ -71,11 +71,11 @@ public class RobotInThreeDays extends LinearOpMode {
             else if(gamepad2.a) intakeTransfer();
 
             if(gamepad2.left_bumper){
-                rDump.setPosition(0.5);
-                lDump.setPosition(0.5);
+                rDump.setPosition(0.8);
+                lDump.setPosition(0.6);
             } else {
-                rDump.setPosition(0.0);
-                lDump.setPosition(1.0);
+                rDump.setPosition(0.93);
+                lDump.setPosition(0.43);
             }
             if(gamepad2.right_bumper){
                 intakeMotor.setPower(0.75);
@@ -105,18 +105,18 @@ public class RobotInThreeDays extends LinearOpMode {
         leftDriveMotorA.setPower(-pow);
         leftDriveMotorB.setPower(-pow);
     }
-    void intakeStore(){
+    void intakeDown(){
         ritkServo.setPosition(0.99);
         litkServo.setPosition(0.01);
 
     }
-    void intakeDown(){
+    void intakeStore(){
         ritkServo.setPosition(0.65);
         litkServo.setPosition(0.35);
     }
     void intakeTransfer(){
-        ritkServo.setPosition(0.5);
-        litkServo.setPosition(0.5);
+        ritkServo.setPosition(0.45);
+        litkServo.setPosition(0.55);
     }
 
 

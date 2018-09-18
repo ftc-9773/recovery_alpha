@@ -31,7 +31,6 @@ import org.firstinspires.ftc.teamcode.resources.Vector;
 
 public class SwerveModule {
 
-    private HardwareMap hwMap;
     public DcMotor swerveMotor;
     private CRServo swerveServo;
     private double zeroPosition;
@@ -95,7 +94,6 @@ public class SwerveModule {
 
         TAG += hardwareMapTag;
         // Pass the hardware map
-        this.hwMap = hwMap;
 
         // Set the electronics
         swerveServo = hwMap.crservo.get(hardwareMapTag + "Servo");

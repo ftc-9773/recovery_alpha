@@ -43,6 +43,11 @@ public class Vector {
         }
     }
 
+    public void setCartesian(double x, double yComponent){
+        xComponent = x;
+        this.yComponent = yComponent;
+    }
+
     // Add a vector
     public void addVector (boolean isCartesian, double xMag, double yAng) {
         if (isCartesian) {

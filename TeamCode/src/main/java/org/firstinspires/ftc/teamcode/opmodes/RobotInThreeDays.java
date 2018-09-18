@@ -25,10 +25,14 @@ public class RobotInThreeDays extends LinearOpMode {
 
     Servo sorterServo;
 
+    boolean notTank ;
+
+
 
     SafeJsonReader config  ;// do later
 
     public void runOpMode(){
+        boolean val = false;
         // init
         leftDriveMotorA = hardwareMap.dcMotor.get("lMotorA");
         leftDriveMotorB = hardwareMap.dcMotor.get("lMotorB");
@@ -37,7 +41,10 @@ public class RobotInThreeDays extends LinearOpMode {
         rightDriveMotorB = hardwareMap.dcMotor.get("rMotorB");
         //liftMotors
         liftMotorA = hardwareMap.dcMotor.get("liftMotorA");
+        liftMotorA.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         liftMotorB = hardwareMap.dcMotor.get("liftMotorB");
+        liftMotorB.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
 
         // armMotors
         armMotor = hardwareMap.dcMotor.get("armMotor");
@@ -56,12 +63,43 @@ public class RobotInThreeDays extends LinearOpMode {
         setLiftPower(-0.15);
 
         waitForStart();
-        sorterServo.setPosition(0.8);
         while(opModeIsActive()){
-
             // driving
-            setLeftPow(gamepad1.left_stick_y);
-            setRightPow(gamepad1.right_stick_y);
+            if(true){
+                double forwardPower = gamepad1.right_stick_y * -1; //Set forward power to the Y of the right stick. -1 makes up forward.
+                double turningPower = gamepad1.right_stick_x; //Set the turning power to the X of the right stick.
+
+                double rightPower = forwardPower - turningPower; //Determine the power for the right.
+                double leftPower = forwardPower + turningPower; //Determine the power for the left.
+
+                if (Math.abs(rightPower) > 1 || Math.abs(leftPower) > 1){ //If either power is too small or big...
+
+                    if(Math.abs(rightPower)> Math.abs(leftPower)){ // Check if rightPower is bigger
+
+                        //scale each by a factor that makes rightPower 1 or -1
+                        leftPower /= Math.abs(rightPower);
+                        rightPower = 1;
+                    }
+                    else if(Math.abs(rightPower) < Math.abs(leftPower)){ // Check if rightPower is smaller
+
+                        //scale each by a factor that makes leftPower 1 or -1
+                        rightPower /= Math.abs(leftPower);
+                        leftPower = 1;
+                    }
+                    else{ //if they are equal both are 1.
+
+                        leftPower = 1;
+                        rightPower = 1;
+                    }
+                }
+
+                //set the left and right powers.
+                setRightPow(-rightPower);
+                setLeftPow(-leftPower);
+            } else {
+                setLeftPow(gamepad1.left_stick_y);
+                setRightPow(gamepad1.right_stick_y);
+            }
             //
             setLiftPower(-gamepad2.left_stick_y);
             armMotor.setPower(-gamepad2.right_stick_y);
@@ -84,7 +122,21 @@ public class RobotInThreeDays extends LinearOpMode {
             } else {
                 intakeMotor.setPower(0.0);
             }
+
+
+            if (gamepad1.right_bumper && !val){
+                notTank = !notTank;
+            }
+            val = gamepad1.right_bumper;
+
+            if(gamepad2.dpad_left ||gamepad2.dpad_down || gamepad2.dpad_right || gamepad2.dpad_up || gamepad2.left_trigger > 0.5 ){
+                sorterServo.setPosition(0.8);
+            } else {
+                sorterServo.setPosition(0.5);
+            }
+
         }
+
 
 
 
@@ -106,8 +158,8 @@ public class RobotInThreeDays extends LinearOpMode {
         leftDriveMotorB.setPower(-pow);
     }
     void intakeDown(){
-        ritkServo.setPosition(0.99);
-        litkServo.setPosition(0.01);
+        ritkServo.setPosition(0.95);
+        litkServo.setPosition(0.05);
 
     }
     void intakeStore(){

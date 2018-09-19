@@ -15,12 +15,11 @@ public class TankDrivebase extends AbstractDrivebase {
         this.rightDriveMotor1 = hwmp.dcMotor.get(rdm1);
     }
     public void setRightPow(double pow){
-        rightDriveMotor0.setPower(pow);
-        rightDriveMotor1.setPower(pow);
-
+        this.rightDriveMotor0.setPower(pow);
+        this.rightDriveMotor1.setPower(pow);
     }
     public void setLeftPow (double pow){
-        leftDriveMotor0.setPower(-pow);
-        leftDriveMotor1.setPower(-pow);
+        this.leftDriveMotor0.setPower(-pow);
+        this.leftDriveMotor1.setPower(-pow);
     }
 }

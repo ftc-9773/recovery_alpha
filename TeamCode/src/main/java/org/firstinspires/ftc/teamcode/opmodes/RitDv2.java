@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.opmodes;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.Nonsense.AbstractDrivebase;
 import org.firstinspires.ftc.teamcode.Nonsense.AbstractIntake;
@@ -9,16 +10,15 @@ import org.firstinspires.ftc.teamcode.Nonsense.Intake;
 import org.firstinspires.ftc.teamcode.Nonsense.Lift;
 import org.firstinspires.ftc.teamcode.Nonsense.AbstractLift;
 import org.firstinspires.ftc.teamcode.Nonsense.TankDrivebase;
-
+@TeleOp(name = "RitDV2")
 public class RitDv2 extends LinearOpMode {
-
 
     public void runOpMode(){
         // init
         Lift lift = new Lift("liftMotorA", "liftMotorB", hardwareMap);
-        Intake intake = new Intake("ritkServo", "litkServor", "armMotor", hardwareMap);
+        Intake intake = new Intake("ritkServo", "litkServo", "armMotor", "intakeMotor",  hardwareMap);
         TankDrivebase drivebase = new TankDrivebase("lMotorA", "lMotorB", "rMotorA", "rMotorB", hardwareMap);
-        Dumper scorer = new Dumper("sortServo", "ldump", "rdump", hardwareMap);
+        Dumper scorer = new Dumper("sortServo", "lDump", "rDump", hardwareMap);
 
 
         if(!validateClasses()){
@@ -28,10 +28,14 @@ public class RitDv2 extends LinearOpMode {
 
         while (opModeIsActive()){
             //Opmode
-            drivebase.setRightPow(gamepad1.left_stick_y);
-            drivebase.setLeftPow(gamepad1.right_stick_y);
 
-            lift.setPower(gamepad2.left_stick_y);
+            //Driving
+            drivebase.setLeftPow(gamepad1.left_stick_y);
+            drivebase.setRightPow(gamepad1.right_stick_y);
+
+            //Set lift music
+
+            lift.setPower(-gamepad2.left_stick_y);
             intake.setArmMotor(-gamepad2.right_stick_y);
 
             if(gamepad2.left_bumper){
@@ -51,11 +55,12 @@ public class RitDv2 extends LinearOpMode {
             else if(gamepad2.x) {intake.transferState();}
 
             //Set the correct value for the intake
+
             if(gamepad2.right_bumper){
-                intake.intakeOn(0.75);
+                intake.intakeOn();
             } else if(gamepad2.right_trigger > 0.2){
                 intake.intakeOn(-gamepad2.right_trigger);
-            } else {
+                } else {
                 intake.intakeOff();
             }
         }

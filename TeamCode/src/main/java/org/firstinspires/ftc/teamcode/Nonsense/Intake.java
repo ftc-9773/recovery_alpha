@@ -9,11 +9,12 @@ public class Intake extends AbstractIntake{
     Servo rightIntakeServo, leftIntakeServo;
     DcMotor intakeMotor, armMotor;
 
-    public Intake(String ritkName, String lintkName, String amName, HardwareMap hwmp){
+    public Intake(String ritkName, String lintkName, String amName,String intakeName, HardwareMap hwmp){
         this.hwmp = hwmp;
         this.rightIntakeServo = hwmp.servo.get(ritkName);
         this.leftIntakeServo = hwmp.servo.get(lintkName);
         this.armMotor = hwmp.dcMotor.get(amName);
+        this.intakeMotor = hwmp.dcMotor.get(intakeName);
     }
 
     public void intakeOn(double pow){
@@ -26,7 +27,7 @@ public class Intake extends AbstractIntake{
         intakeMotor.setPower(pow);
     }
     public void intakeOff(){
-        intakeMotor.setPower(0);
+        intakeMotor.setPower(0.0);
     }
     public void transferState(){
         this.setState(intakeStates.TRANSFER);
@@ -42,14 +43,14 @@ public class Intake extends AbstractIntake{
     public void setState(intakeStates state){
         switch(state){
             case STORE:
-                rightIntakeServo.setPosition(0.99);
-                leftIntakeServo.setPosition(0.01);
+                this.rightIntakeServo.setPosition(0.99);
+                this.leftIntakeServo.setPosition(0.01);
             case INTAKE:
-                rightIntakeServo.setPosition(0.65);
-                leftIntakeServo.setPosition(0.35);
+                this.rightIntakeServo.setPosition(0.65);
+                this.leftIntakeServo.setPosition(0.35);
             case TRANSFER:
-                leftIntakeServo.setPosition(0.5);
-                rightIntakeServo.setPosition(0.5);
+                this.leftIntakeServo.setPosition(0.5);
+                this.rightIntakeServo.setPosition(0.5);
         }
     }
 }

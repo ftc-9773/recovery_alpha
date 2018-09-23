@@ -18,4 +18,7 @@ public abstract class AbstractIntake {
     public abstract void intakeState();
     public abstract void storeState();
 
+    public abstract void intakeOn();
+    public abstract void intakeOff();
+    //public abstract void setPower(double pow);
 }

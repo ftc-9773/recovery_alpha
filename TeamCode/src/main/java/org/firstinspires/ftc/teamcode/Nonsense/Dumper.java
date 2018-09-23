@@ -18,7 +18,7 @@ public class Dumper extends AbstractScorer {
         this.Right = hwmp.servo.get(RightDump);
     }
     public void dump(){
-        this.Left.setPosition(0.5);
+        this.Left.setPosition(0.75);
         this.Right.setPosition(0.5);
     }
     public void score(){
@@ -27,8 +27,9 @@ public class Dumper extends AbstractScorer {
         this.reset();
     }
     public void reset(){
-        this.Left.setPosition(1.0);
-        this.Right.setPosition(0.0);
+        //servos are opposite
+        this.Left.setPosition(0.0);
+        this.Right.setPosition(0.75);
     }
     public void setBeltSpeed(double pow){
         Belt.setPosition(pow);

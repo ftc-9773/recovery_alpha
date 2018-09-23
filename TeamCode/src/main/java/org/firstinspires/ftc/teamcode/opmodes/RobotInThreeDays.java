@@ -117,8 +117,8 @@ public class RobotInThreeDays extends LinearOpMode {
         leftDriveMotorB.setPower(-pow);
     }
     void intakeStore(){
-        ritkServo.setPosition(0.99);
-        litkServo.setPosition(0.01);
+        ritkServo.setPosition(0.95);
+        litkServo.setPosition(0.05);
 
     }
     void intakeDown(){

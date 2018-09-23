@@ -27,6 +27,7 @@ public class Intake extends AbstractIntake{
         this.leftIntakeServo = hwmp.servo.get(lintkName);
         this.armMotor = hwmp.dcMotor.get(amName);
         this.intakeMotor = hwmp.dcMotor.get(intakeName);
+        //this.intakeMotor.setPower(0);
     }
 
     /**
@@ -42,7 +43,7 @@ public class Intake extends AbstractIntake{
     public void intakeOn(){
         intakeMotor.setPower(0.75);
     }
-    @Deprecated
+
     public void setPower(double pow){
         intakeMotor.setPower(pow);
     }
@@ -83,14 +84,18 @@ public class Intake extends AbstractIntake{
     private void setState(intakeStates state){
         switch(state){
             case STORE:
-                this.rightIntakeServo.setPosition(0.99);
-                this.leftIntakeServo.setPosition(0.01);
-            case INTAKE:
-                this.rightIntakeServo.setPosition(0.65);
-                this.leftIntakeServo.setPosition(0.35);
+                this.rightIntakeServo.setPosition(0.93);
+                this.leftIntakeServo.setPosition(0.07);
+                break;
             case TRANSFER:
                 this.leftIntakeServo.setPosition(0.5);
                 this.rightIntakeServo.setPosition(0.5);
+                break;
+            case INTAKE:
+                this.rightIntakeServo.setPosition(0.65);
+                this.leftIntakeServo.setPosition(0.35);
+                break;
+
         }
     }
 }

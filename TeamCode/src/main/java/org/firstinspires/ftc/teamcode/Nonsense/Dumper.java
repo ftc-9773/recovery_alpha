@@ -3,6 +3,9 @@ package org.firstinspires.ftc.teamcode.Nonsense;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
+import java.sql.Time;
+import java.util.concurrent.TimeUnit;
+
 public class Dumper extends AbstractScorer {
     Servo Belt, Left, Right;
     HardwareMap hwmp;
@@ -17,6 +20,11 @@ public class Dumper extends AbstractScorer {
     public void dump(){
         this.Left.setPosition(0.5);
         this.Right.setPosition(0.5);
+    }
+    public void score(){
+        this.dump();
+        //Thread.sleep(100);
+        this.reset();
     }
     public void reset(){
         this.Left.setPosition(1.0);

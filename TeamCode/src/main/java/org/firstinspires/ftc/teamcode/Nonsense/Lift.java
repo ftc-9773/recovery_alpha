@@ -20,8 +20,12 @@ import java.sql.Time;
 public class Lift extends AbstractLift{
     DcMotor LeftLiftMotor;
     DcMotor RightLiftMotor;
-    liftStates currState = liftStates.DOWN;
 
+    /**
+     * @param LeftmotorName The name of the left lift motor as viewed from the back of the robot
+     * @param RightmotorName The name of the right lift motor as viewed from the back of the robot
+     * @param hwmp The hardware map in the opmode.
+     * */
     public Lift(String LeftmotorName, String RightmotorName, HardwareMap hwmp){
         LeftLiftMotor = hwmp.dcMotor.get(LeftmotorName);
         RightLiftMotor = hwmp.dcMotor.get(RightmotorName);
@@ -60,6 +64,5 @@ public class Lift extends AbstractLift{
         this.setPower(1);
         while(System.currentTimeMillis() - time < 300){}
         this.setPower(0);
-        this.currState = liftStates.DOWN;
     }
 }

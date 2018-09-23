@@ -37,12 +37,12 @@ public class RitDv2 extends LinearOpMode {
             //Opmode
 
             //Driving
-            drivebase.setLeftPow(gamepad1.left_stick_y);
-            drivebase.setRightPow(gamepad1.right_stick_y);
+            drivebase.setLeftPow(-gamepad1.left_stick_y);
+            drivebase.setRightPow(-gamepad1.right_stick_y);
 
-            //Set lift music
-            lift.setPower(-gamepad2.left_stick_y);
-            intake.setArmMotor(-gamepad2.right_stick_y);
+            //Set lift power
+            lift.setPower(gamepad2.left_stick_y);
+            intake.setArmMotor(gamepad2.right_stick_y);
 
             if(gamepad2.left_bumper){
                 scorer.dump(); //Release the cubes/balls
@@ -55,9 +55,9 @@ public class RitDv2 extends LinearOpMode {
                 scorer.setBeltSpeed(.85); //Turn sorter belt on.
             }
             else{scorer.setBeltSpeed(0.5);}
-
+            if(gamepad2.y || gamepad2.b || gamepad2.x){
             if(gamepad2.y){intake.storeState();}
-            else if(gamepad2.a) {intake.intakeState();}
+            else if(gamepad2.b) {intake.intakeState();}
             else if(gamepad2.x) {intake.transferState();}
 
             //Set the correct value for the intake
@@ -67,7 +67,7 @@ public class RitDv2 extends LinearOpMode {
                 intake.intakeOn(-gamepad2.right_trigger);
                 } else {
                 intake.intakeOff();
-            }
+            }}
         }
     }
     /**

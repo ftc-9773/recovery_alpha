@@ -9,7 +9,7 @@ import org.firstinspires.ftc.teamcode.infrastructure.RasiParser;
 import org.firstinspires.ftc.teamcode.infrastructure.SafeJsonReader;
 
 @TeleOp(name = "robotinThreeDays", group = "AAA robotInThreeDays" )
-
+@Deprecated //Use RitDv2 instead.
 public class RobotInThreeDays extends LinearOpMode {
     DcMotor  leftDriveMotorA, leftDriveMotorB;
     DcMotor rightDriveMotorA, rightDriveMotorB;
@@ -71,6 +71,7 @@ public class RobotInThreeDays extends LinearOpMode {
 
 
             //Open Gates
+            //WARNING: THESE SERVO POSITIONS ARE NOT CORRECT. DO NOT USE THEM.
             if(gamepad2.left_bumper){
                 rDump.setPosition(0.5);
                 lDump.setPosition(0.5);

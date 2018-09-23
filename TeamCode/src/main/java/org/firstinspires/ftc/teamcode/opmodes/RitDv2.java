@@ -7,14 +7,14 @@ import org.firstinspires.ftc.teamcode.Nonsense.AbstractDrivebase;
 import org.firstinspires.ftc.teamcode.Nonsense.AbstractIntake;
 import org.firstinspires.ftc.teamcode.Nonsense.AbstractScorer;
 import org.firstinspires.ftc.teamcode.Nonsense.Dumper;
-import org.firstinspires.ftc.teamcode.Nonsense.Intake;
+import org.firstinspires.ftc.teamcode.Nonsense.RitDIntake;
 import org.firstinspires.ftc.teamcode.Nonsense.Lift;
 import org.firstinspires.ftc.teamcode.Nonsense.AbstractLift;
 import org.firstinspires.ftc.teamcode.Nonsense.TankDrivebase;
 @TeleOp(name = "RitDV2")
 /**
  *
- * Implements Zach's Robot in three days code with seperate classes.
+ * Implements Zach's Robot in three days code with separate classes.
  * @author Cadence
  * @version 2.0
  * */
@@ -23,7 +23,7 @@ public class RitDv2 extends LinearOpMode {
     public void runOpMode(){
         // init
         Lift lift = new Lift("liftMotorA", "liftMotorB", hardwareMap);
-        Intake intake = new Intake("ritkServo", "litkServo", "armMotor", "intakeMotor",  hardwareMap);
+        RitDIntake intake = new RitDIntake("ritkServo", "litkServo", "armMotor", "intakeMotor",  hardwareMap);
         TankDrivebase drivebase = new TankDrivebase("lMotorA", "lMotorB", "rMotorA", "rMotorB", hardwareMap);
         Dumper scorer = new Dumper("sortServo", "lDump", "rDump", hardwareMap);
 
@@ -48,25 +48,26 @@ public class RitDv2 extends LinearOpMode {
                 scorer.dump(); //Release the cubes/balls
             }
             else{
-                scorer.reset();
+                scorer.reset(); //close the gates
             }
 
 
             if(gamepad2.left_trigger > 0.2){
-                scorer.setBeltSpeed(.85); //Turn sorter belt on.
+                scorer.setBeltSpeed(0.85); //Turn sorter belt on.
             }
             else{scorer.setBeltSpeed(0.5);}
 
+            //change the intake state based on user command
             if(gamepad2.y){intake.storeState();}
             else if(gamepad2.b) {intake.intakeState();}
             else if(gamepad2.x) {intake.transferState();}
 
             //Set the correct value for the intake
             if(gamepad2.right_bumper || gamepad2.a){
-                intake.setPower(0.75);
+                intake.intakeOn();
             }
             else if(gamepad2.right_trigger > 0.2){
-                intake.setPower(-gamepad2.right_trigger);
+                intake.intakeOn(-gamepad2.right_trigger);
             }
             else {
                 intake.intakeOff(); }

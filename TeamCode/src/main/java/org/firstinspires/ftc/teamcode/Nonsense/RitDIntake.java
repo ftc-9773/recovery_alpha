@@ -9,7 +9,7 @@ import com.qualcomm.robotcore.hardware.Servo;
  * @author Cadence
  * @version 1.0
  * */
-public class Intake extends AbstractIntake{
+public class RitDIntake extends AbstractIntake{
     HardwareMap hwmp;
     Servo rightIntakeServo, leftIntakeServo;
     DcMotor intakeMotor, armMotor;
@@ -21,7 +21,7 @@ public class Intake extends AbstractIntake{
      * @param intakeName name of the motor that controls the spinny bit at the end of the intake
      * @param hwmp the hardware map defined in the opmode
      * */
-    public Intake(String ritkName, String lintkName, String amName,String intakeName, HardwareMap hwmp){
+    public RitDIntake(String ritkName, String lintkName, String amName, String intakeName, HardwareMap hwmp){
         this.hwmp = hwmp;
         this.rightIntakeServo = hwmp.servo.get(ritkName);
         this.leftIntakeServo = hwmp.servo.get(lintkName);

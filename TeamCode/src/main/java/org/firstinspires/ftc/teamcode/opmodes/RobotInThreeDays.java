@@ -66,31 +66,16 @@ public class RobotInThreeDays extends LinearOpMode {
         while(opModeIsActive()){
             // driving
             if(true){
-                double forwardPower = gamepad1.right_stick_y * -1; //Set forward power to the Y of the right stick. -1 makes up forward.
-                double turningPower = gamepad1.right_stick_x; //Set the turning power to the X of the right stick.
+                double forwardPower = gamepad1.left_stick_y * -1; //Set forward power to the Y of the right stick. -1 makes up forward.
+                double turningPower = gamepad1.left_stick_x; //Set the turning power to the X of the right stick.
 
                 double rightPower = forwardPower - turningPower; //Determine the power for the right.
                 double leftPower = forwardPower + turningPower; //Determine the power for the left.
 
-                if (Math.abs(rightPower) > 1 || Math.abs(leftPower) > 1){ //If either power is too small or big...
-
-                    if(Math.abs(rightPower)> Math.abs(leftPower)){ // Check if rightPower is bigger
-
-                        //scale each by a factor that makes rightPower 1 or -1
-                        leftPower /= Math.abs(rightPower);
-                        rightPower = 1;
-                    }
-                    else if(Math.abs(rightPower) < Math.abs(leftPower)){ // Check if rightPower is smaller
-
-                        //scale each by a factor that makes leftPower 1 or -1
-                        rightPower /= Math.abs(leftPower);
-                        leftPower = 1;
-                    }
-                    else{ //if they are equal both are 1.
-
-                        leftPower = 1;
-                        rightPower = 1;
-                    }
+                double maxVal = Math.max(rightPower, leftPower);
+                if (Math.abs(maxVal) > 1) {
+                    rightPower /= maxVal;
+                    leftPower /= maxVal;
                 }
 
                 //set the left and right powers.
@@ -109,10 +94,10 @@ public class RobotInThreeDays extends LinearOpMode {
             else if(gamepad2.a) intakeTransfer();
 
             if(gamepad2.left_bumper){
-                rDump.setPosition(0.8);
-                lDump.setPosition(0.6);
+                rDump.setPosition(.375);
+                lDump.setPosition(0.63);
             } else {
-                rDump.setPosition(0.93);
+                rDump.setPosition(0.55);
                 lDump.setPosition(0.43);
             }
             if(gamepad2.right_bumper){
